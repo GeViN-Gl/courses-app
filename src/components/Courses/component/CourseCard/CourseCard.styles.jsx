@@ -1,9 +1,13 @@
 import styled from 'styled-components';
 export const TitleContainer = styled.div`
-  outline: 1px solid red;
   & h2 {
-    font-size: 48px;
-    line-height: 1em;
+    font-size: 36px;
+    /* line-height: 1em; */
+    padding-bottom: 20px;
+  }
+
+  & p {
+    text-align: justify;
   }
 `;
 
@@ -16,11 +20,10 @@ export const InfoText = styled.p`
 
 export const InfoContainer = styled.div`
   display: grid;
-  grid-template-columns: auto;
+  grid-template-columns: 1fr;
   grid-template-rows: auto;
   justify-items: start;
   gap: 10px;
-  outline: 1px solid green;
 
   & button {
     justify-self: center;
@@ -29,7 +32,8 @@ export const InfoContainer = styled.div`
 
 export const CardContainer = styled.section`
   display: grid;
-  grid-template-columns: 60% 40%;
-  outline: 1px solid black;
+  grid-template-columns: 60% auto;
   padding: 25px;
+  border: 1px solid #00ff00;
+  gap: 40px;
 `;

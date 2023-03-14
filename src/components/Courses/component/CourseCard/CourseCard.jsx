@@ -5,17 +5,10 @@ import {
   InfoText,
 } from './CourseCard.styles';
 import Button from '../../../../common/Button/Button';
+import { toHoursAndMinutes } from '../../../../helpers/timeConvert';
 
 import { useContext } from 'react';
 import { AuthorsContext } from '../../../../helpers/context/authors.context';
-
-const toHoursAndMinutes = (totalMinutes) => {
-  const hours = Math.floor(totalMinutes / 60); // отримати кількість годин
-  const minutes = totalMinutes % 60; // отримати залишок хвилин
-  return `${hours.toString().padStart(2, '0')}:${minutes
-    .toString()
-    .padStart(2, '0')}`; // повернути об'єкт з годинами і хвилинами
-};
 
 const getStringWithAuthorsNames = (allAuthors, authorsIds, maxStringLength) => {
   const namesArr = [];
@@ -36,6 +29,10 @@ const getStringWithAuthorsNames = (allAuthors, authorsIds, maxStringLength) => {
 const CourseCard = ({ course }) => {
   const { title, description, creationDate, duration, authors } = course;
   const { authorsList } = useContext(AuthorsContext);
+
+  if (!authorsList) {
+    console.log(authorsList);
+  }
 
   return (
     <CardContainer>

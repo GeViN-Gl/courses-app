@@ -5,7 +5,7 @@ export const HeaderContainer = styled.header`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  outline: 1px solid #aa0000;
+  border: 1px solid #aa0000;
   padding: 25px 40px;
 
   ${LogoSvg} {

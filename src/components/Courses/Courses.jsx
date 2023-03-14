@@ -1,18 +1,21 @@
 import CourseCard from './component/CourseCard/CourseCard';
+import SearchBar from './component/SearchBar/SearchBar';
 
 import { useContext } from 'react';
 import { CoursesContext } from '../../helpers/context/courses.context';
 
+import { CoursesContainer } from './Courses.styles';
+
 const Courses = () => {
-  const { coursesList } = useContext(CoursesContext);
+  const { filderedCoursesList } = useContext(CoursesContext);
 
   return (
-    <div>
-      Courses
-      {coursesList.map((course) => (
+    <CoursesContainer>
+      <SearchBar />
+      {filderedCoursesList.map((course) => (
         <CourseCard key={course.id} course={course} />
       ))}
-    </div>
+    </CoursesContainer>
   );
 };
 
