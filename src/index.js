@@ -10,17 +10,17 @@ import { CreateCourseProvider } from './helpers/context/createCourse.contex';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
-    <DisplayProvider>
-      <CoursesProvider>
-        <AuthorsProvider>
-          <CreateCourseProvider>
-            <App />
-          </CreateCourseProvider>
-        </AuthorsProvider>
-      </CoursesProvider>
-    </DisplayProvider>
-  </React.StrictMode>
+	<React.StrictMode>
+		<DisplayProvider>
+			<CoursesProvider>
+				<AuthorsProvider>
+					<CreateCourseProvider>
+						<App />
+					</CreateCourseProvider>
+				</AuthorsProvider>
+			</CoursesProvider>
+		</DisplayProvider>
+	</React.StrictMode>
 );
 
 reportWebVitals();

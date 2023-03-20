@@ -7,16 +7,16 @@ import { CoursesContext } from '../../helpers/context/courses.context';
 import { CoursesContainer } from './Courses.styles';
 
 const Courses = () => {
-  const { filderedCoursesList } = useContext(CoursesContext);
+	const { filderedCoursesList } = useContext(CoursesContext);
 
-  return (
-    <CoursesContainer>
-      <SearchBar />
-      {filderedCoursesList.map((course) => (
-        <CourseCard key={course.id} course={course} />
-      ))}
-    </CoursesContainer>
-  );
+	return (
+		<CoursesContainer>
+			<SearchBar />
+			{filderedCoursesList.map((course) => (
+				<CourseCard key={course.id} course={course} />
+			))}
+		</CoursesContainer>
+	);
 };
 
 export default Courses;

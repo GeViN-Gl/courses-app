@@ -8,38 +8,38 @@ import { CreateCourseContext } from '../../../../helpers/context/createCourse.co
 import { toHoursAndMinutes } from '../../../../helpers/timeConvert';
 
 const Duration = () => {
-  // const [_, setInputValue] = useState('');
-  const { timeStr, setTimeStr, setTimeNum, timeNum } =
-    useContext(CreateCourseContext);
+	// const [_, setInputValue] = useState('');
+	const { timeStr, setTimeStr, setTimeNum, timeNum } =
+		useContext(CreateCourseContext);
 
-  const inputHandler = (event) => {
-    event.preventDefault();
-    // just prevent any non number chars )
-    if (isNaN(event.target.value)) {
-      return;
-    }
-    // setInputValue(event.target.value);
-    const minutes = +event.target.value;
-    setTimeNum(minutes);
-    setTimeStr(toHoursAndMinutes(minutes));
-  };
+	const inputHandler = (event) => {
+		event.preventDefault();
+		// just prevent any non number chars )
+		if (isNaN(event.target.value)) {
+			return;
+		}
+		// setInputValue(event.target.value);
+		const minutes = +event.target.value;
+		setTimeNum(minutes);
+		setTimeStr(toHoursAndMinutes(minutes));
+	};
 
-  return (
-    <DurationContainer>
-      <Title>Duration</Title>
-      <Input
-        labelText='Duration'
-        placeholderText='Enter duration in minutes...'
-        value={timeNum}
-        onChange={inputHandler}
-        title='Please enter at least one number'
-        required
-      />
-      <DurationText>
-        Duration: <span>{timeStr}</span> hours
-      </DurationText>
-    </DurationContainer>
-  );
+	return (
+		<DurationContainer>
+			<Title>Duration</Title>
+			<Input
+				labelText='Duration'
+				placeholderText='Enter duration in minutes...'
+				value={timeNum}
+				onChange={inputHandler}
+				title='Please enter at least one number'
+				required
+			/>
+			<DurationText>
+				Duration: <span>{timeStr}</span> hours
+			</DurationText>
+		</DurationContainer>
+	);
 };
 
 export default Duration;

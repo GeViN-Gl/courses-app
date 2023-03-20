@@ -1,11 +1,11 @@
 import { LogoSvg } from './Logo.styles';
 
 const Logo = () => {
-  return (
-    <>
-      <LogoSvg />
-    </>
-  );
+	return (
+		<>
+			<LogoSvg />
+		</>
+	);
 };
 
 export default Logo;
