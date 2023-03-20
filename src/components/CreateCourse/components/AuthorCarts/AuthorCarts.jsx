@@ -2,6 +2,7 @@ import { useContext } from 'react';
 import { CreateCourseContext } from '../../../../helpers/context/createCourse.contex';
 
 import { AuthorCardsContainer } from './AuthorCarts.styles';
+import { CreateCourseTitle as Title } from '../CreateCourseTitle/CreateCourseTitle';
 
 import AuthorCard from '../AuthorCard/AuthorCard';
 
@@ -11,13 +12,14 @@ const AuthorCarts = () => {
 
   return (
     <div>
-      <h3>Authors</h3>
+      <Title>Authors</Title>
       <AuthorCardsContainer>
         {notAddedAuthorList.map((author) => (
           <AuthorCard isAdd={true} key={author.id} author={author} />
         ))}
       </AuthorCardsContainer>
-      <h3>Course authors</h3>
+      {!notAddedAuthorList.length && <span>Author list is empty</span>}
+      <Title>Course authors</Title>
       <AuthorCardsContainer>
         {addedAuthorList.map((author) => (
           <AuthorCard isAdd={false} key={author.id} author={author} />

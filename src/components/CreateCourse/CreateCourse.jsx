@@ -17,7 +17,28 @@ import { useContext, useState, useEffect } from 'react';
 import { CreateCourseContext } from '../../helpers/context/createCourse.contex';
 import { CoursesContext } from '../../helpers/context/courses.context';
 
+import { DisplayContext } from '../../helpers/context/display.context';
+
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+const getCurrentDate = () => {
+  const today = new Date();
+  const day = today.getDate().toString();
+  const month = (today.getMonth() + 1).toString(); // JavaScript months are zero-based, so we need to add 1
+  const year = today.getFullYear().toString();
+  return `${day}/${month}/${year}`;
+};
+
 const CreateCourse = () => {
+  // alert replcer
+  const notify = () =>
+    toast('Please fill all fields before creating new course');
+
+  // display
+  const { setIsAddCourseDisplayed, setIsCoursesDisplayed } =
+    useContext(DisplayContext);
+
   const {
     courseTitle,
     setCourseTitle,
@@ -29,14 +50,6 @@ const CreateCourse = () => {
     setTimeStr,
     setAddedAuthorList,
   } = useContext(CreateCourseContext);
-
-  const getCurrentDate = () => {
-    const today = new Date();
-    const day = today.getDate().toString();
-    const month = (today.getMonth() + 1).toString(); // JavaScript months are zero-based, so we need to add 1
-    const year = today.getFullYear().toString();
-    return `${day}/${month}/${year}`;
-  };
 
   const [isReadyToAddNewCourse, setIsReadyToAddNewCourse] = useState(false);
 
@@ -82,23 +95,26 @@ const CreateCourse = () => {
   const createCourseButtonHandler = (event) => {
     event.preventDefault();
     if (!isReadyToAddNewCourse) {
-      alert('Please fill all fields before creating new course');
+      notify(); // toast looks nicer )
+      // alert('Please fill all fields before creating new course');
       return;
     }
-    console.log(courseObj);
     setCoursesList([...coursesList, courseObj]);
 
+    // clear fields
     setCourseTitle('');
     setCourseDescription('');
     setAddedAuthorList([]);
     setTimeNum(0);
     setTimeStr('00:00');
+    // switch elements
+    setIsCoursesDisplayed(true);
+    setIsAddCourseDisplayed(false);
   };
 
   const titleInputHandler = (event) => {
     event.preventDefault();
     setCourseTitle(event.target.value);
-    console.log(courseTitle);
   };
 
   const descriptionInputHandler = (event) => {
@@ -107,7 +123,7 @@ const CreateCourse = () => {
   };
 
   return (
-    <CreateCourseContainer>
+    <CreateCourseContainer className='course-container'>
       <TitleInput>
         <Input
           labelText='Title'
@@ -126,11 +142,11 @@ const CreateCourse = () => {
           value={courseDescription}
         />
       </DescriptionInput>
-      <AddAuthorContainer>
-        <AddAuthorBox>
+      <AddAuthorContainer className='AddAuthorContainer'>
+        <AddAuthorBox className='AddAuthorBox'>
           <AddAuthor />
         </AddAuthorBox>
-        <DurationBox>
+        <DurationBox className='DurationBox'>
           <Duration />
         </DurationBox>
         <CourseAuthorsBox>

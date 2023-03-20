@@ -7,21 +7,18 @@ const flexBoxCol = css`
   gap: 10px;
 `;
 
-export const AddAuthorContainer = styled.div`
-  ${flexBoxCol}/* padding-right: 25px; */
-`;
-
-export const AddAuthorMiniform = styled.div`
+export const DurationContainer = styled.div`
   ${flexBoxCol}
-  align-items: flex-start;
-  justify-content: center;
   ${CustomInput} {
     height: 50px;
     width: 100%;
   }
+`;
 
-  & > button {
-    max-width: fit-content;
-    align-self: center;
+export const DurationText = styled.p`
+  font-size: 25px;
+
+  & > span {
+    font-weight: 600;
   }
 `;

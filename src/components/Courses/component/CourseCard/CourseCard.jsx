@@ -18,6 +18,7 @@ const getStringWithAuthorsNames = (allAuthors, authorsIds, maxStringLength) => {
       namesArr.push(res.name);
     }
   });
+
   let namesStr = namesArr.join(', ');
   if (namesStr.length > maxStringLength) {
     namesStr = namesStr.slice(0, maxStringLength - 3) + '...';
@@ -28,6 +29,7 @@ const getStringWithAuthorsNames = (allAuthors, authorsIds, maxStringLength) => {
 
 const CourseCard = ({ course }) => {
   const { title, description, creationDate, duration, authors } = course;
+
   const { authorsList } = useContext(AuthorsContext);
 
   if (!authorsList) {

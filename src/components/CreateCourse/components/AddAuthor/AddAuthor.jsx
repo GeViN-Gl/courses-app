@@ -2,6 +2,9 @@
 import Input from '../../../../common/Input/Input';
 import Button from '../../../../common/Button/Button';
 
+import { AddAuthorContainer, AddAuthorMiniform } from './AddAuthor.styles';
+import { CreateCourseTitle as Title } from '../CreateCourseTitle/CreateCourseTitle';
+
 import { useState, useContext } from 'react';
 import { AuthorsContext } from '../../../../helpers/context/authors.context';
 
@@ -15,9 +18,9 @@ const AddAuthor = () => {
   };
 
   return (
-    <div>
-      <h3>Add author</h3>
-      <div>
+    <AddAuthorContainer>
+      <Title>Add author</Title>
+      <AddAuthorMiniform>
         <Input
           labelText='Author name'
           placeholderText='Enter author name...'
@@ -38,8 +41,8 @@ const AddAuthor = () => {
           }}>
           Create author
         </Button>
-      </div>
-    </div>
+      </AddAuthorMiniform>
+    </AddAuthorContainer>
   );
 };
 

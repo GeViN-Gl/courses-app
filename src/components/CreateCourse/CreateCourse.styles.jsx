@@ -1,6 +1,8 @@
 import styled, { css } from 'styled-components';
 import { CustomInput } from '../../common/Input/Input.styles';
 
+import AddAuthor from './components/AddAuthor/AddAuthor';
+
 const flexCol = css`
   display: flex;
   flex-direction: column;
@@ -33,6 +35,7 @@ export const DescriptionInput = styled.div`
 `;
 
 export const CreateCourseContainer = styled.form`
+  padding: 25px;
   border: 1px solid #0000ff;
   min-height: 80vh;
   display: grid;
@@ -52,6 +55,7 @@ export const AddAuthorContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   grid-template-rows: auto;
+  gap: 25px;
 `;
 
 export const AddAuthorBox = styled.div``;

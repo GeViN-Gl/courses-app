@@ -12,54 +12,53 @@ const AuthorCard = ({ author, isAdd }) => {
     setAddedAuthorList,
   } = useContext(CreateCourseContext);
 
+  // Define a named function that handles the button click // Render the
+
+  const handleAuthorClick = (event) => {
+    // Prevent the default button behavior
+    event.preventDefault();
+
+    // Check if the author is in the notAdded list
+    const isNotAdded = notAddedAuthorList.some(
+      (notAddedAuthor) => notAddedAuthor.id === author.id
+    );
+
+    // Check if the author is in the added list
+    const isAdded = addedAuthorList.some(
+      (addedAuthor) => addedAuthor.id === author.id
+    );
+
+    // If the author is in the notAdded list
+    if (isNotAdded) {
+      // Transfer the author to the added list
+      const authorToTransfer = notAddedAuthorList.find(
+        (notAddedAuthor) => notAddedAuthor.id === author.id
+      );
+      const newNotAddedAuthorList = notAddedAuthorList.filter(
+        (notAddedAuthor) => notAddedAuthor.id !== author.id
+      );
+      setNotAddedAuthorList(newNotAddedAuthorList);
+      setAddedAuthorList([...addedAuthorList, authorToTransfer]);
+    }
+
+    // If the author is in the added list
+    if (isAdded) {
+      // Transfer the author to the notAdded list
+      const authorToTransfer = addedAuthorList.find(
+        (addedAuthor) => addedAuthor.id === author.id
+      );
+      const newAddedAuthorList = addedAuthorList.filter(
+        (addedAuthor) => addedAuthor.id !== author.id
+      );
+      setAddedAuthorList(newAddedAuthorList);
+      setNotAddedAuthorList([...notAddedAuthorList, authorToTransfer]);
+    }
+  };
+
   return (
     <>
       <h4>{author.name}</h4>
-      <Button
-        onClick={(event) => {
-          event.preventDefault();
-          // check in notAdded array
-          if (
-            notAddedAuthorList.some(
-              (notAddedAuthor) => notAddedAuthor.id === author.id
-            )
-          ) {
-            // transfer to added
-            // 1st find nodAdded
-            const authorToTransfer = notAddedAuthorList.find(
-              (notAddedAuthor) => notAddedAuthor.id === author.id
-            );
-            // 2st mutate notAdded to chop
-            // create filted
-            const newNotAddedAuthorList = notAddedAuthorList.filter(
-              (notAddedAuthor) => notAddedAuthor.id !== author.id
-            );
-            // call setter
-            setNotAddedAuthorList(newNotAddedAuthorList);
-            // add to added list via spread
-            setAddedAuthorList([...addedAuthorList, authorToTransfer]);
-          }
-
-          // and vice-verca
-          if (
-            addedAuthorList.some((addedAuthor) => addedAuthor.id === author.id)
-          ) {
-            // transfer to NOTadded
-            // 1st find in added
-            const authorToTransfer = addedAuthorList.find(
-              (addedAuthor) => addedAuthor.id === author.id
-            );
-            // 2st mutate notAdded to chop
-            // create filted
-            const newAddedAuthorList = addedAuthorList.filter(
-              (notAddedAuthor) => notAddedAuthor.id !== author.id
-            );
-            // call setter
-            setAddedAuthorList(newAddedAuthorList);
-            // add to added list via spread
-            setNotAddedAuthorList([...notAddedAuthorList, authorToTransfer]);
-          }
-        }}>
+      <Button onClick={handleAuthorClick}>
         {`${isAdd ? 'Add' : 'Delete'} author`}
       </Button>
     </>

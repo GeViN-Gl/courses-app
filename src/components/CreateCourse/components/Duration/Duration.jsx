@@ -1,4 +1,7 @@
 import Input from '../../../../common/Input/Input';
+import { CreateCourseTitle as Title } from '../CreateCourseTitle/CreateCourseTitle';
+import { DurationContainer, DurationText } from './Duration.styles';
+
 import { useContext } from 'react';
 import { CreateCourseContext } from '../../../../helpers/context/createCourse.contex';
 
@@ -22,8 +25,8 @@ const Duration = () => {
   };
 
   return (
-    <div>
-      <h3>Duration</h3>
+    <DurationContainer>
+      <Title>Duration</Title>
       <Input
         labelText='Duration'
         placeholderText='Enter duration in minutes...'
@@ -32,8 +35,10 @@ const Duration = () => {
         title='Please enter at least one number'
         required
       />
-      <div>Duration: {timeStr} hours</div>
-    </div>
+      <DurationText>
+        Duration: <span>{timeStr}</span> hours
+      </DurationText>
+    </DurationContainer>
   );
 };
 

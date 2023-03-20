@@ -9,7 +9,7 @@ export const DisplayContext = createContext({
 
 export const DisplayProvider = ({ children }) => {
   const [isCoursesDisplayed, setIsCoursesDisplayed] = useState(true);
-  const [isAddCourseDisplayed, setIsAddCourseDisplayed] = useState(true);
+  const [isAddCourseDisplayed, setIsAddCourseDisplayed] = useState(false);
 
   const value = {
     isCoursesDisplayed,
