@@ -12,3 +12,9 @@ export const AuthorCardsContainer = styled.div`
 		max-width: fit-content;
 	}
 `;
+
+export const AllAuthorCards = styled.div`
+	& > h3 {
+		padding: 25px 0;
+	}
+`;

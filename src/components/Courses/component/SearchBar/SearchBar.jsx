@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { CoursesContext } from '../../../../helpers/context/courses.context';
 import { DisplayContext } from '../../../../helpers/context/display.context';
 
@@ -29,6 +29,15 @@ const SearchBar = () => {
 		event.preventDefault();
 		setFilterField(inputFieldValue);
 	};
+
+	// Reset search result when searchbar is empty
+	useEffect(() => {
+		if (inputFieldValue === '') {
+			setFilterField(inputFieldValue);
+		}
+		// Linter is overreacting about the array of dependencies, no need to put the setter there, ignore it
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [inputFieldValue]);
 
 	return (
 		<SearchBarContainer>

@@ -7,8 +7,12 @@ import { CreateCourseContext } from '../../../../helpers/context/createCourse.co
 
 import { toHoursAndMinutes } from '../../../../helpers/timeConvert';
 
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 const Duration = () => {
-	// const [_, setInputValue] = useState('');
+	const notify = () => toast('Duration accepts only numbers');
+
 	const { timeStr, setTimeStr, setTimeNum, timeNum } =
 		useContext(CreateCourseContext);
 
@@ -16,6 +20,7 @@ const Duration = () => {
 		event.preventDefault();
 		// just prevent any non number chars )
 		if (isNaN(event.target.value)) {
+			notify();
 			return;
 		}
 		// setInputValue(event.target.value);
@@ -30,7 +35,8 @@ const Duration = () => {
 			<Input
 				labelText='Duration'
 				placeholderText='Enter duration in minutes...'
-				value={timeNum}
+				// prevent leading 0
+				value={timeNum === 0 ? '' : timeNum}
 				onChange={inputHandler}
 				title='Please enter at least one number'
 				required

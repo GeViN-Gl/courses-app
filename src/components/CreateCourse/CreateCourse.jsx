@@ -31,7 +31,7 @@ const getCurrentDate = () => {
 };
 
 const CreateCourse = () => {
-	// alert replcer
+	// alert replacer
 	const notify = () =>
 		toast('Please fill all fields before creating new course');
 

@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 import { CreateCourseContext } from '../../../../helpers/context/createCourse.contex';
 
-import { AuthorCardsContainer } from './AuthorCarts.styles';
+import { AuthorCardsContainer, AllAuthorCards } from './AuthorCarts.styles';
 import { CreateCourseTitle as Title } from '../CreateCourseTitle/CreateCourseTitle';
 
 import AuthorCard from '../AuthorCard/AuthorCard';
@@ -11,7 +11,7 @@ const AuthorCarts = () => {
 		useContext(CreateCourseContext);
 
 	return (
-		<div>
+		<AllAuthorCards>
 			<Title>Authors</Title>
 			<AuthorCardsContainer>
 				{notAddedAuthorList.map((author) => (
@@ -26,7 +26,7 @@ const AuthorCarts = () => {
 				))}
 			</AuthorCardsContainer>
 			{!addedAuthorList.length && <span>Author list is empty</span>}
-		</div>
+		</AllAuthorCards>
 	);
 };
 

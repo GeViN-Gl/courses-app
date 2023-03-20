@@ -1,4 +1,4 @@
-import './App.css';
+import './App.scss';
 
 import Header from './components/Header/Header';
 import Courses from './components/Courses/Courses';
@@ -15,8 +15,11 @@ function App() {
 		useContext(DisplayContext);
 
 	return (
-		<div>
+		<div className='App'>
 			<Header />
+			{isCoursesDisplayed && <Courses />}
+			{isAddCourseDisplayed && <CreateCourse />}
+			{/* the toast container must be higher than the element where the toast will be called */}
 			<ToastContainer
 				position='top-left'
 				autoClose={5000}
@@ -29,8 +32,6 @@ function App() {
 				pauseOnHover
 				theme='light'
 			/>
-			{isCoursesDisplayed && <Courses />}
-			{isAddCourseDisplayed && <CreateCourse />}
 		</div>
 	);
 }
