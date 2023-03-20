@@ -32,10 +32,6 @@ const CourseCard = ({ course }) => {
 
 	const { authorsList } = useContext(AuthorsContext);
 
-	if (!authorsList) {
-		console.log(authorsList);
-	}
-
 	return (
 		<CardContainer>
 			<TitleContainer>
@@ -62,11 +58,3 @@ const CourseCard = ({ course }) => {
 };
 
 export default CourseCard;
-/*
-id: string;
-title: string;
-description: string;
-creationDate: string;
-duration: number;
-authors: string[];
-*/
