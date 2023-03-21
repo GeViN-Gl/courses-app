@@ -12,7 +12,7 @@ const defaultFormFields = {
 	password: '123123',
 };
 
-export const Login = () => {
+const Login = () => {
 	const [formFields, setFormFields] = useState(defaultFormFields);
 	const { email, password } = formFields;
 
@@ -77,3 +77,4 @@ export const Login = () => {
 		</LoginContainer>
 	);
 };
+export default Login;

@@ -98,8 +98,7 @@ const Registration = () => {
 				/>
 				<Button>Registration</Button>
 				<RegistrationFormText>
-					If you not have an account you can{' '}
-					<Link to='/registration'>Login</Link>
+					If you not have an account you can <Link to='/login'>Login</Link>
 				</RegistrationFormText>
 			</RegistrationForm>
 		</RegistrationContainer>

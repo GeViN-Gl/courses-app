@@ -1,4 +1,9 @@
-import { HeaderContainer, ElementContainer } from './Header.styles';
+import {
+	HeaderContainer,
+	ElementContainer,
+	LogoContainer,
+	Name,
+} from './Header.styles';
 
 import { useEffect, Fragment } from 'react';
 import { Outlet, useNavigate, Link } from 'react-router-dom';
@@ -12,7 +17,7 @@ const Header = () => {
 		() => {
 			const isLoggedIn = false;
 			if (!isLoggedIn) {
-				navigate('/login');
+				navigate('/courses');
 			}
 		},
 		// currently only on mount
@@ -23,9 +28,11 @@ const Header = () => {
 	return (
 		<Fragment>
 			<HeaderContainer>
-				<Logo />
+				<LogoContainer to='/'>
+					<Logo />
+				</LogoContainer>
 				<ElementContainer>
-					<div className='name'>Dave</div>
+					<Name>dave</Name>
 					<Button buttonType={BUTTON_TYPES_CLASSES.base}>Logout</Button>
 				</ElementContainer>
 			</HeaderContainer>
@@ -33,6 +40,7 @@ const Header = () => {
 			<Link to='registration'>registration </Link>
 			<Link to='login'>login </Link>
 			<Link to='create'>CreateCourse </Link>
+			<Link to='cinfo'>Cinfo </Link>
 			<Outlet />
 		</Fragment>
 	);

@@ -7,30 +7,39 @@ import {
 import Button from '../../../../common/Button/Button';
 import { toHoursAndMinutes } from '../../../../helpers/timeConvert';
 
+import { useNavigate } from 'react-router-dom';
+
 import { useContext } from 'react';
 import { AuthorsContext } from '../../../../helpers/context/authors.context';
 
 const getStringWithAuthorsNames = (allAuthors, authorsIds, maxStringLength) => {
-	const namesArr = [];
-	authorsIds.forEach((authorId) => {
-		const res = allAuthors.find((authObj) => authObj.id === authorId);
-		if (res) {
-			namesArr.push(res.name);
-		}
-	});
+	const namesArr = authorsIds
+		.map(
+			(authorId) => allAuthors.find((authObj) => authObj.id === authorId)?.name
+		)
+		.filter((name) => name); // Remove undefined/null names
 
 	let namesStr = namesArr.join(', ');
+
 	if (namesStr.length > maxStringLength) {
-		namesStr = namesStr.slice(0, maxStringLength - 3) + '...';
+		namesStr = `${namesStr.slice(0, maxStringLength - 3)}...`;
 	}
 
 	return namesStr;
 };
+//TODO remove maxLength, this can be done with CSS
+// white-space: nowrap;
+// overflow: hidden;
+// text-overflow: ellipsis;
 
 const CourseCard = ({ course }) => {
-	const { title, description, creationDate, duration, authors } = course;
+	const { id, title, description, creationDate, duration, authors } = course;
 
 	const { authorsList } = useContext(AuthorsContext);
+
+	const navigate = useNavigate();
+
+	const showCourseNavigateHandler = () => navigate(id);
 
 	return (
 		<CardContainer>
@@ -51,7 +60,7 @@ const CourseCard = ({ course }) => {
 					<span>Created: </span>
 					{creationDate}
 				</InfoText>
-				<Button>Show course</Button>
+				<Button onClick={showCourseNavigateHandler}>Show course</Button>
 			</InfoContainer>
 		</CardContainer>
 	);

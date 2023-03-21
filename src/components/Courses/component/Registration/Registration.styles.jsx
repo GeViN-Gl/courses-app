@@ -20,4 +20,7 @@ export const RegistrationForm = styled.form`
 `;
 export const RegistrationFormText = styled.p`
 	text-align: center;
+	& > a {
+		text-decoration: none;
+	}
 `;

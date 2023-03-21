@@ -4,7 +4,8 @@ import Header from './components/Header/Header';
 import Courses from './components/Courses/Courses';
 import CreateCourse from './components/CreateCourse/CreateCourse';
 import Registration from './components/Courses/component/Registration/Registration';
-import { Login } from './components/Courses/component/Login/Login';
+import Login from './components/Courses/component/Login/Login';
+import CourseInfo from './components/CourseInfo/CourseInfo';
 
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -22,7 +23,10 @@ function App() {
 		<>
 			<Routes>
 				<Route path='/' element={<Header />}>
-					<Route path='courses' element={<Courses />} />
+					<Route path='courses/*'>
+						<Route index element={<Courses />} />
+						<Route path=':courseId' element={<CourseInfo />} />
+					</Route>
 					<Route path='registration' element={<Registration />} />
 					<Route path='login' element={<Login />} />
 					<Route path='create' element={<CreateCourse />} />

@@ -23,4 +23,8 @@ export const LoginForm = styled.form`
 
 export const LoginFormText = styled.p`
 	text-align: center;
+
+	& > a {
+		text-decoration: none;
+	}
 `;
