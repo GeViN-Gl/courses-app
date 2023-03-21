@@ -3,7 +3,7 @@ import Input from '../../../../common/Input/Input';
 import Button from '../../../../common/Button/Button';
 
 import { AddAuthorContainer, AddAuthorMiniform } from './AddAuthor.styles';
-import { CreateCourseTitle as Title } from '../CreateCourseTitle/CreateCourseTitle';
+import { CustomTitle as Title } from '../../../../common/CustomTitle/CustomTitle';
 
 import { useState, useContext } from 'react';
 import { AuthorsContext } from '../../../../helpers/context/authors.context';

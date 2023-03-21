@@ -11,6 +11,7 @@ export const HeaderContainer = styled.header`
 	${LogoSvg} {
 		outline: 1px solid green;
 	}
+	margin-bottom: 20px;
 `;
 
 export const ElementContainer = styled.div`

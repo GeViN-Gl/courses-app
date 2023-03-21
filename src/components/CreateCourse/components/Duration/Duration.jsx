@@ -1,5 +1,5 @@
 import Input from '../../../../common/Input/Input';
-import { CreateCourseTitle as Title } from '../CreateCourseTitle/CreateCourseTitle';
+import { CustomTitle as Title } from '../../../../common/CustomTitle/CustomTitle';
 import { DurationContainer, DurationText } from './Duration.styles';
 
 import { useContext } from 'react';

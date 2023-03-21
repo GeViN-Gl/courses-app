@@ -2,7 +2,7 @@ import { useContext } from 'react';
 import { CreateCourseContext } from '../../../../helpers/context/createCourse.contex';
 
 import { AuthorCardsContainer, AllAuthorCards } from './AuthorCarts.styles';
-import { CreateCourseTitle as Title } from '../CreateCourseTitle/CreateCourseTitle';
+import { CustomTitle as Title } from '../../../../common/CustomTitle/CustomTitle';
 
 import AuthorCard from '../AuthorCard/AuthorCard';
 
