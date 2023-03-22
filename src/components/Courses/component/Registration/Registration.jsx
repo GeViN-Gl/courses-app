@@ -9,14 +9,14 @@ import Input from '../../../../common/Input/Input';
 import Button from '../../../../common/Button/Button';
 
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const defaultFormFields = {
 	name: 'Test',
-	email: 'text@example.com',
+	email: 'test@example.com',
 	password: '123123',
 };
 const notify = (message) => toast(message);
@@ -24,6 +24,8 @@ const notify = (message) => toast(message);
 const Registration = () => {
 	const [formFields, setFormFields] = useState(defaultFormFields);
 	const { name, email, password } = formFields;
+
+	const navigate = useNavigate();
 
 	const resetFormFields = () => setFormFields(defaultFormFields);
 
@@ -45,6 +47,7 @@ const Registration = () => {
 
 			if (data.successful) {
 				notify('🟢 ' + data.result);
+				return data.successful;
 			}
 
 			if (!data.successful || !response.ok) {
@@ -55,14 +58,24 @@ const Registration = () => {
 				);
 			}
 		} catch (error) {
-			notify('🔴 ' + error.message);
-			console.error(`Fetch error in Reg comp ${error.message}`);
+			if (error.message.includes('an email or email already exists')) {
+				notify('🛑 Wrong email format, or email already exists');
+			} else {
+				notify('🔴 ' + error.message);
+				console.error(`Fetch error: ${error.message}`);
+			}
 		}
 	};
 
 	const submitFormHandler = (event) => {
 		event.preventDefault();
-		fetchHandler();
+		fetchHandler().then((result) => {
+			if (result) {
+				resetFormFields();
+				navigate('/login');
+			}
+			// else nothig, user stay on this page until registration compl
+		});
 	};
 
 	return (
@@ -98,7 +111,7 @@ const Registration = () => {
 				/>
 				<Button>Registration</Button>
 				<RegistrationFormText>
-					If you not have an account you can <Link to='/login'>Login</Link>
+					If you have an account you can <Link to='/login'>Login</Link>
 				</RegistrationFormText>
 			</RegistrationForm>
 		</RegistrationContainer>

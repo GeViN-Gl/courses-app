@@ -20,7 +20,7 @@ const CourseInfo = () => {
 	const { coursesList } = useContext(CoursesContext);
 	const { authorsList } = useContext(AuthorsContext);
 
-	const { courseId } = useParams(); //Same as Route
+	const { courseId } = useParams(); //or useLocation?
 
 	const { id, creationDate, description, duration, title, authors } =
 		coursesList.find((course) => course.id === courseId);

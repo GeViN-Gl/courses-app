@@ -1,6 +1,5 @@
 import { useContext, useState, useEffect } from 'react';
 import { CoursesContext } from '../../../../helpers/context/courses.context';
-// import { DisplayContext } from '../../../../helpers/context/display.context';
 
 import Input from '../../../../common/Input/Input';
 import Button from '../../../../common/Button/Button';
@@ -11,9 +10,6 @@ import { useNavigate } from 'react-router-dom';
 
 const SearchBar = () => {
 	const { setFilterField } = useContext(CoursesContext);
-	// const { setIsAddCourseDisplayed, setIsCoursesDisplayed } =
-	// 	useContext(DisplayContext);
-	//TODO looks like display context is obsolete
 
 	const [inputFieldValue, setInputFieldValue] = useState('');
 
@@ -21,7 +17,7 @@ const SearchBar = () => {
 
 	const addNewCourseNavigateHandler = (event) => {
 		event.preventDefault();
-		navigate('/create');
+		navigate('/courses/add');
 	};
 
 	const inputChangeHandler = (event) => {

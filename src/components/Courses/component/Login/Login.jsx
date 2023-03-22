@@ -3,16 +3,25 @@ import { CustomTitle } from '../../../../common/CustomTitle/CustomTitle';
 import Input from '../../../../common/Input/Input';
 import Button from '../../../../common/Button/Button';
 
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+
+import { useState, useContext } from 'react';
+import { UserContext } from '../../../../helpers/context/user.context';
+
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const defaultFormFields = {
 	name: 'Test',
 	email: 'test@example.com',
 	password: '123123',
 };
+const notify = (message) => toast(message);
 
 const Login = () => {
+	const { setUser, setUserToken } = useContext(UserContext);
+	const navigate = useNavigate();
+
 	const [formFields, setFormFields] = useState(defaultFormFields);
 	const { email, password } = formFields;
 
@@ -34,16 +43,35 @@ const Login = () => {
 			});
 			const data = await response.json();
 			if (data.successful) {
-				localStorage.setItem('userToken', JSON.stringify(data.result));
+				notify('🟢 Login successful');
+				return data;
+			}
+			if (!data.successful || !response.ok) {
+				throw new Error(
+					`Login failed. Reason: ${data ? data?.result : response.status}`
+				);
 			}
 		} catch (error) {
-			console.error(`Fetch error in Login comp ${error.message}`);
+			if (error.message.includes('nvalid data')) {
+				notify('🛑 Invalid email or password');
+			} else {
+				notify('🔴 ' + error.message);
+				console.error(`Fetch error: ${error.message}`);
+			}
 		}
 	};
 
 	const submitFormHandler = (event) => {
 		event.preventDefault();
-		fetchHandler();
+		fetchHandler().then((data) => {
+			if (data) {
+				localStorage.setItem('userToken', JSON.stringify(data.result));
+				setUserToken(data.result);
+				setUser(data.user);
+				navigate('/courses');
+				resetFormFields();
+			}
+		});
 	};
 
 	return (

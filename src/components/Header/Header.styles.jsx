@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 
-export const LogoContainer = styled(Link)`
+export const LogoLinkContainer = styled(Link)`
 	outline: 1px solid green;
 `;
 
