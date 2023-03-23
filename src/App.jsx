@@ -24,6 +24,7 @@ function App() {
 					</Route>
 					<Route path='registration' element={<Registration />} />
 					<Route path='login' element={<Login />} />
+					<Route path='*' element={<Courses />} />
 				</Route>
 			</Routes>
 			<ToastContainer

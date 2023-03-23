@@ -23,8 +23,13 @@ const CourseInfo = () => {
 
 	const { courseId } = useParams(); //or useLocation?
 
+	// find course to render
+	const courseToRender = coursesList.find((course) => course.id === courseId);
+	if (!courseToRender) {
+		return;
+	}
 	const { id, creationDate, description, duration, title, authors } =
-		coursesList.find((course) => course.id === courseId);
+		courseToRender;
 
 	return (
 		<CourseInfoContainer>

@@ -11,3 +11,9 @@ export const getArrayWithAuthors = (allAuthors, authorsIds) => {
 		.map((authorId) => allAuthors.find((authObj) => authObj.id === authorId))
 		.filter((res) => res !== undefined);
 };
+
+export const getStringWithAuthorsNames = (allAuthors, authorsIds) => {
+	return getArrayWithAuthors(allAuthors, authorsIds)
+		.map(({ name }) => name)
+		.join(', ');
+};

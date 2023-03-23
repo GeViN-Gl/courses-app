@@ -12,13 +12,7 @@ import { useNavigate } from 'react-router-dom';
 import { useContext } from 'react';
 import { AuthorsContext } from '../../../../helpers/context/authors.context';
 
-import { getArrayWithAuthors } from '../../../../helpers/customArrayFuncs';
-
-const getStringWithAuthorsNames = (allAuthors, authorsIds) => {
-	return getArrayWithAuthors(allAuthors, authorsIds)
-		.map(({ name }) => name)
-		.join(', ');
-};
+import { getStringWithAuthorsNames } from '../../../../helpers/customArrayFuncs';
 
 const CourseCard = ({ course }) => {
 	const { id, title, description, creationDate, duration, authors } = course;
