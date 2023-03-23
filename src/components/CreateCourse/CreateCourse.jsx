@@ -17,7 +17,7 @@ import { useContext, useState, useEffect } from 'react';
 import { CreateCourseContext } from '../../helpers/context/createCourse.contex';
 import { CoursesContext } from '../../helpers/context/courses.context';
 
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -35,6 +35,13 @@ const CreateCourse = () => {
 	const notify = () =>
 		toast('Please fill all fields before creating new course');
 	const navigate = useNavigate();
+	const clearFormFields = () => {
+		setCourseTitle('');
+		setCourseDescription('');
+		setAddedAuthorList([]);
+		setTimeNum(0);
+		setTimeStr('00:00');
+	};
 
 	const {
 		courseTitle,
@@ -99,11 +106,7 @@ const CreateCourse = () => {
 		setCoursesList([...coursesList, courseObj]);
 
 		// clear fields
-		setCourseTitle('');
-		setCourseDescription('');
-		setAddedAuthorList([]);
-		setTimeNum(0);
-		setTimeStr('00:00');
+		clearFormFields();
 		// navigate back to courses
 		navigate('/courses');
 	};
@@ -120,6 +123,9 @@ const CreateCourse = () => {
 
 	return (
 		<CreateCourseContainer className='course-container'>
+			<Link to='/courses' onClick={clearFormFields}>
+				↩️ Back to courses
+			</Link>
 			<TitleInput>
 				<Input
 					labelText='Title'

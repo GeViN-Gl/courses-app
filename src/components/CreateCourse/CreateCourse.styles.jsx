@@ -38,13 +38,18 @@ export const CreateCourseContainer = styled.form`
 	min-height: 80vh;
 	display: grid;
 	grid-template-columns: 1fr 1fr;
-	grid-template-rows: 80px 250px auto;
+	grid-template-rows: auto 80px 250px auto;
 	align-items: start;
 
 	& > button {
 		max-width: fit-content;
 		align-self: end;
 		justify-self: end;
+	}
+	& > a {
+		grid-column: 1 / 3;
+		text-decoration: none;
+		padding-bottom: 10px;
 	}
 `;
 

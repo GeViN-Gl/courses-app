@@ -14,6 +14,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+import { postData } from '../../../../helpers/dataFethers';
+
 const defaultFormFields = {
 	name: 'Test',
 	email: 'test@example.com',
@@ -29,33 +31,21 @@ const Registration = () => {
 
 	const resetFormFields = () => setFormFields(defaultFormFields);
 
-	const inputChangeHandler = (event) => {
-		const { name, value } = event.target;
+	const inputChangeHandler = ({ target: { name, value } }) => {
 		setFormFields({ ...formFields, [name]: value });
 	};
 
 	const fetchHandler = async () => {
 		try {
-			const response = await fetch('http://127.0.0.1:4000/register', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify(formFields),
-			});
-			const data = await response.json();
+			const data = await postData('http://127.0.0.1:4000/register', formFields);
 
 			if (data.successful) {
 				notify('🟢 ' + data.result);
 				return data.successful;
 			}
 
-			if (!data.successful || !response.ok) {
-				throw new Error(
-					`Registration failed. Reason: ${
-						data ? data?.errors.join(', ') : response.status
-					}`
-				);
+			if (!data.successful) {
+				throw new Error(`Registration failed. Reason: ${data.error}`);
 			}
 		} catch (error) {
 			if (error.message.includes('an email or email already exists')) {

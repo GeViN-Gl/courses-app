@@ -11,6 +11,8 @@ import { UserContext } from '../../../../helpers/context/user.context';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+import { postData } from '../../../../helpers/dataFethers';
+
 const defaultFormFields = {
 	name: 'Test',
 	email: 'test@example.com',
@@ -27,29 +29,19 @@ const Login = () => {
 
 	const resetFormFields = () => setFormFields(defaultFormFields);
 
-	const inputChangeHandler = (event) => {
-		const { name, value } = event.target;
+	const inputChangeHandler = ({ target: { name, value } }) => {
 		setFormFields({ ...formFields, [name]: value });
 	};
 
 	const fetchHandler = async () => {
 		try {
-			const response = await fetch('http://localhost:4000/login', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify(formFields),
-			});
-			const data = await response.json();
+			const data = await postData('http://127.0.0.1:4000/login', formFields);
 			if (data.successful) {
 				notify('🟢 Login successful');
 				return data;
 			}
-			if (!data.successful || !response.ok) {
-				throw new Error(
-					`Login failed. Reason: ${data ? data?.result : response.status}`
-				);
+			if (!data.successful) {
+				throw new Error(`Login failed. Reason: ${data.error}`);
 			}
 		} catch (error) {
 			if (error.message.includes('nvalid data')) {

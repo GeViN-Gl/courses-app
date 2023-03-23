@@ -29,7 +29,6 @@ const CourseInfo = () => {
 		return authorsIds
 			.map((authorId) => allAuthors.find((authObj) => authObj.id === authorId))
 			.filter((res) => res !== undefined);
-		// .map((res) => res.name); // need id for keys
 	};
 
 	return (

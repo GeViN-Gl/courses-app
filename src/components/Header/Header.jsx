@@ -5,7 +5,7 @@ import {
 	Name,
 } from './Header.styles';
 
-import { useState, useEffect, Fragment, useContext } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 
 import Logo from './components/Logo/Logo';
@@ -15,17 +15,12 @@ import { UserContext } from '../../helpers/context/user.context';
 
 const Header = () => {
 	const navigate = useNavigate();
-	const userToken = localStorage.getItem('userToken');
 
 	const [onAuthPages, setOnAuthPages] = useState(false);
 
-	const { user, setUser, setUserToken } = useContext(UserContext);
+	const { user, setUser, userToken, setUserToken } = useContext(UserContext);
 
 	const currentLocation = useLocation(); //Where am i?
-	// useCallback(() => {
-	// 	setLocation(currentLocation);
-	// }, [currentLocation]);
-
 	useEffect(() => {
 		if (
 			currentLocation.pathname.includes('login') ||
@@ -37,18 +32,20 @@ const Header = () => {
 		}
 	}, [currentLocation]);
 
-	useEffect(
-		() => {
-			if (userToken) {
-				navigate('/courses');
-			} else {
-				navigate('/login');
-			}
-		},
-		// currently only on mount
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[]
-	);
+	// on first mount check if there is any stored token
+	useEffect(() => {
+		if (localStorage.getItem('userToken')) {
+			setUserToken(localStorage.getItem('userToken'));
+		}
+	}, [setUserToken]);
+
+	useEffect(() => {
+		if (localStorage.getItem('userToken')) {
+			navigate('/courses');
+		} else {
+			navigate('/login');
+		}
+	}, [userToken]);
 
 	const logInOutButtonHandler = (e) => {
 		// When user clicks on Logout button, App should navigate to /login
@@ -58,7 +55,6 @@ const Header = () => {
 			localStorage.removeItem('userToken');
 			setUser(null);
 			setUserToken(null);
-			navigate('/login');
 		} else {
 			//userToken exists in localStorage but user is not logged
 			navigate('/login');
@@ -66,7 +62,7 @@ const Header = () => {
 	};
 
 	return (
-		<Fragment>
+		<>
 			<HeaderContainer>
 				<LogoLinkContainer to='/courses'>
 					<Logo />
@@ -85,7 +81,7 @@ const Header = () => {
 			</HeaderContainer>
 
 			<Outlet />
-		</Fragment>
+		</>
 	);
 };
 
