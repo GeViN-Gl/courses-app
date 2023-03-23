@@ -11,7 +11,7 @@ import { UserContext } from '../../../../helpers/context/user.context';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-import { postData } from '../../../../helpers/dataFethers';
+import { postData } from '../../../../helpers/dataFetchers';
 
 const defaultFormFields = {
 	name: 'Test',

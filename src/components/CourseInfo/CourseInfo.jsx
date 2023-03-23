@@ -13,6 +13,7 @@ import { CoursesContext } from '../../helpers/context/courses.context';
 import { AuthorsContext } from '../../helpers/context/authors.context';
 
 import { toHoursAndMinutes } from '../../helpers/timeConvert';
+import { getArrayWithAuthors } from '../../helpers/customArrayFuncs';
 
 import { useParams } from 'react-router-dom';
 
@@ -24,12 +25,6 @@ const CourseInfo = () => {
 
 	const { id, creationDate, description, duration, title, authors } =
 		coursesList.find((course) => course.id === courseId);
-
-	const getArrayWithAuthors = (allAuthors, authorsIds) => {
-		return authorsIds
-			.map((authorId) => allAuthors.find((authObj) => authObj.id === authorId))
-			.filter((res) => res !== undefined);
-	};
 
 	return (
 		<CourseInfoContainer>

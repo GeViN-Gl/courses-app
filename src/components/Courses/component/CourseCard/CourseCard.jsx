@@ -12,12 +12,11 @@ import { useNavigate } from 'react-router-dom';
 import { useContext } from 'react';
 import { AuthorsContext } from '../../../../helpers/context/authors.context';
 
+import { getArrayWithAuthors } from '../../../../helpers/customArrayFuncs';
+
 const getStringWithAuthorsNames = (allAuthors, authorsIds) => {
-	return authorsIds
-		.map(
-			(authorId) => allAuthors.find((authObj) => authObj.id === authorId)?.name
-		)
-		.filter((name) => name) // Remove undefined/null names
+	return getArrayWithAuthors(allAuthors, authorsIds)
+		.map(({ name }) => name)
 		.join(', ');
 };
 
