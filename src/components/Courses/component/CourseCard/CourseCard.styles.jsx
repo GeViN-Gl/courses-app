@@ -12,7 +12,18 @@ export const TitleContainer = styled.div`
 `;
 
 export const InfoText = styled.p`
+	max-width: 100%;
 	font-size: 20px;
+
+	${({ isMaxLengthApply }) => {
+		return isMaxLengthApply
+			? `
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;`
+			: '';
+	}}
+
 	& span {
 		font-weight: bold;
 	}

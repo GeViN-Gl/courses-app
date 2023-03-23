@@ -1,23 +1,23 @@
 import { useContext, useState, useEffect } from 'react';
 import { CoursesContext } from '../../../../helpers/context/courses.context';
-import { DisplayContext } from '../../../../helpers/context/display.context';
 
 import Input from '../../../../common/Input/Input';
 import Button from '../../../../common/Button/Button';
 
 import { SearchBarContainer } from './SearchBar.styles';
 
+import { useNavigate } from 'react-router-dom';
+
 const SearchBar = () => {
 	const { setFilterField } = useContext(CoursesContext);
-	const { setIsAddCourseDisplayed, setIsCoursesDisplayed } =
-		useContext(DisplayContext);
 
 	const [inputFieldValue, setInputFieldValue] = useState('');
 
-	const addNewCourseClickHandler = (event) => {
+	const navigate = useNavigate();
+
+	const addNewCourseNavigateHandler = (event) => {
 		event.preventDefault();
-		setIsCoursesDisplayed(false);
-		setIsAddCourseDisplayed(true);
+		navigate('/courses/add');
 	};
 
 	const inputChangeHandler = (event) => {
@@ -48,7 +48,7 @@ const SearchBar = () => {
 				onChange={inputChangeHandler}
 			/>
 			<Button onClick={seacrhClickHandler}>Search</Button>
-			<Button onClick={addNewCourseClickHandler}>Add new course</Button>
+			<Button onClick={addNewCourseNavigateHandler}>Add new course</Button>
 		</SearchBarContainer>
 	);
 };

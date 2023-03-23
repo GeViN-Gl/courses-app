@@ -7,30 +7,21 @@ import {
 import Button from '../../../../common/Button/Button';
 import { toHoursAndMinutes } from '../../../../helpers/timeConvert';
 
+import { useNavigate } from 'react-router-dom';
+
 import { useContext } from 'react';
 import { AuthorsContext } from '../../../../helpers/context/authors.context';
 
-const getStringWithAuthorsNames = (allAuthors, authorsIds, maxStringLength) => {
-	const namesArr = [];
-	authorsIds.forEach((authorId) => {
-		const res = allAuthors.find((authObj) => authObj.id === authorId);
-		if (res) {
-			namesArr.push(res.name);
-		}
-	});
-
-	let namesStr = namesArr.join(', ');
-	if (namesStr.length > maxStringLength) {
-		namesStr = namesStr.slice(0, maxStringLength - 3) + '...';
-	}
-
-	return namesStr;
-};
+import { getStringWithAuthorsNames } from '../../../../helpers/customArrayFuncs';
 
 const CourseCard = ({ course }) => {
-	const { title, description, creationDate, duration, authors } = course;
+	const { id, title, description, creationDate, duration, authors } = course;
 
 	const { authorsList } = useContext(AuthorsContext);
+
+	const navigate = useNavigate();
+
+	const showCourseNavigateHandler = () => navigate(id);
 
 	return (
 		<CardContainer>
@@ -39,9 +30,9 @@ const CourseCard = ({ course }) => {
 				<p className='description'>{description}</p>
 			</TitleContainer>
 			<InfoContainer>
-				<InfoText>
+				<InfoText isMaxLengthApply>
 					<span>Authors: </span>
-					{getStringWithAuthorsNames(authorsList, authors, 30)}
+					{getStringWithAuthorsNames(authorsList, authors)}
 				</InfoText>
 				<InfoText>
 					<span>Duration: </span>
@@ -51,7 +42,7 @@ const CourseCard = ({ course }) => {
 					<span>Created: </span>
 					{creationDate}
 				</InfoText>
-				<Button>Show course</Button>
+				<Button onClick={showCourseNavigateHandler}>Show course</Button>
 			</InfoContainer>
 		</CardContainer>
 	);

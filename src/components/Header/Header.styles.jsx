@@ -1,5 +1,9 @@
 import styled from 'styled-components';
-import { LogoSvg } from './components/Logo/Logo.styles';
+import { Link } from 'react-router-dom';
+
+export const LogoLinkContainer = styled(Link)`
+	outline: 1px solid green;
+`;
 
 export const HeaderContainer = styled.header`
 	display: flex;
@@ -8,9 +12,7 @@ export const HeaderContainer = styled.header`
 	border: 1px solid #aa0000;
 	padding: 25px 40px;
 
-	${LogoSvg} {
-		outline: 1px solid green;
-	}
+	margin-bottom: 20px;
 `;
 
 export const ElementContainer = styled.div`

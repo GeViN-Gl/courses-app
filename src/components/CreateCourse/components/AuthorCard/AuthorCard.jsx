@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { useContext, useCallback } from 'react';
 import { CreateCourseContext } from '../../../../helpers/context/createCourse.contex';
 
