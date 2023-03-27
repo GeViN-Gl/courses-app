@@ -4,9 +4,15 @@ import Input from '../../../../common/Input/Input';
 import Button from '../../../../common/Button/Button';
 
 import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import {
+	setCurrentUserName,
+	setCurrentUserEmail,
+	setCurrentUserIsAuth,
+	setCurrentUserToken,
+} from '../../../../store/user/actionCreators';
 
-import { useState, useContext } from 'react';
-import { UserContext } from '../../../../helpers/context/user.context';
+import { useState } from 'react';
 
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -21,7 +27,8 @@ const defaultFormFields = {
 const notify = (message) => toast(message);
 
 const Login = () => {
-	const { setUser, setUserToken } = useContext(UserContext);
+	const dispatch = useDispatch();
+
 	const navigate = useNavigate();
 
 	const [formFields, setFormFields] = useState(defaultFormFields);
@@ -58,8 +65,10 @@ const Login = () => {
 		fetchHandler().then((data) => {
 			if (data) {
 				localStorage.setItem('userToken', JSON.stringify(data.result));
-				setUserToken(data.result);
-				setUser(data.user);
+				dispatch(setCurrentUserIsAuth(true));
+				dispatch(setCurrentUserName(data.user.name));
+				dispatch(setCurrentUserEmail(data.user.email));
+				dispatch(setCurrentUserToken(data.result));
 				navigate('/courses');
 				resetFormFields();
 			}

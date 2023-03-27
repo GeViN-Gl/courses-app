@@ -5,20 +5,30 @@ import {
 	Name,
 } from './Header.styles';
 
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 
 import Logo from './components/Logo/Logo';
 import Button, { BUTTON_TYPES_CLASSES } from '../../common/Button/Button';
 
-import { UserContext } from '../../helpers/context/user.context';
+import { useSelector, useDispatch } from 'react-redux';
+import {
+	selectCurrentUserName,
+	selectCurrentUserToken,
+} from '../../store/user/selectors';
+import {
+	setCurrentUserName,
+	setCurrentUserToken,
+} from '../../store/user/actionCreators';
 
 const Header = () => {
 	const navigate = useNavigate();
 
 	const [onAuthPages, setOnAuthPages] = useState(false);
 
-	const { user, setUser, userToken, setUserToken } = useContext(UserContext);
+	const user = useSelector(selectCurrentUserName);
+	const userToken = useSelector(selectCurrentUserToken);
+	const dispatch = useDispatch();
 
 	const currentLocation = useLocation(); //Where am i?
 	useEffect(() => {
@@ -35,9 +45,9 @@ const Header = () => {
 	// on first mount check if there is any stored token
 	useEffect(() => {
 		if (localStorage.getItem('userToken')) {
-			setUserToken(localStorage.getItem('userToken'));
+			dispatch(setCurrentUserToken(localStorage.getItem('userToken')));
 		}
-	}, [setUserToken]);
+	}, [dispatch]); // TOASK dispatch will not change ever
 
 	useEffect(() => {
 		if (localStorage.getItem('userToken')) {
@@ -53,8 +63,8 @@ const Header = () => {
 		if (!!user) {
 			// LogOUT displays only if user obj exists
 			localStorage.removeItem('userToken');
-			setUser(null);
-			setUserToken(null);
+			dispatch(setCurrentUserName(''));
+			dispatch(setCurrentUserToken(''));
 		} else {
 			//userToken exists in localStorage but user is not logged
 			navigate('/login');
