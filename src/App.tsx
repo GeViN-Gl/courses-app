@@ -6,6 +6,7 @@ import CreateCourse from './components/CreateCourse/CreateCourse';
 import Registration from './components/Courses/component/Registration/Registration';
 import Login from './components/Courses/component/Login/Login';
 import CourseInfo from './components/CourseInfo/CourseInfo';
+import NotFound from './common/NotFound/NotFound';
 
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -21,10 +22,11 @@ function App() {
 					<Route path='courses/*'>
 						<Route index element={<Courses />} />
 						<Route path=':courseId' element={<CourseInfo />} />
+						{/* TODO: Add normal check */}
 					</Route>
 					<Route path='registration' element={<Registration />} />
 					<Route path='login' element={<Login />} />
-					<Route path='*' element={<Courses />} />
+					<Route path='*' element={<NotFound />} />
 				</Route>
 			</Routes>
 			<ToastContainer

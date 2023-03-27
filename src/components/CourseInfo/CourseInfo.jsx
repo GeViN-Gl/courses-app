@@ -26,7 +26,7 @@ const CourseInfo = () => {
 	// find course to render
 	const courseToRender = coursesList.find((course) => course.id === courseId);
 	if (!courseToRender) {
-		return;
+		return <h1>Error</h1>;
 	}
 	const { id, creationDate, description, duration, title, authors } =
 		courseToRender;
