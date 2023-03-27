@@ -1,5 +1,6 @@
-import { useContext, useState, useEffect } from 'react';
-import { CoursesContext } from '../../../../helpers/context/courses.context';
+import { useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { setFilterField } from '../../../../store/courses/actionCreators';
 
 import Input from '../../../../common/Input/Input';
 import Button from '../../../../common/Button/Button';
@@ -9,7 +10,7 @@ import { SearchBarContainer } from './SearchBar.styles';
 import { useNavigate } from 'react-router-dom';
 
 const SearchBar = () => {
-	const { setFilterField } = useContext(CoursesContext);
+	const dispatch = useDispatch();
 
 	const [inputFieldValue, setInputFieldValue] = useState('');
 
@@ -27,15 +28,15 @@ const SearchBar = () => {
 
 	const seacrhClickHandler = (event) => {
 		event.preventDefault();
-		setFilterField(inputFieldValue);
+		dispatch(setFilterField(inputFieldValue));
 	};
 
 	// Reset search result when searchbar is empty
 	useEffect(() => {
 		if (inputFieldValue === '') {
-			setFilterField(inputFieldValue);
+			dispatch(setFilterField(inputFieldValue));
 		}
-		// Linter is overreacting about the array of dependencies, no need to put the setter there, ignore it
+		// Linter is overreacting about the array of dependencies, no need to put the dispatch there, ignore it
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [inputFieldValue]);
 

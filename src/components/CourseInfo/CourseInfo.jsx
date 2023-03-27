@@ -8,10 +8,9 @@ import {
 } from './CourseInfo.styles';
 import { CustomTitle } from '../../common/CustomTitle/CustomTitle';
 
-import { useContext } from 'react';
-import { CoursesContext } from '../../helpers/context/courses.context';
 import { useSelector } from 'react-redux';
 import { selectAuthorsList } from '../../store/authors/selectors';
+import { selectCoursesList } from '../../store/courses/selectors';
 
 import { toHoursAndMinutes } from '../../helpers/timeConvert';
 import { getArrayWithAuthors } from '../../helpers/customArrayFuncs';
@@ -19,7 +18,7 @@ import { getArrayWithAuthors } from '../../helpers/customArrayFuncs';
 import { useParams } from 'react-router-dom';
 
 const CourseInfo = () => {
-	const { coursesList } = useContext(CoursesContext);
+	const coursesList = useSelector(selectCoursesList);
 	const authorsList = useSelector(selectAuthorsList);
 
 	const { courseId } = useParams();

@@ -15,7 +15,9 @@ import Duration from './components/Duration/Duration';
 
 import { useContext, useState, useEffect } from 'react';
 import { CreateCourseContext } from '../../helpers/context/createCourse.contex';
-import { CoursesContext } from '../../helpers/context/courses.context';
+import { useSelector, useDispatch } from 'react-redux';
+import { selectCoursesList } from '../../store/courses/selectors';
+import { setCoursesList } from '../../store/courses/actionCreators';
 
 import { useNavigate, Link } from 'react-router-dom';
 
@@ -31,6 +33,8 @@ const getCurrentDate = () => {
 };
 
 const CreateCourse = () => {
+	const dispatch = useDispatch();
+
 	// alert replacer
 	const notify = () =>
 		toast('Please fill all fields before creating new course');
@@ -94,8 +98,7 @@ const CreateCourse = () => {
 		}
 	}, [courseObj]);
 
-	const { coursesList, setCoursesList } = useContext(CoursesContext);
-
+	const coursesList = useSelector(selectCoursesList);
 	const createCourseButtonHandler = (event) => {
 		event.preventDefault();
 		if (!isReadyToAddNewCourse) {
@@ -103,7 +106,8 @@ const CreateCourse = () => {
 			// alert('Please fill all fields before creating new course');
 			return;
 		}
-		setCoursesList([...coursesList, courseObj]);
+
+		dispatch(setCoursesList([...coursesList, courseObj]));
 
 		// clear fields
 		clearFormFields();
