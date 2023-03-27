@@ -13,11 +13,25 @@ import AuthorCarts from './components/AuthorCarts/AuthorCarts';
 import AddAuthor from './components/AddAuthor/AddAuthor';
 import Duration from './components/Duration/Duration';
 
-import { useContext, useState, useEffect } from 'react';
-import { CreateCourseContext } from '../../helpers/context/createCourse.contex';
+import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { selectAuthorsList } from '../../store/authors/selectors';
 import { selectCoursesList } from '../../store/courses/selectors';
+import {
+	selectCourseTitle,
+	selectAddedAuthorsList,
+	selectTimeMinutes,
+	selectCourseDescription,
+} from '../../store/create-course/selectors';
 import { setCoursesList } from '../../store/courses/actionCreators';
+import {
+	setAddedAuthorsList,
+	setNotAddedAuthorsList,
+	setCourseTitle,
+	setCourseDescription,
+	setTimeMinutes,
+	setTimeHours,
+} from '../../store/create-course/actionCreators';
 
 import { useNavigate, Link } from 'react-router-dom';
 
@@ -33,31 +47,25 @@ const getCurrentDate = () => {
 };
 
 const CreateCourse = () => {
-	const dispatch = useDispatch();
-
 	// alert replacer
 	const notify = () =>
 		toast('Please fill all fields before creating new course');
-	const navigate = useNavigate();
-	const clearFormFields = () => {
-		setCourseTitle('');
-		setCourseDescription('');
-		setAddedAuthorList([]);
-		setTimeNum(0);
-		setTimeStr('00:00');
-	};
 
-	const {
-		courseTitle,
-		setCourseTitle,
-		courseDescription,
-		setCourseDescription,
-		addedAuthorList,
-		timeNum,
-		setTimeNum,
-		setTimeStr,
-		setAddedAuthorList,
-	} = useContext(CreateCourseContext);
+	const dispatch = useDispatch();
+	const navigate = useNavigate();
+	// redux vars
+	const courseTitle = useSelector(selectCourseTitle);
+	const courseDescription = useSelector(selectCourseDescription);
+	const addedAuthorsList = useSelector(selectAddedAuthorsList);
+	const timeMinutes = useSelector(selectTimeMinutes);
+
+	const clearFormFields = () => {
+		dispatch(setCourseTitle(''));
+		dispatch(setCourseDescription(''));
+		dispatch(setAddedAuthorsList([])); // no need to set NotAdded, i have useEffect that care about it
+		dispatch(setTimeMinutes(0));
+		dispatch(setTimeHours('00:00'));
+	};
 
 	const [isReadyToAddNewCourse, setIsReadyToAddNewCourse] = useState(false);
 
@@ -70,21 +78,40 @@ const CreateCourse = () => {
 		duration: 0,
 		authors: [],
 	});
+
+	// useEffect to balance added / NOTadded authorLists
+	const authorsList = useSelector(selectAuthorsList);
+	useEffect(() => {
+		// if authorsList changed
+		// replace notAddedAuthorList with new authorsList - addedAuthorList
+		let newNotAddedAuthorList = [...authorsList];
+
+		// forEach author in already added list i need to remove it from notAdded
+		addedAuthorsList.forEach((addedAuthor) => {
+			const authorsWithoutAlreadyAdded = newNotAddedAuthorList.filter(
+				(notAdded) => notAdded.id !== addedAuthor.id
+			);
+			newNotAddedAuthorList = [...authorsWithoutAlreadyAdded];
+		});
+		dispatch(setNotAddedAuthorsList(newNotAddedAuthorList));
+	}, [authorsList, addedAuthorsList, dispatch]);
+
 	// useEffect to regenerate new course object
 	useEffect(() => {
-		const authorsIdsList = addedAuthorList.map((author) => author.id);
+		const authorsIdsList = addedAuthorsList.map((author) => author.id);
 
 		const newCourseObj = {
 			id: crypto.randomUUID(),
 			title: courseTitle,
 			description: courseDescription,
 			creationDate: getCurrentDate(),
-			duration: timeNum,
+			duration: timeMinutes,
 			authors: authorsIdsList,
 		};
 		setCourseObj(newCourseObj);
-	}, [courseTitle, courseDescription, addedAuthorList, timeNum]);
+	}, [courseTitle, courseDescription, addedAuthorsList, timeMinutes]);
 
+	// useEffect to check if current course object is ready to be added
 	useEffect(() => {
 		if (
 			!!courseObj.title &&
@@ -117,12 +144,12 @@ const CreateCourse = () => {
 
 	const titleInputHandler = (event) => {
 		event.preventDefault();
-		setCourseTitle(event.target.value);
+		dispatch(setCourseTitle(event.target.value));
 	};
 
 	const descriptionInputHandler = (event) => {
 		event.preventDefault();
-		setCourseDescription(event.target.value);
+		dispatch(setCourseDescription(event.target.value));
 	};
 
 	return (

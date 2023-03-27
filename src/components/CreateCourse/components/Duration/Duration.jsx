@@ -2,8 +2,15 @@ import Input from '../../../../common/Input/Input';
 import { CustomTitle as Title } from '../../../../common/CustomTitle/CustomTitle';
 import { DurationContainer, DurationText } from './Duration.styles';
 
-import { useContext } from 'react';
-import { CreateCourseContext } from '../../../../helpers/context/createCourse.contex';
+import { useSelector, useDispatch } from 'react-redux';
+import {
+	selectTimeHours,
+	selectTimeMinutes,
+} from '../../../../store/create-course/selectors';
+import {
+	setTimeMinutes,
+	setTimeHours,
+} from '../../../../store/create-course/actionCreators';
 
 import { toHoursAndMinutes } from '../../../../helpers/timeConvert';
 
@@ -13,8 +20,10 @@ import 'react-toastify/dist/ReactToastify.css';
 const Duration = () => {
 	const notify = () => toast('Duration accepts only numbers');
 
-	const { timeStr, setTimeStr, setTimeNum, timeNum } =
-		useContext(CreateCourseContext);
+	const dispatch = useDispatch();
+
+	const timeHours = useSelector(selectTimeHours);
+	const timeMinutes = useSelector(selectTimeMinutes);
 
 	const inputHandler = (event) => {
 		event.preventDefault();
@@ -25,8 +34,8 @@ const Duration = () => {
 		}
 		// setInputValue(event.target.value);
 		const minutes = +event.target.value;
-		setTimeNum(minutes);
-		setTimeStr(toHoursAndMinutes(minutes));
+		dispatch(setTimeMinutes(minutes));
+		dispatch(setTimeHours(toHoursAndMinutes(minutes)));
 	};
 
 	return (
@@ -36,13 +45,13 @@ const Duration = () => {
 				labelText='Duration'
 				placeholderText='Enter duration in minutes...'
 				// prevent leading 0
-				value={timeNum === 0 ? '' : timeNum}
+				value={timeMinutes === 0 ? '' : timeMinutes}
 				onChange={inputHandler}
 				title='Please enter at least one number'
 				required
 			/>
 			<DurationText>
-				Duration: <span>{timeStr}</span> hours
+				Duration: <span>{timeHours}</span> hours
 			</DurationText>
 		</DurationContainer>
 	);

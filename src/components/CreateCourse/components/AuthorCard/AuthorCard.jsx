@@ -1,15 +1,21 @@
-import { useContext, useCallback } from 'react';
-import { CreateCourseContext } from '../../../../helpers/context/createCourse.contex';
+import { useCallback } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import {
+	selectNotAddedAuthorsList,
+	selectAddedAuthorsList,
+} from '../../../../store/create-course/selectors';
+import {
+	setNotAddedAuthorsList,
+	setAddedAuthorsList,
+} from '../../../../store/create-course/actionCreators';
 
 import Button from '../../../../common/Button/Button';
 
 const AuthorCard = ({ author, isAdd }) => {
-	const {
-		notAddedAuthorList,
-		addedAuthorList,
-		setNotAddedAuthorList,
-		setAddedAuthorList,
-	} = useContext(CreateCourseContext);
+	const dispatch = useDispatch();
+
+	const notAddedAuthorsList = useSelector(selectNotAddedAuthorsList);
+	const addedAuthorsList = useSelector(selectAddedAuthorsList);
 
 	// Define a named function to handle the button click and cache it to avoid unnecessary rerendings
 
@@ -19,44 +25,46 @@ const AuthorCard = ({ author, isAdd }) => {
 			event.preventDefault();
 
 			// Check if the author is in the notAdded list
-			const isNotAdded = notAddedAuthorList.some(
+			const isNotAdded = notAddedAuthorsList.some(
 				(notAddedAuthor) => notAddedAuthor.id === author.id
 			);
 
 			// Check if the author is in the added list
-			const isAdded = addedAuthorList.some(
+			const isAdded = addedAuthorsList.some(
 				(addedAuthor) => addedAuthor.id === author.id
 			);
 
 			// If the author is in the notAdded list
 			if (isNotAdded) {
 				// Transfer the author to the added list
-				const authorToTransfer = notAddedAuthorList.find(
+				const authorToTransfer = notAddedAuthorsList.find(
 					(notAddedAuthor) => notAddedAuthor.id === author.id
 				);
-				const newNotAddedAuthorList = notAddedAuthorList.filter(
+				const newNotAddedAuthorsList = notAddedAuthorsList.filter(
 					(notAddedAuthor) => notAddedAuthor.id !== author.id
 				);
-				setNotAddedAuthorList(newNotAddedAuthorList);
-				setAddedAuthorList([...addedAuthorList, authorToTransfer]);
+				dispatch(setNotAddedAuthorsList(newNotAddedAuthorsList));
+				dispatch(setAddedAuthorsList([...addedAuthorsList, authorToTransfer]));
 			}
 
 			// If the author is in the added list
 			if (isAdded) {
 				// Transfer the author to the notAdded list
-				const authorToTransfer = addedAuthorList.find(
+				const authorToTransfer = addedAuthorsList.find(
 					(addedAuthor) => addedAuthor.id === author.id
 				);
-				const newAddedAuthorList = addedAuthorList.filter(
+				const newAddedAuthorsList = addedAuthorsList.filter(
 					(addedAuthor) => addedAuthor.id !== author.id
 				);
-				setAddedAuthorList(newAddedAuthorList);
-				setNotAddedAuthorList([...notAddedAuthorList, authorToTransfer]);
+				dispatch(setAddedAuthorsList(newAddedAuthorsList));
+				dispatch(
+					setNotAddedAuthorsList([...notAddedAuthorsList, authorToTransfer])
+				);
 			}
 		},
 		// Linter asks you to add everything to the dependency array, but it only needs these two arrays
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[notAddedAuthorList, addedAuthorList]
+		[notAddedAuthorsList, addedAuthorsList]
 	);
 
 	return (

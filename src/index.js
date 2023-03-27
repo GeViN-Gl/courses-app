@@ -9,19 +9,15 @@ import reportWebVitals from './reportWebVitals';
 import { Provider } from 'react-redux';
 import { store } from './store/store';
 
-import { CreateCourseProvider } from './helpers/context/createCourse.contex';
-
 import { BrowserRouter } from 'react-router-dom';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
 	<React.StrictMode>
 		<Provider store={store}>
-			<CreateCourseProvider>
-				<BrowserRouter>
-					<App />
-				</BrowserRouter>
-			</CreateCourseProvider>
+			<BrowserRouter>
+				<App />
+			</BrowserRouter>
 		</Provider>
 	</React.StrictMode>
 );
