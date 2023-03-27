@@ -55,6 +55,7 @@ const Header = () => {
 		} else {
 			navigate('/login');
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [userToken]);
 
 	const logInOutButtonHandler = (e) => {

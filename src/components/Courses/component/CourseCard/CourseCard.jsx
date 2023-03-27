@@ -9,15 +9,15 @@ import { toHoursAndMinutes } from '../../../../helpers/timeConvert';
 
 import { useNavigate } from 'react-router-dom';
 
-import { useContext } from 'react';
-import { AuthorsContext } from '../../../../helpers/context/authors.context';
+import { useSelector } from 'react-redux';
+import { selectAuthorsList } from '../../../../store/authors/selectors';
 
 import { getStringWithAuthorsNames } from '../../../../helpers/customArrayFuncs';
 
 const CourseCard = ({ course }) => {
 	const { id, title, description, creationDate, duration, authors } = course;
 
-	const { authorsList } = useContext(AuthorsContext);
+	const authorsList = useSelector(selectAuthorsList);
 
 	const navigate = useNavigate();
 

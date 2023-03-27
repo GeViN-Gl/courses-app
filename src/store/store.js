@@ -7,6 +7,7 @@ import logger from 'redux-logger';
 
 import { rootReducer } from './root-reducer';
 
+// eslint-disable-next-line no-unused-vars
 const loggerMiddleware = (store) => (next) => (action) => {
 	if (!action.type) {
 		return next(action);

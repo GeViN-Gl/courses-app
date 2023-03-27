@@ -5,12 +5,17 @@ import Button from '../../../../common/Button/Button';
 import { AddAuthorContainer, AddAuthorMiniform } from './AddAuthor.styles';
 import { CustomTitle as Title } from '../../../../common/CustomTitle/CustomTitle';
 
-import { useState, useContext } from 'react';
-import { AuthorsContext } from '../../../../helpers/context/authors.context';
+import { useState } from 'react';
+
+import { useSelector, useDispatch } from 'react-redux';
+import { selectAuthorsList } from '../../../../store/authors/selectors';
+import { setAuthorsList } from '../../../../store/authors/actionCreators';
 
 const AddAuthor = () => {
 	const [inputValue, setInputValue] = useState('');
-	const { authorsList, setAuthorsList } = useContext(AuthorsContext);
+
+	const dispatch = useDispatch();
+	const authorsList = useSelector(selectAuthorsList);
 
 	const inputHandler = (event) => {
 		event.preventDefault();
@@ -25,7 +30,9 @@ const AddAuthor = () => {
 		const newAuthor = {};
 		newAuthor.id = crypto.randomUUID();
 		newAuthor.name = inputValue;
-		setAuthorsList([...authorsList, newAuthor]);
+
+		dispatch(setAuthorsList([...authorsList, newAuthor]));
+
 		setInputValue('');
 	};
 

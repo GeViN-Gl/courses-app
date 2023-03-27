@@ -10,7 +10,8 @@ import { CustomTitle } from '../../common/CustomTitle/CustomTitle';
 
 import { useContext } from 'react';
 import { CoursesContext } from '../../helpers/context/courses.context';
-import { AuthorsContext } from '../../helpers/context/authors.context';
+import { useSelector } from 'react-redux';
+import { selectAuthorsList } from '../../store/authors/selectors';
 
 import { toHoursAndMinutes } from '../../helpers/timeConvert';
 import { getArrayWithAuthors } from '../../helpers/customArrayFuncs';
@@ -19,9 +20,9 @@ import { useParams } from 'react-router-dom';
 
 const CourseInfo = () => {
 	const { coursesList } = useContext(CoursesContext);
-	const { authorsList } = useContext(AuthorsContext);
+	const authorsList = useSelector(selectAuthorsList);
 
-	const { courseId } = useParams(); //or useLocation?
+	const { courseId } = useParams();
 
 	// find course to render
 	const courseToRender = coursesList.find((course) => course.id === courseId);

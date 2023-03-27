@@ -1,5 +1,7 @@
-import { createContext, useState, useContext, useEffect } from 'react';
-import { AuthorsContext } from './authors.context';
+import { createContext, useState, useEffect } from 'react';
+
+import { useSelector } from 'react-redux';
+import { selectAuthorsList } from '../../store/authors/selectors';
 
 // actual value i want to access
 export const CreateCourseContext = createContext({
@@ -18,7 +20,7 @@ export const CreateCourseContext = createContext({
 });
 
 export const CreateCourseProvider = ({ children }) => {
-	const { authorsList } = useContext(AuthorsContext);
+	const authorsList = useSelector(selectAuthorsList);
 	const [notAddedAuthorList, setNotAddedAuthorList] = useState(authorsList);
 	const [addedAuthorList, setAddedAuthorList] = useState([]);
 	const [timeStr, setTimeStr] = useState('00:00');

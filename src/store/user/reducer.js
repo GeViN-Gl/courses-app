@@ -11,7 +11,7 @@ export const userReducer = (state = INITIAL_STATE, action) => {
 	const { type, payload } = action;
 
 	switch (type) {
-		case USER_ACTION_TYPES.SET_CURREN_USER_IS_AUTH:
+		case USER_ACTION_TYPES.SET_CURRENT_USER_IS_AUTH:
 			return { ...state, isAuth: payload };
 		case USER_ACTION_TYPES.SET_CURRENT_USER_NAME:
 			return { ...state, name: payload };

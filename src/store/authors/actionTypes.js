@@ -1,0 +1,3 @@
+export const AUTHORS_ACTION_TYPES = {
+	SET_AUTHORS_LIST: 'user/SET_AUTHORS_LIST',
+};

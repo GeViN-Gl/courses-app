@@ -10,7 +10,6 @@ import { Provider } from 'react-redux';
 import { store } from './store/store';
 
 import { CoursesProvider } from './helpers/context/courses.context';
-import { AuthorsProvider } from './helpers/context/authors.context';
 
 import { CreateCourseProvider } from './helpers/context/createCourse.contex';
 
@@ -21,13 +20,11 @@ root.render(
 	<React.StrictMode>
 		<Provider store={store}>
 			<CoursesProvider>
-				<AuthorsProvider>
-					<CreateCourseProvider>
-						<BrowserRouter>
-							<App />
-						</BrowserRouter>
-					</CreateCourseProvider>
-				</AuthorsProvider>
+				<CreateCourseProvider>
+					<BrowserRouter>
+						<App />
+					</BrowserRouter>
+				</CreateCourseProvider>
 			</CoursesProvider>
 		</Provider>
 	</React.StrictMode>
