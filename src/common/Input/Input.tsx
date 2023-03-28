@@ -1,10 +1,19 @@
 import { CustomLabel, CustomInput } from './Input.styles';
 
-const Input = ({
+import { FC, InputHTMLAttributes } from 'react';
+
+export type ImputProps = {
+	labelText?: string;
+	placeholderText?: string;
+	borderColor?: string;
+	isTextArea?: boolean;
+} & InputHTMLAttributes<HTMLInputElement>;
+
+const Input: FC<ImputProps> = ({
 	labelText,
 	placeholderText,
 	borderColor = '#d4c600',
-	isTextArea,
+	isTextArea = false,
 	...otherProps
 }) => {
 	return (
