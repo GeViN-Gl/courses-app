@@ -8,7 +8,7 @@ import { CustomTitle } from '../../../../common/CustomTitle/CustomTitle';
 import Input from '../../../../common/Input/Input';
 import Button from '../../../../common/Button/Button';
 
-import { useState } from 'react';
+import { ChangeEvent, FormEvent, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { toast } from 'react-toastify';
@@ -21,7 +21,7 @@ const defaultFormFields = {
 	email: 'test@example.com',
 	password: '123123',
 };
-const notify = (message) => toast(message);
+const notify = (message: string) => toast(message);
 
 const Registration = () => {
 	const [formFields, setFormFields] = useState(defaultFormFields);
@@ -31,33 +31,33 @@ const Registration = () => {
 
 	const resetFormFields = () => setFormFields(defaultFormFields);
 
-	const inputChangeHandler = ({ target: { name, value } }) => {
+	const inputChangeHandler = ({
+		target: { name, value },
+	}: ChangeEvent<HTMLInputElement>) => {
 		setFormFields({ ...formFields, [name]: value });
 	};
 
-	const fetchHandler = async () => {
+	const fetchHandler = async (): Promise<boolean> => {
 		try {
 			const data = await postData('http://127.0.0.1:4000/register', formFields);
 
 			if (data.successful) {
 				notify('🟢 ' + data.result);
-				return data.successful;
+				return true;
 			}
 
-			if (!data.successful) {
-				throw new Error(`Registration failed. Reason: ${data.error}`);
+			if (!data.successful && data.errors) {
+				notify(`🛑 Errors: ${data.errors.join(', ')}`);
+				return false;
 			}
 		} catch (error) {
-			if (error.message.includes('an email or email already exists')) {
-				notify('🛑 Wrong email format, or email already exists');
-			} else {
-				notify('🔴 ' + error.message);
-				console.error(`Fetch error: ${error.message}`);
-			}
+			notify('🔴 Error');
+			console.error(`Fetch error: ${error}`);
 		}
+		return false;
 	};
 
-	const submitFormHandler = (event) => {
+	const submitFormHandler = (event: FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
 		fetchHandler().then((result) => {
 			if (result) {

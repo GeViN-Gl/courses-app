@@ -12,7 +12,7 @@ import {
 	setCurrentUserToken,
 } from '../../../../store/user/actionCreators';
 
-import { useState } from 'react';
+import { ChangeEvent, FormEvent, useState } from 'react';
 
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -24,7 +24,7 @@ const defaultFormFields = {
 	email: 'test@example.com',
 	password: '123123',
 };
-const notify = (message) => toast(message);
+const notify = (message: string) => toast(message);
 
 const Login = () => {
 	const dispatch = useDispatch();
@@ -36,7 +36,9 @@ const Login = () => {
 
 	const resetFormFields = () => setFormFields(defaultFormFields);
 
-	const inputChangeHandler = ({ target: { name, value } }) => {
+	const inputChangeHandler = ({
+		target: { name, value },
+	}: ChangeEvent<HTMLInputElement>) => {
 		setFormFields({ ...formFields, [name]: value });
 	};
 
@@ -47,32 +49,42 @@ const Login = () => {
 				notify('🟢 Login successful');
 				return data;
 			}
-			if (!data.successful) {
-				throw new Error(`Login failed. Reason: ${data.error}`);
+			// Errors
+			if (
+				!data.successful &&
+				data.result &&
+				data.result.includes('nvalid data')
+			) {
+				notify('🛑 Invalid email or password');
+				return; // Give user a second chance to reenter the form fields
+			}
+			if (!data.successful && data.errors) {
+				notify(`🛑 Errors: ${data.errors.join(', ')}`);
+				return; // Give user a second chance to reenter the form fields
 			}
 		} catch (error) {
-			if (error.message.includes('nvalid data')) {
-				notify('🛑 Invalid email or password');
-			} else {
-				notify('🔴 ' + error.message);
-				console.error(`Fetch error: ${error.message}`);
-			}
+			notify('🔴 Error');
+			console.error(`Fetch error: ${error}`);
+			throw new Error(`Fetch error: ${error}`);
 		}
 	};
 
-	const submitFormHandler = (event) => {
+	const submitFormHandler = (event: FormEvent<HTMLFormElement>): void => {
 		event.preventDefault();
-		fetchHandler().then((data) => {
-			if (data) {
-				localStorage.setItem('userToken', JSON.stringify(data.result));
-				dispatch(setCurrentUserIsAuth(true));
-				dispatch(setCurrentUserName(data.user.name));
-				dispatch(setCurrentUserEmail(data.user.email));
-				dispatch(setCurrentUserToken(data.result));
-				navigate('/courses');
-				resetFormFields();
-			}
-		});
+		fetchHandler()
+			.then((data) => {
+				//TODO handle else in task 3
+				if (data && data.user && data.result) {
+					localStorage.setItem('userToken', JSON.stringify(data.result));
+					dispatch(setCurrentUserIsAuth(true));
+					dispatch(setCurrentUserName(data.user.name));
+					dispatch(setCurrentUserEmail(data.user.email));
+					dispatch(setCurrentUserToken(data.result));
+					navigate('/courses');
+					resetFormFields();
+				}
+			})
+			.catch((error) => console.error(error));
 	};
 
 	return (

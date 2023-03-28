@@ -5,7 +5,7 @@ import {
 	Name,
 } from './Header.styles';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, MouseEvent } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 
 import Logo from './components/Logo/Logo';
@@ -26,7 +26,7 @@ const Header = () => {
 
 	const [onAuthPages, setOnAuthPages] = useState(false);
 
-	const user = useSelector(selectCurrentUserName);
+	const userName = useSelector(selectCurrentUserName);
 	const userToken = useSelector(selectCurrentUserToken);
 	const dispatch = useDispatch();
 
@@ -43,9 +43,14 @@ const Header = () => {
 	}, [currentLocation]);
 
 	// on first mount check if there is any stored token
+	type LocalToken = string | null;
+
 	useEffect(() => {
-		if (localStorage.getItem('userToken')) {
-			dispatch(setCurrentUserToken(localStorage.getItem('userToken')));
+		const localToken: LocalToken = localStorage.getItem('userToken');
+		const isLocalTokenExist = (localToken: LocalToken): localToken is string =>
+			localToken !== null;
+		if (isLocalTokenExist(localToken)) {
+			dispatch(setCurrentUserToken(localToken));
 		}
 	}, [dispatch]); // TOASK dispatch will not change ever
 
@@ -58,10 +63,10 @@ const Header = () => {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [userToken]);
 
-	const logInOutButtonHandler = (e) => {
+	const logInOutButtonHandler = (event: MouseEvent<HTMLButtonElement>) => {
 		// When user clicks on Logout button, App should navigate to /login
 		// and you should remove token from localStorage.
-		if (!!user) {
+		if (!!userName) {
 			// LogOUT displays only if user obj exists
 			localStorage.removeItem('userToken');
 			dispatch(setCurrentUserName(''));
@@ -79,13 +84,13 @@ const Header = () => {
 					<Logo />
 				</LogoLinkContainer>
 				<ElementContainer>
-					{!onAuthPages && <Name>{user?.name}</Name>}
+					{!onAuthPages && <Name>{userName}</Name>}
 					{!onAuthPages && (
 						<Button
 							buttonType={BUTTON_TYPES_CLASSES.base}
 							// eslint-disable-next-line prettier/prettier
 							onClick={logInOutButtonHandler}>
-							{user ? 'Logout' : 'Login'}
+							{userName ? 'Logout' : 'Login'}
 						</Button>
 					)}
 				</ElementContainer>

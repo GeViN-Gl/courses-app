@@ -10,11 +10,17 @@ import { toHoursAndMinutes } from '../../../../helpers/timeConvert';
 import { useNavigate } from 'react-router-dom';
 
 import { useSelector } from 'react-redux';
+import { Course } from '../../../../store/courses/reducer';
 import { selectAuthorsList } from '../../../../store/authors/selectors';
 
 import { getStringWithAuthorsNames } from '../../../../helpers/customArrayFuncs';
+import { FC } from 'react';
 
-const CourseCard = ({ course }) => {
+type CourseCardProps = {
+	course: Course;
+};
+
+const CourseCard: FC<CourseCardProps> = ({ course }) => {
 	const { id, title, description, creationDate, duration, authors } = course;
 
 	const authorsList = useSelector(selectAuthorsList);

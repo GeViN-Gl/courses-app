@@ -31,7 +31,10 @@ export const InfoWrapper = styled.div`
 	padding: 15px 0;
 `;
 
-export const InfoField = styled.p`
+type InfoFieldPros = {
+	column?: boolean;
+};
+export const InfoField = styled.p<InfoFieldPros>`
 	display: flex;
 	gap: 15px;
 	flex-direction: column;

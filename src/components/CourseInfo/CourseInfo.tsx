@@ -17,6 +17,8 @@ import { getArrayWithAuthors } from '../../helpers/customArrayFuncs';
 
 import { useParams } from 'react-router-dom';
 
+import { Author } from '../../store/authors/reducer';
+
 const CourseInfo = () => {
 	const coursesList = useSelector(selectCoursesList);
 	const authorsList = useSelector(selectAuthorsList);
@@ -30,6 +32,12 @@ const CourseInfo = () => {
 	}
 	const { id, creationDate, description, duration, title, authors } =
 		courseToRender;
+
+	const arrayWithAuthors = getArrayWithAuthors(authorsList, authors);
+	type ArrayWithAuthors = typeof arrayWithAuthors;
+	const isArrayWithAuthorsExist = (
+		arrayWithAuthors: ArrayWithAuthors
+	): arrayWithAuthors is Author[] => arrayWithAuthors !== null;
 
 	return (
 		<CourseInfoContainer>
@@ -50,9 +58,10 @@ const CourseInfo = () => {
 					<Key>Authors:</Key>
 				</InfoField>
 				<InfoField as='ul' column={true}>
-					{getArrayWithAuthors(authorsList, authors).map((author) => (
-						<li key={author.id}>{author.name}</li>
-					))}
+					{isArrayWithAuthorsExist(arrayWithAuthors) &&
+						arrayWithAuthors.map((author) => (
+							<li key={author.id}>{author.name}</li>
+						))}
 				</InfoField>
 			</InfoWrapper>
 		</CourseInfoContainer>

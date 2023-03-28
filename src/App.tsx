@@ -13,6 +13,15 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import { Routes, Route } from 'react-router-dom';
 
+// fix for crypto
+// github.com/denoland/deno/issues/12754
+declare global {
+	interface Crypto {
+		randomUUID: () => string;
+	}
+}
+export {};
+
 function App() {
 	return (
 		<>
@@ -22,7 +31,6 @@ function App() {
 					<Route path='courses/*'>
 						<Route index element={<Courses />} />
 						<Route path=':courseId' element={<CourseInfo />} />
-						{/* TODO: Add normal check */}
 					</Route>
 					<Route path='registration' element={<Registration />} />
 					<Route path='login' element={<Login />} />

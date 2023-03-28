@@ -15,24 +15,33 @@ import {
 import { toHoursAndMinutes } from '../../../../helpers/timeConvert';
 
 import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ChangeEvent } from 'react';
+// import 'react-toastify/dist/ReactToastify.css'; // Toast CSS only needed once at the top level.
 
 const Duration = () => {
-	const notify = () => toast('Duration accepts only numbers');
+	const notify = (message: string) => toast(message);
 
 	const dispatch = useDispatch();
 
 	const timeHours = useSelector(selectTimeHours);
 	const timeMinutes = useSelector(selectTimeMinutes);
 
-	const inputHandler = (event) => {
+	const inputHandler = (event: ChangeEvent<HTMLInputElement>) => {
 		event.preventDefault();
 		// just prevent any non number chars )
-		if (isNaN(event.target.value)) {
-			notify();
+		if (isNaN(Number(event.target.value))) {
+			notify('Duration accepts only numbers');
 			return;
 		}
-		// setInputValue(event.target.value);
+		if (Number(event.target.value) > Number.MAX_SAFE_INTEGER) {
+			notify(
+				'Only elves will live long enough to see the end of the course. Reduce the duration a bit.'
+			);
+			event.target.value = String(Number.MAX_SAFE_INTEGER);
+			return;
+		}
+
+		// no NaN at this point
 		const minutes = +event.target.value;
 		dispatch(setTimeMinutes(minutes));
 		dispatch(setTimeHours(toHoursAndMinutes(minutes)));

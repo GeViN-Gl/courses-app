@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, MouseEvent, ChangeEvent } from 'react';
 import { useDispatch } from 'react-redux';
 import { setFilterField } from '../../../../store/courses/actionCreators';
 
@@ -16,17 +16,19 @@ const SearchBar = () => {
 
 	const navigate = useNavigate();
 
-	const addNewCourseNavigateHandler = (event) => {
+	const addNewCourseNavigateHandler = (
+		event: MouseEvent<HTMLButtonElement>
+	) => {
 		event.preventDefault();
 		navigate('/courses/add');
 	};
 
-	const inputChangeHandler = (event) => {
+	const inputChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
 		event.preventDefault();
 		setInputFieldValue(event.target.value);
 	};
 
-	const seacrhClickHandler = (event) => {
+	const seacrhClickHandler = (event: MouseEvent<HTMLButtonElement>) => {
 		event.preventDefault();
 		dispatch(setFilterField(inputFieldValue));
 	};

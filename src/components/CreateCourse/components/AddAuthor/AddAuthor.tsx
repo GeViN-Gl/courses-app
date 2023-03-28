@@ -5,11 +5,13 @@ import Button from '../../../../common/Button/Button';
 import { AddAuthorContainer, AddAuthorMiniform } from './AddAuthor.styles';
 import { CustomTitle as Title } from '../../../../common/CustomTitle/CustomTitle';
 
-import { useState } from 'react';
+import { useState, ChangeEvent, MouseEvent } from 'react';
 
 import { useSelector, useDispatch } from 'react-redux';
 import { selectAuthorsList } from '../../../../store/authors/selectors';
 import { setAuthorsList } from '../../../../store/authors/actionCreators';
+
+import { Author } from '../../../../store/authors/reducer';
 
 const AddAuthor = () => {
 	const [inputValue, setInputValue] = useState('');
@@ -17,19 +19,21 @@ const AddAuthor = () => {
 	const dispatch = useDispatch();
 	const authorsList = useSelector(selectAuthorsList);
 
-	const inputHandler = (event) => {
+	const inputHandler = (event: ChangeEvent<HTMLInputElement>) => {
 		event.preventDefault();
 		setInputValue(event.target.value);
 	};
 
-	const newAuthorButtonHandler = (event) => {
+	const newAuthorButtonHandler = (event: MouseEvent<HTMLButtonElement>) => {
 		event.preventDefault();
 		if (!inputValue) {
 			return;
 		}
-		const newAuthor = {};
-		newAuthor.id = crypto.randomUUID();
-		newAuthor.name = inputValue;
+
+		const newAuthor: Author = {
+			id: crypto.randomUUID(),
+			name: inputValue,
+		};
 
 		dispatch(setAuthorsList([...authorsList, newAuthor]));
 

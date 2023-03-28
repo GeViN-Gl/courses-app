@@ -10,8 +10,10 @@ export const TitleContainer = styled.div`
 		text-align: justify;
 	}
 `;
-
-export const InfoText = styled.p`
+type InfoTextProps = {
+	isMaxLengthApply?: boolean;
+};
+export const InfoText = styled.p<InfoTextProps>`
 	max-width: 100%;
 	font-size: 20px;
 

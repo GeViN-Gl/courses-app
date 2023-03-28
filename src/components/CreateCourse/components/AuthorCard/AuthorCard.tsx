@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { FC, useCallback, MouseEvent } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
 	selectNotAddedAuthorsList,
@@ -11,7 +11,14 @@ import {
 
 import Button from '../../../../common/Button/Button';
 
-const AuthorCard = ({ author, isAdd }) => {
+import { Author } from '../../../../store/authors/reducer';
+
+type AuthorCardProps = {
+	author: Author;
+	isAdd: boolean;
+};
+
+const AuthorCard: FC<AuthorCardProps> = ({ author, isAdd }) => {
 	const dispatch = useDispatch();
 
 	const notAddedAuthorsList = useSelector(selectNotAddedAuthorsList);
@@ -20,8 +27,7 @@ const AuthorCard = ({ author, isAdd }) => {
 	// Define a named function to handle the button click and cache it to avoid unnecessary rerendings
 
 	const handleAuthorClick = useCallback(
-		(event) => {
-			// Prevent the default button behavior
+		(event: MouseEvent<HTMLButtonElement>) => {
 			event.preventDefault();
 
 			// Check if the author is in the notAdded list
@@ -44,7 +50,7 @@ const AuthorCard = ({ author, isAdd }) => {
 					(notAddedAuthor) => notAddedAuthor.id !== author.id
 				);
 				dispatch(setNotAddedAuthorsList(newNotAddedAuthorsList));
-				dispatch(setAddedAuthorsList([...addedAuthorsList, authorToTransfer]));
+				dispatch(setAddedAuthorsList([...addedAuthorsList, authorToTransfer!])); //authorToTransfer will exist if some() already give us TRUE
 			}
 
 			// If the author is in the added list
@@ -58,11 +64,12 @@ const AuthorCard = ({ author, isAdd }) => {
 				);
 				dispatch(setAddedAuthorsList(newAddedAuthorsList));
 				dispatch(
-					setNotAddedAuthorsList([...notAddedAuthorsList, authorToTransfer])
+					setNotAddedAuthorsList([...notAddedAuthorsList, authorToTransfer!]) //authorToTransfer will exist if some() already give us TRUE
 				);
 			}
 		},
-		// Linter asks you to add everything to the dependency array, but it only needs these two arrays
+		// Linter asks you to add everything to the dependency array,
+		// but I want it to react only on these two arrays
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[notAddedAuthorsList, addedAuthorsList]
 	);

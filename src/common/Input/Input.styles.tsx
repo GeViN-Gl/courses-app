@@ -5,7 +5,7 @@ export const CustomLabel = styled.label`
 `;
 
 type CustomInputBorderProps = {
-	borderColor: string;
+	borderColor?: string;
 };
 
 export const CustomInput = styled.input<CustomInputBorderProps>`

@@ -13,7 +13,7 @@ import AuthorCarts from './components/AuthorCarts/AuthorCarts';
 import AddAuthor from './components/AddAuthor/AddAuthor';
 import Duration from './components/Duration/Duration';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, MouseEvent, ChangeEvent } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectAuthorsList } from '../../store/authors/selectors';
 import { selectCoursesList } from '../../store/courses/selectors';
@@ -32,6 +32,9 @@ import {
 	setTimeMinutes,
 	setTimeHours,
 } from '../../store/create-course/actionCreators';
+
+// type imports
+import { Course } from '../../store/courses/reducer';
 
 import { useNavigate, Link } from 'react-router-dom';
 
@@ -70,14 +73,16 @@ const CreateCourse = () => {
 	const [isReadyToAddNewCourse, setIsReadyToAddNewCourse] = useState(false);
 
 	//
-	const [courseObj, setCourseObj] = useState({
+	const defaultCourseObj: Course = {
 		id: '',
 		title: '',
 		description: '',
 		creationDate: '',
 		duration: 0,
 		authors: [],
-	});
+	};
+
+	const [courseObj, setCourseObj] = useState(defaultCourseObj);
 
 	// useEffect to balance added / NOTadded authorLists
 	const authorsList = useSelector(selectAuthorsList);
@@ -100,7 +105,7 @@ const CreateCourse = () => {
 	useEffect(() => {
 		const authorsIdsList = addedAuthorsList.map((author) => author.id);
 
-		const newCourseObj = {
+		const newCourseObj: Course = {
 			id: crypto.randomUUID(),
 			title: courseTitle,
 			description: courseDescription,
@@ -126,7 +131,7 @@ const CreateCourse = () => {
 	}, [courseObj]);
 
 	const coursesList = useSelector(selectCoursesList);
-	const createCourseButtonHandler = (event) => {
+	const createCourseButtonHandler = (event: MouseEvent<HTMLButtonElement>) => {
 		event.preventDefault();
 		if (!isReadyToAddNewCourse) {
 			notify(); // toast looks nicer )
@@ -142,18 +147,18 @@ const CreateCourse = () => {
 		navigate('/courses');
 	};
 
-	const titleInputHandler = (event) => {
+	const titleInputHandler = (event: ChangeEvent<HTMLInputElement>) => {
 		event.preventDefault();
 		dispatch(setCourseTitle(event.target.value));
 	};
 
-	const descriptionInputHandler = (event) => {
+	const descriptionInputHandler = (event: ChangeEvent<HTMLInputElement>) => {
 		event.preventDefault();
 		dispatch(setCourseDescription(event.target.value));
 	};
 
 	return (
-		<CreateCourseContainer className='course-container'>
+		<CreateCourseContainer>
 			<Link to='/courses' onClick={clearFormFields}>
 				↩️ Back to courses
 			</Link>
@@ -175,11 +180,11 @@ const CreateCourse = () => {
 					value={courseDescription}
 				/>
 			</DescriptionInput>
-			<AddAuthorContainer className='AddAuthorContainer'>
-				<AddAuthorBox className='AddAuthorBox'>
+			<AddAuthorContainer>
+				<AddAuthorBox>
 					<AddAuthor />
 				</AddAuthorBox>
-				<DurationBox className='DurationBox'>
+				<DurationBox>
 					<Duration />
 				</DurationBox>
 				<CourseAuthorsBox>
@@ -191,13 +196,3 @@ const CreateCourse = () => {
 };
 
 export default CreateCourse;
-/*
-{
-  id: string
-  title: string
-  description: string
-  creationDate: string
-  duration: number
-  authors: [authorId]
-  }
-  */
