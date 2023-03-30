@@ -7,7 +7,7 @@ import {
 import Button from '../../../../common/Button/Button';
 import { toHoursAndMinutes } from '../../../../helpers/timeConvert';
 
-import { useNavigate } from 'react-router-dom';
+import { NavigateFunction, useNavigate } from 'react-router-dom';
 
 import { useSelector } from 'react-redux';
 import { Course } from '../../../../store/courses/reducer';
@@ -25,7 +25,7 @@ const CourseCard: FC<CourseCardProps> = ({ course }) => {
 
 	const authorsList = useSelector(selectAuthorsList);
 
-	const navigate = useNavigate();
+	const navigate: NavigateFunction = useNavigate();
 
 	const showCourseNavigateHandler = () => navigate(id);
 

@@ -5,8 +5,13 @@ import {
 	Name,
 } from './Header.styles';
 
-import { useState, useEffect, MouseEvent } from 'react';
-import { Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { useState, useEffect, MouseEvent, FC } from 'react';
+import {
+	Outlet,
+	useNavigate,
+	useLocation,
+	NavigateFunction,
+} from 'react-router-dom';
 
 import Logo from './components/Logo/Logo';
 import Button, { BUTTON_TYPES_CLASSES } from '../../common/Button/Button';
@@ -20,15 +25,16 @@ import {
 	setCurrentUserName,
 	setCurrentUserToken,
 } from '../../store/user/actionCreators';
+import { AnyAction, Dispatch } from 'redux';
 
-const Header = () => {
-	const navigate = useNavigate();
+const Header: FC = () => {
+	const navigate: NavigateFunction = useNavigate();
 
 	const [onAuthPages, setOnAuthPages] = useState(false);
 
 	const userName = useSelector(selectCurrentUserName);
 	const userToken = useSelector(selectCurrentUserToken);
-	const dispatch = useDispatch();
+	const dispatch: Dispatch<AnyAction> = useDispatch();
 
 	const currentLocation = useLocation(); //Where am i?
 	useEffect(() => {
@@ -52,7 +58,7 @@ const Header = () => {
 		if (isLocalTokenExist(localToken)) {
 			dispatch(setCurrentUserToken(localToken));
 		}
-	}, [dispatch]); // TOASK dispatch will not change ever
+	}, [dispatch]);
 
 	useEffect(() => {
 		if (localStorage.getItem('userToken')) {

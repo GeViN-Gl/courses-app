@@ -8,26 +8,26 @@ import { CustomTitle } from '../../../../common/CustomTitle/CustomTitle';
 import Input from '../../../../common/Input/Input';
 import Button from '../../../../common/Button/Button';
 
-import { ChangeEvent, FormEvent, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ChangeEvent, FC, FormEvent, useState } from 'react';
+import { Link, NavigateFunction, useNavigate } from 'react-router-dom';
 
 import { postData } from '../../../../helpers/dataFetchers';
+import { toastNotify } from '../../../../helpers/toastNotify';
 
-const defaultFormFields = {
+type RegistrationFormField = { name: string; email: string; password: string };
+
+const defaultFormFields: RegistrationFormField = {
 	name: 'Test',
 	email: 'test@example.com',
 	password: '123123',
 };
-const notify = (message: string) => toast(message);
 
-const Registration = () => {
-	const [formFields, setFormFields] = useState(defaultFormFields);
+const Registration: FC = () => {
+	const [formFields, setFormFields] =
+		useState<RegistrationFormField>(defaultFormFields);
 	const { name, email, password } = formFields;
 
-	const navigate = useNavigate();
+	const navigate: NavigateFunction = useNavigate();
 
 	const resetFormFields = () => setFormFields(defaultFormFields);
 
@@ -42,16 +42,16 @@ const Registration = () => {
 			const data = await postData('http://127.0.0.1:4000/register', formFields);
 
 			if (data.successful) {
-				notify('🟢 ' + data.result);
+				toastNotify('🟢 ' + data.result);
 				return true;
 			}
 
 			if (!data.successful && data.errors) {
-				notify(`🛑 Errors: ${data.errors.join(', ')}`);
+				toastNotify(`🛑 Errors: ${data.errors.join(', ')}`);
 				return false;
 			}
 		} catch (error) {
-			notify('🔴 Error');
+			toastNotify('🔴 Error');
 			console.error(`Fetch error: ${error}`);
 		}
 		return false;

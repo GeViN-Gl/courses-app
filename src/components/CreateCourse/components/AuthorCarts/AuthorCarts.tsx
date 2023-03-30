@@ -8,8 +8,9 @@ import { AuthorCardsContainer, AllAuthorCards } from './AuthorCarts.styles';
 import { CustomTitle as Title } from '../../../../common/CustomTitle/CustomTitle';
 
 import AuthorCard from '../AuthorCard/AuthorCard';
+import { FC } from 'react';
 
-const AuthorCarts = () => {
+const AuthorCarts: FC = () => {
 	const notAddedAuthorsList = useSelector(selectNotAddedAuthorsList);
 	const addedAuthorsList = useSelector(selectAddedAuthorsList);
 	return (

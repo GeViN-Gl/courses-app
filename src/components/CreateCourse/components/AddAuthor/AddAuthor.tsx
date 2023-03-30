@@ -5,18 +5,19 @@ import Button from '../../../../common/Button/Button';
 import { AddAuthorContainer, AddAuthorMiniform } from './AddAuthor.styles';
 import { CustomTitle as Title } from '../../../../common/CustomTitle/CustomTitle';
 
-import { useState, ChangeEvent, MouseEvent } from 'react';
+import { useState, ChangeEvent, MouseEvent, FC } from 'react';
 
 import { useSelector, useDispatch } from 'react-redux';
 import { selectAuthorsList } from '../../../../store/authors/selectors';
 import { setAuthorsList } from '../../../../store/authors/actionCreators';
 
 import { Author } from '../../../../store/authors/reducer';
+import { AnyAction, Dispatch } from 'redux';
 
-const AddAuthor = () => {
+const AddAuthor: FC = () => {
 	const [inputValue, setInputValue] = useState('');
 
-	const dispatch = useDispatch();
+	const dispatch: Dispatch<AnyAction> = useDispatch();
 	const authorsList = useSelector(selectAuthorsList);
 
 	const inputHandler = (event: ChangeEvent<HTMLInputElement>) => {

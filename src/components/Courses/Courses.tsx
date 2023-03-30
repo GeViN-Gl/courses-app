@@ -1,20 +1,22 @@
 import CourseCard from './component/CourseCard/CourseCard';
 import SearchBar from './component/SearchBar/SearchBar';
 
-import { useEffect, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import {
 	selectFilterField,
 	selectCoursesList,
 } from '../../store/courses/selectors';
+import { Course } from '../../store/courses/reducer';
 
 import { CoursesContainer } from './Courses.styles';
 
-const Courses = () => {
-	const filterField = useSelector(selectFilterField);
-	const coursesList = useSelector(selectCoursesList);
+const Courses: FC = () => {
+	const filterField: string = useSelector(selectFilterField);
+	const coursesList: Course[] = useSelector(selectCoursesList);
 
-	const [filderedCoursesList, setFilderedCoursesList] = useState(coursesList);
+	const [filderedCoursesList, setFilderedCoursesList] =
+		useState<Course[]>(coursesList);
 
 	// This useEffect triggers rerending of filtered courses from SearchBar
 	useEffect(() => {

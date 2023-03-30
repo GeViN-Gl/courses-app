@@ -18,8 +18,9 @@ import { getArrayWithAuthors } from '../../helpers/customArrayFuncs';
 import { useParams } from 'react-router-dom';
 
 import { Author } from '../../store/authors/reducer';
+import { FC } from 'react';
 
-const CourseInfo = () => {
+const CourseInfo: FC = () => {
 	const coursesList = useSelector(selectCoursesList);
 	const authorsList = useSelector(selectAuthorsList);
 
@@ -34,9 +35,9 @@ const CourseInfo = () => {
 		courseToRender;
 
 	const arrayWithAuthors = getArrayWithAuthors(authorsList, authors);
-	type ArrayWithAuthors = typeof arrayWithAuthors;
+
 	const isArrayWithAuthorsExist = (
-		arrayWithAuthors: ArrayWithAuthors
+		arrayWithAuthors: Author[] | null
 	): arrayWithAuthors is Author[] => arrayWithAuthors !== null;
 
 	return (

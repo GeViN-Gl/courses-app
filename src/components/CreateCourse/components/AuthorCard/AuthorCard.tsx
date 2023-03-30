@@ -12,6 +12,7 @@ import {
 import Button from '../../../../common/Button/Button';
 
 import { Author } from '../../../../store/authors/reducer';
+import { AnyAction, Dispatch } from 'redux';
 
 type AuthorCardProps = {
 	author: Author;
@@ -19,7 +20,7 @@ type AuthorCardProps = {
 };
 
 const AuthorCard: FC<AuthorCardProps> = ({ author, isAdd }) => {
-	const dispatch = useDispatch();
+	const dispatch: Dispatch<AnyAction> = useDispatch();
 
 	const notAddedAuthorsList = useSelector(selectNotAddedAuthorsList);
 	const addedAuthorsList = useSelector(selectAddedAuthorsList);

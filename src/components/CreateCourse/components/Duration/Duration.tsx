@@ -14,14 +14,12 @@ import {
 
 import { toHoursAndMinutes } from '../../../../helpers/timeConvert';
 
-import { toast } from 'react-toastify';
-import { ChangeEvent } from 'react';
-// import 'react-toastify/dist/ReactToastify.css'; // Toast CSS only needed once at the top level.
+import { ChangeEvent, FC } from 'react';
+import { toastNotify } from '../../../../helpers/toastNotify';
+import { AnyAction, Dispatch } from 'redux';
 
-const Duration = () => {
-	const notify = (message: string) => toast(message);
-
-	const dispatch = useDispatch();
+const Duration: FC = () => {
+	const dispatch: Dispatch<AnyAction> = useDispatch();
 
 	const timeHours = useSelector(selectTimeHours);
 	const timeMinutes = useSelector(selectTimeMinutes);
@@ -30,11 +28,11 @@ const Duration = () => {
 		event.preventDefault();
 		// just prevent any non number chars )
 		if (isNaN(Number(event.target.value))) {
-			notify('Duration accepts only numbers');
+			toastNotify('Duration accepts only numbers');
 			return;
 		}
 		if (Number(event.target.value) > Number.MAX_SAFE_INTEGER) {
-			notify(
+			toastNotify(
 				'Only elves will live long enough to see the end of the course. Reduce the duration a bit.'
 			);
 			event.target.value = String(Number.MAX_SAFE_INTEGER);

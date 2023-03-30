@@ -6,12 +6,12 @@ import CreateCourse from './components/CreateCourse/CreateCourse';
 import Registration from './components/Courses/component/Registration/Registration';
 import Login from './components/Courses/component/Login/Login';
 import CourseInfo from './components/CourseInfo/CourseInfo';
-import NotFound from './common/NotFound/NotFound';
 
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import { Routes, Route } from 'react-router-dom';
+import React, { FC } from 'react';
 
 // fix for crypto
 // github.com/denoland/deno/issues/12754
@@ -22,7 +22,7 @@ declare global {
 }
 export {};
 
-function App() {
+const App: FC = () => {
 	return (
 		<>
 			<Routes>
@@ -34,7 +34,7 @@ function App() {
 					</Route>
 					<Route path='registration' element={<Registration />} />
 					<Route path='login' element={<Login />} />
-					<Route path='*' element={<NotFound />} />
+					<Route path='*' element={<Courses />} />
 				</Route>
 			</Routes>
 			<ToastContainer
@@ -51,7 +51,7 @@ function App() {
 			/>
 		</>
 	);
-}
+};
 
 export default App;
 

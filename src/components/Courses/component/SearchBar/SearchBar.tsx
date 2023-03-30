@@ -1,4 +1,4 @@
-import React, { useState, useEffect, MouseEvent, ChangeEvent } from 'react';
+import React, { useState, useEffect, MouseEvent, ChangeEvent, FC } from 'react';
 import { useDispatch } from 'react-redux';
 import { setFilterField } from '../../../../store/courses/actionCreators';
 
@@ -7,14 +7,15 @@ import Button from '../../../../common/Button/Button';
 
 import { SearchBarContainer } from './SearchBar.styles';
 
-import { useNavigate } from 'react-router-dom';
+import { NavigateFunction, useNavigate } from 'react-router-dom';
+import { AnyAction, Dispatch } from 'redux';
 
-const SearchBar = () => {
-	const dispatch = useDispatch();
+const SearchBar: FC = () => {
+	const dispatch: Dispatch<AnyAction> = useDispatch();
 
 	const [inputFieldValue, setInputFieldValue] = useState('');
 
-	const navigate = useNavigate();
+	const navigate: NavigateFunction = useNavigate();
 
 	const addNewCourseNavigateHandler = (
 		event: MouseEvent<HTMLButtonElement>

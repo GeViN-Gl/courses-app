@@ -3,7 +3,7 @@ import { CustomTitle } from '../../../../common/CustomTitle/CustomTitle';
 import Input from '../../../../common/Input/Input';
 import Button from '../../../../common/Button/Button';
 
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, NavigateFunction, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import {
 	setCurrentUserName,
@@ -12,26 +12,27 @@ import {
 	setCurrentUserToken,
 } from '../../../../store/user/actionCreators';
 
-import { ChangeEvent, FormEvent, useState } from 'react';
-
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ChangeEvent, FC, FormEvent, useState } from 'react';
 
 import { postData } from '../../../../helpers/dataFetchers';
+import { toastNotify } from '../../../../helpers/toastNotify';
+import { AnyAction, Dispatch } from 'redux';
 
-const defaultFormFields = {
+type LoginFormField = { name: string; email: string; password: string };
+
+const defaultFormFields: LoginFormField = {
 	name: 'Test',
 	email: 'test@example.com',
 	password: '123123',
 };
-const notify = (message: string) => toast(message);
 
-const Login = () => {
-	const dispatch = useDispatch();
+const Login: FC = () => {
+	const dispatch: Dispatch<AnyAction> = useDispatch();
 
-	const navigate = useNavigate();
+	const navigate: NavigateFunction = useNavigate();
 
-	const [formFields, setFormFields] = useState(defaultFormFields);
+	const [formFields, setFormFields] =
+		useState<LoginFormField>(defaultFormFields);
 	const { email, password } = formFields;
 
 	const resetFormFields = () => setFormFields(defaultFormFields);
@@ -46,7 +47,7 @@ const Login = () => {
 		try {
 			const data = await postData('http://127.0.0.1:4000/login', formFields);
 			if (data.successful) {
-				notify('🟢 Login successful');
+				toastNotify('🟢 Login successful');
 				return data;
 			}
 			// Errors
@@ -55,15 +56,15 @@ const Login = () => {
 				data.result &&
 				data.result.includes('nvalid data')
 			) {
-				notify('🛑 Invalid email or password');
+				toastNotify('🛑 Invalid email or password');
 				return; // Give user a second chance to reenter the form fields
 			}
 			if (!data.successful && data.errors) {
-				notify(`🛑 Errors: ${data.errors.join(', ')}`);
+				toastNotify(`🛑 Errors: ${data.errors.join(', ')}`);
 				return; // Give user a second chance to reenter the form fields
 			}
 		} catch (error) {
-			notify('🔴 Error');
+			toastNotify('🔴 Error');
 			console.error(`Fetch error: ${error}`);
 			throw new Error(`Fetch error: ${error}`);
 		}

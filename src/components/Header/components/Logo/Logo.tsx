@@ -1,6 +1,7 @@
+import { FC } from 'react';
 import { LogoSvg } from './Logo.styles';
 
-const Logo = () => {
+const Logo: FC = () => {
 	return (
 		<>
 			<LogoSvg />

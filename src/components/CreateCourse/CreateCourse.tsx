@@ -13,7 +13,7 @@ import AuthorCarts from './components/AuthorCarts/AuthorCarts';
 import AddAuthor from './components/AddAuthor/AddAuthor';
 import Duration from './components/Duration/Duration';
 
-import { useState, useEffect, MouseEvent, ChangeEvent } from 'react';
+import { useState, useEffect, MouseEvent, ChangeEvent, FC } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectAuthorsList } from '../../store/authors/selectors';
 import { selectCoursesList } from '../../store/courses/selectors';
@@ -36,10 +36,9 @@ import {
 // type imports
 import { Course } from '../../store/courses/reducer';
 
-import { useNavigate, Link } from 'react-router-dom';
-
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate, Link, NavigateFunction } from 'react-router-dom';
+import { toastNotify } from '../../helpers/toastNotify';
+import { AnyAction, Dispatch } from 'redux';
 
 const getCurrentDate = () => {
 	const today = new Date();
@@ -49,13 +48,9 @@ const getCurrentDate = () => {
 	return `${day}/${month}/${year}`;
 };
 
-const CreateCourse = () => {
-	// alert replacer
-	const notify = () =>
-		toast('Please fill all fields before creating new course');
-
-	const dispatch = useDispatch();
-	const navigate = useNavigate();
+const CreateCourse: FC = () => {
+	const dispatch: Dispatch<AnyAction> = useDispatch();
+	const navigate: NavigateFunction = useNavigate();
 	// redux vars
 	const courseTitle = useSelector(selectCourseTitle);
 	const courseDescription = useSelector(selectCourseDescription);
@@ -82,7 +77,7 @@ const CreateCourse = () => {
 		authors: [],
 	};
 
-	const [courseObj, setCourseObj] = useState(defaultCourseObj);
+	const [courseObj, setCourseObj] = useState<Course>(defaultCourseObj);
 
 	// useEffect to balance added / NOTadded authorLists
 	const authorsList = useSelector(selectAuthorsList);
@@ -134,7 +129,8 @@ const CreateCourse = () => {
 	const createCourseButtonHandler = (event: MouseEvent<HTMLButtonElement>) => {
 		event.preventDefault();
 		if (!isReadyToAddNewCourse) {
-			notify(); // toast looks nicer )
+			toastNotify('Please fill all fields before creating new course');
+			// toast looks nicer )
 			// alert('Please fill all fields before creating new course');
 			return;
 		}
