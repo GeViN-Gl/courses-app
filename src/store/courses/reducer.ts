@@ -12,8 +12,8 @@ export type Course = {
 };
 
 export type CourseState = {
-	coursesList: Course[];
-	filterField: string;
+	readonly coursesList: Course[];
+	readonly filterField: string;
 };
 
 const INITIAL_STATE: CourseState = {
@@ -38,4 +38,8 @@ export const coursesReducer = (state = INITIAL_STATE, action: AnyAction) => {
 courses: [], // list of courses. Default value - empty array. After
 success getting courses - value from API /courses/all response. See Swagger.
 
+Save new course.
+Delete course.
+Update course.
+Get courses. Save courses to store after getting them from API. See Swagger /courses/all.
 */
