@@ -65,7 +65,6 @@ export const fetchRequest = async (
 
 		// all ok
 		if (isFetchSuccess(responcedData)) {
-			console.log('👌 - dataFetchers');
 			return responcedData;
 		}
 	} catch (error) {

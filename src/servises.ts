@@ -1,9 +1,25 @@
-import { fetchRequest, isFetchSuccess } from './helpers/dataFetchers';
+import {
+	FailedRequest,
+	SuccessfulRequest,
+	fetchRequest,
+	isFetchSuccess,
+} from './helpers/dataFetchers';
 
 //expected types
 import { Course } from './store/courses/reducer';
 import { Author } from './store/authors/reducer';
+
+export type SuccessfulAuthorRequest = {
+	successful: boolean;
+	result: Author[];
+};
+export type SuccessfulCourseRequest = {
+	successful: boolean;
+	result: Course[];
+};
+
 //type guards
+// Need to ask, mb makes sence instead of type guards to use asserions?
 
 const isExpectedCourseData = (data: any): data is Course => {
 	if (
@@ -17,10 +33,19 @@ const isExpectedCourseData = (data: any): data is Course => {
 		return false;
 	if (
 		!Array.isArray(data.authors) ||
-		!data.authors.every((author: any) => typeof author === 'string')
+		!data?.authors.every((author: any) => typeof author === 'string')
 	)
 		return false;
 	return true;
+};
+
+export const isCoursesFetchSuccess = (
+	data: SuccessfulRequest | FailedRequest
+): data is SuccessfulCourseRequest => {
+	if (!isFetchSuccess(data)) return false;
+	if (data.result.every((data: object) => isExpectedCourseData(data)))
+		return true;
+	return false;
 };
 
 const isExpectedAuthorData = (data: any): data is Author => {
@@ -29,20 +54,27 @@ const isExpectedAuthorData = (data: any): data is Author => {
 	return true;
 };
 
-export const getAllCoursesFromAPI = async () => {
+export const isAuthorsFetchSuccess = (
+	data: SuccessfulRequest | FailedRequest
+): data is SuccessfulAuthorRequest => {
+	if (!isFetchSuccess(data)) return false;
+	if (data.result.every((data: object) => isExpectedAuthorData(data)))
+		return true;
+	return false;
+};
+
+export const getAllCoursesFromAPI = async (): Promise<
+	SuccessfulCourseRequest | FailedRequest
+> => {
 	try {
 		const data = await fetchRequest('http://localhost:4000/courses/all');
-		// all Ok
-		if (isFetchSuccess(data)) {
-			console.log('🟢 Fetch all courses - success');
-			return data;
-		}
+
 		// errors
 		if (!isFetchSuccess(data)) {
-			if (
-				Array.isArray(data.result) &&
-				!data.result.every((data) => isExpectedCourseData(data))
-			) {
+			if (!Array.isArray(data.result)) {
+				throw new Error('🛑 Error in returned object');
+			}
+			if (!data.result.every((data) => isExpectedCourseData(data))) {
 				throw new Error('🛑 Error in returned object');
 			}
 			if (data.errors) {
@@ -53,20 +85,22 @@ export const getAllCoursesFromAPI = async () => {
 			}
 			throw new Error(`🛑 Error while fetching all courses`);
 		}
+
+		// all Ok
+		if (isFetchSuccess(data)) {
+			return data as SuccessfulCourseRequest;
+		}
 	} catch (error) {
 		console.error(`Error while fetching all courses: ${error}`);
 	}
 	return { successful: false, result: 'Error while fetching all courses' };
 };
 
-export const getAllAuthorsFromAPI = async () => {
+export const getAllAuthorsFromAPI = async (): Promise<
+	SuccessfulAuthorRequest | FailedRequest
+> => {
 	try {
 		const data = await fetchRequest('http://localhost:4000/authors/all');
-		// all Ok
-		if (isFetchSuccess(data)) {
-			console.log('🟢 Fetch all authors - success');
-			return data;
-		}
 		// errors
 		if (!isFetchSuccess(data)) {
 			if (
@@ -84,6 +118,11 @@ export const getAllAuthorsFromAPI = async () => {
 			if (!data.successful) {
 				throw new Error(`🛑 Error while fetching all authors`);
 			}
+		}
+
+		// all Ok
+		if (isFetchSuccess(data)) {
+			return data as SuccessfulAuthorRequest;
 		}
 	} catch (error) {
 		console.error(`Error while fetching all authors: ${error}`);

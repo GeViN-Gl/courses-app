@@ -1,6 +1,11 @@
-import { mockedCoursesList } from '../../constants';
 import { AnyAction } from 'redux';
-import { setCoursesList, setFilterField } from './actionCreators';
+import {
+	setFilterField,
+	setCoursesList,
+	addNewCourseToList,
+	deleteCourseFromList,
+	updateCourseInList,
+} from './actionCreators';
 
 export type Course = {
 	id: string;
@@ -17,18 +22,41 @@ export type CourseState = {
 };
 
 const INITIAL_STATE: CourseState = {
-	coursesList: mockedCoursesList,
+	coursesList: [],
 	filterField: '',
 };
 //TODO migrate mockedCoursesList in task 3
 // and mb don`t create List as in authors
 
 export const coursesReducer = (state = INITIAL_STATE, action: AnyAction) => {
+	if (setFilterField.match(action)) {
+		return { ...state, filterField: action.payload };
+	}
 	if (setCoursesList.match(action)) {
 		return { ...state, coursesList: action.payload };
 	}
-	if (setFilterField.match(action)) {
-		return { ...state, filterField: action.payload };
+	if (addNewCourseToList.match(action)) {
+		return { ...state, coursesList: [...state.coursesList, action.payload] };
+	}
+	if (deleteCourseFromList.match(action)) {
+		return {
+			...state,
+			coursesList: state.coursesList.filter(
+				(course) => course.id !== action.payload
+			),
+		};
+	}
+	if (updateCourseInList.match(action)) {
+		const idx: number = state.coursesList.findIndex(
+			(course) => course.id === action.payload.id
+		);
+		// TODO check -1
+		const newCoursesList = state.coursesList;
+		newCoursesList[idx] = action.payload;
+		return {
+			...state,
+			coursesList: newCoursesList,
+		};
 	}
 	return state;
 };

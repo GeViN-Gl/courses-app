@@ -11,18 +11,57 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import { Routes, Route } from 'react-router-dom';
-import React, { FC } from 'react';
+import React, { FC, useEffect } from 'react';
+import {
+	getAllAuthorsFromAPI,
+	getAllCoursesFromAPI,
+	isAuthorsFetchSuccess,
+	isCoursesFetchSuccess,
+} from './servises';
+import { useDispatch } from 'react-redux';
+import { setAuthorsList } from './store/authors/actionCreators';
+import { setCoursesList } from './store/courses/actionCreators';
 
 // fix for crypto
 // github.com/denoland/deno/issues/12754
 declare global {
 	interface Crypto {
-		randomUUID: () => string;
+		randomUUID: () => `${string}-${string}-${string}-${string}-${string}`;
 	}
 }
 export {};
 
+// this useEffect triggers fetching of authors list
+
 const App: FC = () => {
+	const dispatch = useDispatch();
+	useEffect(() => {
+		async function getAuthorFromBack(): Promise<void> {
+			try {
+				const data = await getAllAuthorsFromAPI();
+				if (isAuthorsFetchSuccess(data)) {
+					dispatch(setAuthorsList(data.result));
+				}
+			} catch (error) {
+				console.error(error);
+			}
+		}
+		getAuthorFromBack();
+	}, [dispatch]);
+	// this useEffect triggers rerendering of courses list
+	useEffect(() => {
+		async function getCoursesFromBack(): Promise<void> {
+			try {
+				const data = await getAllCoursesFromAPI();
+				if (isCoursesFetchSuccess(data)) {
+					dispatch(setCoursesList(data.result));
+				}
+			} catch (error) {
+				console.error(error);
+			}
+		}
+		getCoursesFromBack();
+	}, [dispatch]);
 	return (
 		<>
 			<Routes>

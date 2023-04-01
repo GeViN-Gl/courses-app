@@ -7,9 +7,8 @@ import { CustomTitle as Title } from '../../../../common/CustomTitle/CustomTitle
 
 import { useState, ChangeEvent, MouseEvent, FC } from 'react';
 
-import { useSelector, useDispatch } from 'react-redux';
-import { selectAuthorsList } from '../../../../store/authors/selectors';
-import { setAuthorsList } from '../../../../store/authors/actionCreators';
+import { useDispatch } from 'react-redux';
+import { addAuthorToList } from '../../../../store/authors/actionCreators';
 
 import { Author } from '../../../../store/authors/reducer';
 import { AnyAction, Dispatch } from 'redux';
@@ -18,7 +17,7 @@ const AddAuthor: FC = () => {
 	const [inputValue, setInputValue] = useState('');
 
 	const dispatch: Dispatch<AnyAction> = useDispatch();
-	const authorsList = useSelector(selectAuthorsList);
+	// const authorsList = useSelector(selectAuthorsList);
 
 	const inputHandler = (event: ChangeEvent<HTMLInputElement>) => {
 		event.preventDefault();
@@ -36,7 +35,7 @@ const AddAuthor: FC = () => {
 			name: inputValue,
 		};
 
-		dispatch(setAuthorsList([...authorsList, newAuthor]));
+		dispatch(addAuthorToList(newAuthor));
 
 		setInputValue('');
 	};

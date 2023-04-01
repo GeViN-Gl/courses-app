@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { BaseButton } from '../../../../common/Button/Button.styles';
 export const TitleContainer = styled.div`
 	& h2 {
 		font-size: 36px;
@@ -31,6 +32,14 @@ export const InfoText = styled.p<InfoTextProps>`
 	}
 `;
 
+export const ButtonsContainer = styled.div`
+	display: flex;
+	gap: 10px;
+	& > ${BaseButton} {
+		max-width: fit-content;
+	}
+`;
+
 export const InfoContainer = styled.div`
 	display: grid;
 	grid-template-columns: 1fr;
@@ -38,7 +47,7 @@ export const InfoContainer = styled.div`
 	justify-items: start;
 	gap: 10px;
 
-	& button {
+	& ${ButtonsContainer} {
 		justify-self: center;
 	}
 `;

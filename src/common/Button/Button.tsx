@@ -16,11 +16,21 @@ const getButton = (buttonType = BUTTON_TYPES_CLASSES.base): typeof BaseButton =>
 export type ButtonProps = {
 	children?: React.ReactNode;
 	buttonType?: BUTTON_TYPES_CLASSES;
+	narrow?: boolean;
 } & ButtonHTMLAttributes<HTMLButtonElement>;
 
-const Button: FC<ButtonProps> = ({ children, buttonType, ...otherProps }) => {
+const Button: FC<ButtonProps> = ({
+	children,
+	buttonType,
+	narrow = false,
+	...otherProps
+}) => {
 	const CustomButton = getButton(buttonType);
-	return <CustomButton {...otherProps}>{children}</CustomButton>;
+	return (
+		<CustomButton narrow={narrow} {...otherProps}>
+			{children}
+		</CustomButton>
+	);
 };
 
 export default Button;
