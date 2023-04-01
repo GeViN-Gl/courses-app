@@ -13,14 +13,15 @@ import 'react-toastify/dist/ReactToastify.css';
 import { Routes, Route } from 'react-router-dom';
 import React, { FC, useEffect } from 'react';
 import {
+	SuccessfullCourseRequest,
+	SuccessfullAuthorRequest,
 	getAllAuthorsFromAPI,
 	getAllCoursesFromAPI,
-	isAuthorsFetchSuccess,
-	isCoursesFetchSuccess,
 } from './servises';
 import { useDispatch } from 'react-redux';
 import { setAuthorsList } from './store/authors/actionCreators';
 import { setCoursesList } from './store/courses/actionCreators';
+import { FailedRequest } from './helpers/dataFetchers';
 
 // fix for crypto
 // github.com/denoland/deno/issues/12754
@@ -36,6 +37,11 @@ export {};
 const App: FC = () => {
 	const dispatch = useDispatch();
 	useEffect(() => {
+		// typeguard for authors list
+		const isAuthorsFetchSuccess = (
+			data: SuccessfullAuthorRequest | FailedRequest
+		): data is SuccessfullAuthorRequest => data.successful;
+
 		async function getAuthorFromBack(): Promise<void> {
 			try {
 				const data = await getAllAuthorsFromAPI();
@@ -50,6 +56,11 @@ const App: FC = () => {
 	}, [dispatch]);
 	// this useEffect triggers rerendering of courses list
 	useEffect(() => {
+		// typeguard for courses list
+		const isCoursesFetchSuccess = (
+			data: SuccessfullCourseRequest | FailedRequest
+		): data is SuccessfullCourseRequest => data.successful;
+
 		async function getCoursesFromBack(): Promise<void> {
 			try {
 				const data = await getAllCoursesFromAPI();

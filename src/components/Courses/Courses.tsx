@@ -1,7 +1,7 @@
 import CourseCard from './component/CourseCard/CourseCard';
 import SearchBar from './component/SearchBar/SearchBar';
 
-import { FC, useEffect, useState, MouseEvent } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import {
 	selectFilterField,
@@ -37,12 +37,8 @@ const Courses: FC = () => {
 		setFilderedCoursesList(newFilderedCoursesList);
 	}, [filterField, coursesList]);
 
-	const testButtonHandler = (event: MouseEvent<HTMLButtonElement>) => {
-		console.log(`TEST BUTTON CLICKED`);
-	};
 	return (
 		<CoursesContainer>
-			<button onClick={testButtonHandler}>Test</button>
 			<SearchBar />
 			{filderedCoursesList.map((course) => (
 				<CourseCard key={course.id} course={course} />

@@ -9,17 +9,16 @@ import {
 import { Course } from './store/courses/reducer';
 import { Author } from './store/authors/reducer';
 
-export type SuccessfulAuthorRequest = {
+export type SuccessfullAuthorRequest = {
 	successful: boolean;
 	result: Author[];
 };
-export type SuccessfulCourseRequest = {
+export type SuccessfullCourseRequest = {
 	successful: boolean;
 	result: Course[];
 };
 
 //type guards
-// Need to ask, mb makes sence instead of type guards to use asserions?
 
 const isExpectedCourseData = (data: any): data is Course => {
 	if (
@@ -39,93 +38,95 @@ const isExpectedCourseData = (data: any): data is Course => {
 	return true;
 };
 
-export const isCoursesFetchSuccess = (
-	data: SuccessfulRequest | FailedRequest
-): data is SuccessfulCourseRequest => {
-	if (!isFetchSuccess(data)) return false;
-	if (data.result.every((data: object) => isExpectedCourseData(data)))
-		return true;
-	return false;
-};
-
 const isExpectedAuthorData = (data: any): data is Author => {
 	if (typeof data.id !== 'string' || typeof data.name !== 'string')
 		return false;
 	return true;
 };
 
-export const isAuthorsFetchSuccess = (
+//assertion functions
+function assertAuthorsResponce(
 	data: SuccessfulRequest | FailedRequest
-): data is SuccessfulAuthorRequest => {
-	if (!isFetchSuccess(data)) return false;
-	if (data.result.every((data: object) => isExpectedAuthorData(data)))
-		return true;
-	return false;
-};
+): asserts data is SuccessfullAuthorRequest {
+	if (!isFetchSuccess(data)) {
+		// if there is error message in result
+		if (data.result) {
+			throw new Error(`🛑 Errors: ${data.result}`);
+		}
+		// if there is error message in errors array
+		if (data.errors) {
+			throw new Error(`🛑 Errors: ${data.errors.join(', ')}`);
+		}
+		// if there is no error message but success is false
+		throw new Error('🛑 Error during fetching authors');
+	}
+	if (isFetchSuccess(data)) {
+		if (!Array.isArray(data.result)) {
+			throw new Error('🛑 Error in returned object');
+		}
+		if (!data.result.every((data) => isExpectedAuthorData(data))) {
+			throw new Error('🛑 Error in returned object');
+		}
+	}
+}
 
+function assertCoursesResponce(
+	data: SuccessfulRequest | FailedRequest
+): asserts data is SuccessfullCourseRequest {
+	if (!isFetchSuccess(data)) {
+		// if there is error message in result
+		if (data.result) {
+			throw new Error(`🛑 Errors: ${data.result}`);
+		}
+		// if there is error message in errors array
+		if (data.errors) {
+			throw new Error(`🛑 Errors: ${data.errors.join(', ')}`);
+		}
+		// if there is no error message but success is false
+		throw new Error('🛑 Error during fetching courses');
+	}
+	if (isFetchSuccess(data)) {
+		// if there ia a success in fetch but result has wrong type
+		// it must be array of courses
+		if (!Array.isArray(data.result)) {
+			throw new Error('🛑 Error in returned object');
+		}
+		if (!data.result.every((data) => isExpectedCourseData(data))) {
+			throw new Error('🛑 Error in returned object');
+		}
+	}
+}
+
+// fetching functions
 export const getAllCoursesFromAPI = async (): Promise<
-	SuccessfulCourseRequest | FailedRequest
+	SuccessfullCourseRequest | FailedRequest
 > => {
 	try {
 		const data = await fetchRequest('http://localhost:4000/courses/all');
-
 		// errors
-		if (!isFetchSuccess(data)) {
-			if (!Array.isArray(data.result)) {
-				throw new Error('🛑 Error in returned object');
-			}
-			if (!data.result.every((data) => isExpectedCourseData(data))) {
-				throw new Error('🛑 Error in returned object');
-			}
-			if (data.errors) {
-				throw new Error(`🛑 Errors: ${data.errors.join(', ')}`);
-			}
-			if (data.result) {
-				throw new Error(`🛑 Errors: ${data.result}`);
-			}
-			throw new Error(`🛑 Error while fetching all courses`);
-		}
-
+		assertCoursesResponce(data);
 		// all Ok
-		if (isFetchSuccess(data)) {
-			return data as SuccessfulCourseRequest;
-		}
+		return data;
 	} catch (error) {
-		console.error(`Error while fetching all courses: ${error}`);
+		console.error(error);
 	}
-	return { successful: false, result: 'Error while fetching all courses' };
+	return { successful: false, result: '🛑 Error during fetching courses' };
 };
 
 export const getAllAuthorsFromAPI = async (): Promise<
-	SuccessfulAuthorRequest | FailedRequest
+	SuccessfullAuthorRequest | FailedRequest
 > => {
 	try {
 		const data = await fetchRequest('http://localhost:4000/authors/all');
 		// errors
-		if (!isFetchSuccess(data)) {
-			if (
-				Array.isArray(data.result) &&
-				!data.result.every((data) => isExpectedAuthorData(data))
-			) {
-				throw new Error('🛑 Error in returned object');
-			}
-			if (!data.successful && data.errors) {
-				throw new Error(`🛑 Errors: ${data.errors.join(', ')}`);
-			}
-			if (!data.successful && data.result) {
-				throw new Error(`🛑 Errors: ${data.result}`);
-			}
-			if (!data.successful) {
-				throw new Error(`🛑 Error while fetching all authors`);
-			}
-		}
-
+		assertAuthorsResponce(data);
 		// all Ok
-		if (isFetchSuccess(data)) {
-			return data as SuccessfulAuthorRequest;
-		}
+		return data;
 	} catch (error) {
-		console.error(`Error while fetching all authors: ${error}`);
+		console.error(error);
 	}
-	return { successful: false, result: 'Error while fetching all authors' };
+	return {
+		successful: false,
+		result: '🛑 Error during fetching authors',
+	};
 };
