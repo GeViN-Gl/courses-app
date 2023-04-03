@@ -25,8 +25,6 @@ const INITIAL_STATE: CourseState = {
 	coursesList: [],
 	filterField: '',
 };
-//TODO migrate mockedCoursesList in task 3
-// and mb don`t create List as in authors
 
 export const coursesReducer = (state = INITIAL_STATE, action: AnyAction) => {
 	if (setFilterField.match(action)) {
@@ -50,8 +48,11 @@ export const coursesReducer = (state = INITIAL_STATE, action: AnyAction) => {
 		const idx: number = state.coursesList.findIndex(
 			(course) => course.id === action.payload.id
 		);
-		// TODO check -1
 		const newCoursesList = state.coursesList;
+		// if course with such id doesn`t exist - return state
+		if (idx === -1) {
+			return state;
+		}
 		newCoursesList[idx] = action.payload;
 		return {
 			...state,

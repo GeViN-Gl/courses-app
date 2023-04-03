@@ -12,8 +12,6 @@ export type AuthorsState = {
 const INITIAL_STATE: AuthorsState = {
 	authorsList: [],
 };
-//TODO migrate mockedAuthorsList in task 3
-// and mb don`t create authorsList in authors, and directly hold array in slice
 
 export const authorsReducer = (state = INITIAL_STATE, action: AnyAction) => {
 	if (setAuthorsList.match(action)) {

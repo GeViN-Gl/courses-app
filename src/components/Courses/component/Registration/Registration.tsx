@@ -50,11 +50,9 @@ const Registration: FC = () => {
 				FETCH_ACTION_TYPES.POST,
 				queryData
 			);
-			console.log('data:', data);
 
 			// Success
 			if (isFetchSuccess(data)) {
-				console.log(`first`);
 				toastNotify('🟢 ' + data.result);
 				return true;
 			}
