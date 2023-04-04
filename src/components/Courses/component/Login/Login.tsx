@@ -14,7 +14,13 @@ import {
 
 import { ChangeEvent, FC, FormEvent, useState } from 'react';
 
-import { postData } from '../../../../helpers/dataFetchers';
+import {
+	FETCH_ACTION_TYPES,
+	fetchRequest,
+	isFetchSuccess,
+	QueryParams,
+	SuccessfulRequest,
+} from '../../../../helpers/dataFetchers';
 import { toastNotify } from '../../../../helpers/toastNotify';
 import { AnyAction, Dispatch } from 'redux';
 
@@ -43,39 +49,56 @@ const Login: FC = () => {
 		setFormFields({ ...formFields, [name]: value });
 	};
 
-	const fetchHandler = async () => {
+	const fetchHandler = async (): Promise<SuccessfulRequest | null> => {
 		try {
-			const data = await postData('http://127.0.0.1:4000/login', formFields);
-			if (data.successful) {
+			const queryData: QueryParams = formFields; //recheck type i send to body
+			const data = await fetchRequest(
+				'http://127.0.0.1:4000/login',
+				FETCH_ACTION_TYPES.POST,
+				queryData
+			);
+
+			// Success
+			if (isFetchSuccess(data)) {
 				toastNotify('🟢 Login successful');
 				return data;
 			}
 			// Errors
-			if (
-				!data.successful &&
-				data.result &&
-				data.result.includes('nvalid data')
-			) {
-				toastNotify('🛑 Invalid email or password');
-				return; // Give user a second chance to reenter the form fields
-			}
-			if (!data.successful && data.errors) {
-				toastNotify(`🛑 Errors: ${data.errors.join(', ')}`);
-				return; // Give user a second chance to reenter the form fields
+			if (!isFetchSuccess(data)) {
+				if (data.result && data.result.includes('nvalid data')) {
+					toastNotify('🛑 Invalid email or password');
+					return null; // its form fill errors, report and do nothing
+				}
+				if (data.result) {
+					toastNotify(`🛑 Eroor: ${data.result}`);
+					return null; // its form fill errors, report and do nothing
+				}
+				if (data.errors) {
+					toastNotify(`🛑 Errors: ${data.errors.join(', ')}`);
+					return null; // its form fill errors, report and do nothing
+				}
 			}
 		} catch (error) {
 			toastNotify('🔴 Error');
-			console.error(`Fetch error: ${error}`);
-			throw new Error(`Fetch error: ${error}`);
+			console.error(`Fetch error during login: ${error}`);
+			throw new Error(`Fetch error during login: ${error}`);
 		}
+		return null;
 	};
 
 	const submitFormHandler = (event: FormEvent<HTMLFormElement>): void => {
 		event.preventDefault();
+		type SuccessfulRequestWithUser = SuccessfulRequest & {
+			user: { name: string; email: string };
+		};
+		const isUserExist = (
+			data: SuccessfulRequest
+		): data is SuccessfulRequestWithUser =>
+			!!data.user?.email && !!data.user?.name;
+
 		fetchHandler()
 			.then((data) => {
-				//TODO handle else in task 3
-				if (data && data.user && data.result) {
+				if (data !== null && isUserExist(data)) {
 					localStorage.setItem('userToken', JSON.stringify(data.result));
 					dispatch(setCurrentUserIsAuth(true));
 					dispatch(setCurrentUserName(data.user.name));
@@ -83,7 +106,7 @@ const Login: FC = () => {
 					dispatch(setCurrentUserToken(data.result));
 					navigate('/courses');
 					resetFormFields();
-				}
+				} // else user stays on login form
 			})
 			.catch((error) => console.error(error));
 	};

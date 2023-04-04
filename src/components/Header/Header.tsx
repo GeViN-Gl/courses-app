@@ -18,11 +18,12 @@ import Button, { BUTTON_TYPES_CLASSES } from '../../common/Button/Button';
 
 import { useSelector, useDispatch } from 'react-redux';
 import {
+	selectCurrentUserIsAuth,
 	selectCurrentUserName,
 	selectCurrentUserToken,
 } from '../../store/user/selectors';
 import {
-	setCurrentUserName,
+	clearCurrentUser,
 	setCurrentUserToken,
 } from '../../store/user/actionCreators';
 import { AnyAction, Dispatch } from 'redux';
@@ -32,6 +33,7 @@ const Header: FC = () => {
 
 	const [onAuthPages, setOnAuthPages] = useState(false);
 
+	const isUserAuth = useSelector(selectCurrentUserIsAuth);
 	const userName = useSelector(selectCurrentUserName);
 	const userToken = useSelector(selectCurrentUserToken);
 	const dispatch: Dispatch<AnyAction> = useDispatch();
@@ -66,19 +68,19 @@ const Header: FC = () => {
 		} else {
 			navigate('/login');
 		}
+		// i dont need navigate in dependency
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [userToken]);
 
 	const logInOutButtonHandler = (event: MouseEvent<HTMLButtonElement>) => {
 		// When user clicks on Logout button, App should navigate to /login
 		// and you should remove token from localStorage.
-		if (!!userName) {
+		if (isUserAuth) {
 			// LogOUT displays only if user obj exists
 			localStorage.removeItem('userToken');
-			dispatch(setCurrentUserName(''));
-			dispatch(setCurrentUserToken(''));
+			dispatch(clearCurrentUser());
 		} else {
-			//userToken exists in localStorage but user is not logged
+			// userToken exists in localStorage but user is not logged
 			navigate('/login');
 		}
 	};
@@ -94,6 +96,7 @@ const Header: FC = () => {
 					{!onAuthPages && (
 						<Button
 							buttonType={BUTTON_TYPES_CLASSES.base}
+							// ASK strange prettier bechavior, have an Insert `⏎↹↹↹↹↹↹` error :(
 							// eslint-disable-next-line prettier/prettier
 							onClick={logInOutButtonHandler}>
 							{userName ? 'Logout' : 'Login'}

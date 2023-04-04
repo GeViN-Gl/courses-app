@@ -16,14 +16,14 @@ import Duration from './components/Duration/Duration';
 import { useState, useEffect, MouseEvent, ChangeEvent, FC } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectAuthorsList } from '../../store/authors/selectors';
-import { selectCoursesList } from '../../store/courses/selectors';
+
 import {
 	selectCourseTitle,
 	selectAddedAuthorsList,
 	selectTimeMinutes,
 	selectCourseDescription,
 } from '../../store/create-course/selectors';
-import { setCoursesList } from '../../store/courses/actionCreators';
+import { addNewCourseToList } from '../../store/courses/actionCreators';
 import {
 	setAddedAuthorsList,
 	setNotAddedAuthorsList,
@@ -125,17 +125,14 @@ const CreateCourse: FC = () => {
 		}
 	}, [courseObj]);
 
-	const coursesList = useSelector(selectCoursesList);
 	const createCourseButtonHandler = (event: MouseEvent<HTMLButtonElement>) => {
 		event.preventDefault();
 		if (!isReadyToAddNewCourse) {
 			toastNotify('Please fill all fields before creating new course');
-			// toast looks nicer )
-			// alert('Please fill all fields before creating new course');
 			return;
 		}
 
-		dispatch(setCoursesList([...coursesList, courseObj]));
+		dispatch(addNewCourseToList(courseObj));
 
 		// clear fields
 		clearFormFields();

@@ -11,7 +11,12 @@ import Button from '../../../../common/Button/Button';
 import { ChangeEvent, FC, FormEvent, useState } from 'react';
 import { Link, NavigateFunction, useNavigate } from 'react-router-dom';
 
-import { postData } from '../../../../helpers/dataFetchers';
+import {
+	FETCH_ACTION_TYPES,
+	fetchRequest,
+	isFetchSuccess,
+	QueryParams,
+} from '../../../../helpers/dataFetchers';
 import { toastNotify } from '../../../../helpers/toastNotify';
 
 type RegistrationFormField = { name: string; email: string; password: string };
@@ -39,20 +44,29 @@ const Registration: FC = () => {
 
 	const fetchHandler = async (): Promise<boolean> => {
 		try {
-			const data = await postData('http://127.0.0.1:4000/register', formFields);
+			const queryData: QueryParams = formFields; //recheck type i send to body
+			const data = await fetchRequest(
+				'http://127.0.0.1:4000/register',
+				FETCH_ACTION_TYPES.POST,
+				queryData
+			);
 
-			if (data.successful) {
+			// Success
+			if (isFetchSuccess(data)) {
 				toastNotify('🟢 ' + data.result);
 				return true;
 			}
-
-			if (!data.successful && data.errors) {
-				toastNotify(`🛑 Errors: ${data.errors.join(', ')}`);
-				return false;
+			// Errors
+			if (!isFetchSuccess(data)) {
+				if (data.errors) {
+					toastNotify(`🛑 Errors: ${data.errors.join(', ')}`);
+					return false; // Give user a second chance to reenter the form fields
+				}
 			}
 		} catch (error) {
 			toastNotify('🔴 Error');
-			console.error(`Fetch error: ${error}`);
+			console.error(`Fetch error during registration: ${error}`);
+			throw new Error(`Fetch error during registration: ${error}`);
 		}
 		return false;
 	};

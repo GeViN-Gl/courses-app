@@ -11,18 +11,68 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import { Routes, Route } from 'react-router-dom';
-import React, { FC } from 'react';
+import React, { FC, useEffect } from 'react';
+import {
+	SuccessfullCourseRequest,
+	SuccessfullAuthorRequest,
+	getAllAuthorsFromAPI,
+	getAllCoursesFromAPI,
+} from './servises';
+import { useDispatch } from 'react-redux';
+import { setAuthorsList } from './store/authors/actionCreators';
+import { setCoursesList } from './store/courses/actionCreators';
+import { FailedRequest } from './helpers/dataFetchers';
 
 // fix for crypto
 // github.com/denoland/deno/issues/12754
 declare global {
 	interface Crypto {
-		randomUUID: () => string;
+		randomUUID: () => `${string}-${string}-${string}-${string}-${string}`;
 	}
 }
 export {};
 
+// this useEffect triggers fetching of authors list
+
 const App: FC = () => {
+	const dispatch = useDispatch();
+	useEffect(() => {
+		// typeguard for authors list
+		const isAuthorsFetchSuccess = (
+			data: SuccessfullAuthorRequest | FailedRequest
+		): data is SuccessfullAuthorRequest => data.successful;
+
+		async function getAuthorFromBack(): Promise<void> {
+			try {
+				const data = await getAllAuthorsFromAPI();
+				if (isAuthorsFetchSuccess(data)) {
+					dispatch(setAuthorsList(data.result));
+				}
+			} catch (error) {
+				console.error(error);
+			}
+		}
+		getAuthorFromBack();
+	}, [dispatch]);
+	// this useEffect triggers rerendering of courses list
+	useEffect(() => {
+		// typeguard for courses list
+		const isCoursesFetchSuccess = (
+			data: SuccessfullCourseRequest | FailedRequest
+		): data is SuccessfullCourseRequest => data.successful;
+
+		async function getCoursesFromBack(): Promise<void> {
+			try {
+				const data = await getAllCoursesFromAPI();
+				if (isCoursesFetchSuccess(data)) {
+					dispatch(setCoursesList(data.result));
+				}
+			} catch (error) {
+				console.error(error);
+			}
+		}
+		getCoursesFromBack();
+	}, [dispatch]);
 	return (
 		<>
 			<Routes>

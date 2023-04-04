@@ -3,6 +3,7 @@ import {
 	createAction,
 	withMatcher,
 	ActionWithPayload,
+	Action,
 } from '../../helpers/reducer/reducer.utils';
 
 // Action types
@@ -22,6 +23,7 @@ export type SetCurrentUserToken = ActionWithPayload<
 	USER_ACTION_TYPES.SET_CURRENT_USER_TOKEN,
 	string
 >;
+export type ClearCurrentUser = Action<USER_ACTION_TYPES.CLEAR_CURRENT_USER>;
 
 // Action Creators with withMacther
 export const setCurrentUserIsAuth = withMatcher(
@@ -39,4 +41,7 @@ export const setCurrentUserEmail = withMatcher(
 export const setCurrentUserToken = withMatcher(
 	(userToken: string): SetCurrentUserToken =>
 		createAction(USER_ACTION_TYPES.SET_CURRENT_USER_TOKEN, userToken)
+);
+export const clearCurrentUser = withMatcher(
+	(): ClearCurrentUser => createAction(USER_ACTION_TYPES.CLEAR_CURRENT_USER)
 );

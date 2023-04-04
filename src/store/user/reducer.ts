@@ -1,5 +1,6 @@
 import { AnyAction } from 'redux';
 import {
+	clearCurrentUser,
 	setCurrentUserEmail,
 	setCurrentUserIsAuth,
 	setCurrentUserName,
@@ -33,7 +34,9 @@ export const userReducer = (state = INITIAL_STATE, action: AnyAction) => {
 	if (setCurrentUserToken.match(action)) {
 		return { ...state, token: action.payload };
 	}
-
+	if (clearCurrentUser.match(action)) {
+		return { ...state, isAuth: false, name: '', email: '', token: '' };
+	}
 	return state;
 };
 
