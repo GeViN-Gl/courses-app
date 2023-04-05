@@ -133,6 +133,22 @@ function assertUserResponce(
 		}
 	}
 }
+function assertUserLogoutResponce(
+	data: SuccessfulRequest | FailedRequest
+): asserts data is SuccessfulRequest {
+	if (!isFetchSuccess(data)) {
+		// if there is error message in result
+		if (data.result) {
+			throw new Error(`🛑 Errors: ${data.result}`);
+		}
+		// if there is error message in errors array
+		if (data.errors) {
+			throw new Error(`🛑 Errors: ${data.errors.join(', ')}`);
+		}
+		// if there is no error message but success is false
+		throw new Error('🛑 Error during user logoff');
+	}
+}
 
 // fetching functions
 export const getAllCoursesFromAPI = async (): Promise<
@@ -186,6 +202,26 @@ export const getUserFromAPI = async (
 	} catch (error) {
 		console.error(error);
 		// rethrow error to be able to catch it in thunk
+		throw error;
+	}
+};
+
+export const logoutUserFromAPI = async (
+	token: string
+): Promise<SuccessfullUserRequest | FailedRequest> => {
+	try {
+		const fetchOptions: FetchRequestOptions = {
+			token,
+		};
+		const data = await fetchRequest(
+			'http://localhost:4000/logout',
+			FETCH_ACTION_TYPES.DELETE,
+			fetchOptions
+		);
+		assertUserLogoutResponce(data);
+		return data;
+	} catch (error) {
+		console.error(error);
 		throw error;
 	}
 };

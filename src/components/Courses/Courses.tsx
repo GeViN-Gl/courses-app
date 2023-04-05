@@ -45,12 +45,11 @@ const Courses: FC = () => {
 	//TODO: remove this test function
 	const handleTest = (event: MouseEvent<HTMLButtonElement>) => {
 		thunkDispatch(fetchUserAsync(token));
-		// console.log(data);
 	};
 
 	return (
 		<CoursesContainer>
-			<button onClick={handleTest}>Test</button>
+			<button onClick={handleTest}>Test me </button>
 			<SearchBar />
 			{filderedCoursesList.map((course) => (
 				<CourseCard key={course.id} course={course} />

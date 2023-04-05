@@ -27,6 +27,8 @@ import {
 	setCurrentUserToken,
 } from '../../store/user/actionCreators';
 import { AnyAction, Dispatch } from 'redux';
+import { logoutUserFromAPI } from '../../servises';
+import { toastNotify } from '../../helpers/toastNotify';
 
 const Header: FC = () => {
 	const navigate: NavigateFunction = useNavigate();
@@ -50,9 +52,9 @@ const Header: FC = () => {
 		}
 	}, [currentLocation]);
 
-	// on first mount check if there is any stored token
+	// On first render, App should check if token exists in localStorage.
+	// If token exists, App should set it to the store.
 	type LocalToken = string | null;
-
 	useEffect(() => {
 		const localToken: LocalToken = localStorage.getItem('userToken');
 		const isLocalTokenExist = (localToken: LocalToken): localToken is string =>
@@ -62,6 +64,10 @@ const Header: FC = () => {
 		}
 	}, [dispatch]);
 
+	// If token exists, App should navigate to /courses.
+	// If token doesn't exist, App should navigate to /login.
+	// TODO: there is must be some logic to pull user credentials from server
+	// TODO: userToken from selector may cause unexpected rerendering, need to check
 	useEffect(() => {
 		if (localStorage.getItem('userToken')) {
 			navigate('/courses');
@@ -72,13 +78,30 @@ const Header: FC = () => {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [userToken]);
 
+	const logoutHandler = async (): Promise<void> => {
+		// first check is user logged in
+		if (!isUserAuth) {
+			return;
+		}
+		// if user logged in, then logout
+		console.log('userToken: HEADER', userToken);
+		const { successful } = await logoutUserFromAPI(userToken);
+		if (successful) {
+			localStorage.removeItem('userToken');
+			dispatch(clearCurrentUser());
+			toastNotify('👋 You are logged out');
+		} else {
+			toastNotify('🛑 Something went wrong');
+		}
+	};
+
 	const logInOutButtonHandler = (event: MouseEvent<HTMLButtonElement>) => {
 		// When user clicks on Logout button, App should navigate to /login
 		// and you should remove token from localStorage.
+		// TODO: i need to migrate this behavior to redux-thunk
 		if (isUserAuth) {
 			// LogOUT displays only if user obj exists
-			localStorage.removeItem('userToken');
-			dispatch(clearCurrentUser());
+			logoutHandler();
 		} else {
 			// userToken exists in localStorage but user is not logged
 			navigate('/login');

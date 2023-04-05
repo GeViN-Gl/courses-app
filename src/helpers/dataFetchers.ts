@@ -2,6 +2,7 @@ export enum FETCH_ACTION_TYPES {
 	GET = 'GET',
 	POST = 'POST',
 	GET_WITH_AUTH = 'GET_WITH_AUTH',
+	DELETE = 'DELETE',
 }
 
 export type QueryParams = {
@@ -68,6 +69,17 @@ export const fetchRequest = async (
 					},
 				});
 				break;
+			case FETCH_ACTION_TYPES.DELETE:
+				if (!options.token) {
+					throw new Error('No token provided');
+				}
+				request = new Request(url, {
+					method: 'DELETE',
+					headers: {
+						Authorization: options.token,
+					},
+				});
+				break;
 
 			default: //GET
 				request = new Request(url);
@@ -75,6 +87,17 @@ export const fetchRequest = async (
 		}
 
 		const response = await fetch(request);
+		console.log('response:', response);
+		// Logout bechaivour is strange, it returns 200 and successful: false
+		// so i handle it here separately
+		if (response.ok && action === FETCH_ACTION_TYPES.DELETE) {
+			console.log('case: DELETE');
+			return {
+				successful: true,
+				result: 'Logout successful',
+			} as SuccessfulRequest;
+		}
+		// -------
 		const responcedData: SuccessfulRequest | FailedRequest =
 			await response.json();
 		console.log('responcedData:', responcedData);
