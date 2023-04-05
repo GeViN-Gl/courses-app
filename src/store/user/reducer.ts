@@ -55,14 +55,13 @@ export const userReducer = (state = INITIAL_STATE, action: AnyAction) => {
 		return { ...state, isLoading: true };
 	}
 	if (fetchUserSuccess.match(action)) {
-		const { name, email, token, role } = action.payload;
+		const { name, email, role } = action.payload;
 		return {
 			...state,
 			isLoading: false,
 			isAuth: true,
 			name,
 			email,
-			token,
 			role,
 		};
 	}

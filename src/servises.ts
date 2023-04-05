@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import {
 	FETCH_ACTION_TYPES,
 	FailedRequest,
@@ -11,181 +12,99 @@ import {
 import { Course } from './store/courses/reducer';
 import { Author } from './store/authors/reducer';
 import { User } from './store/user/reducer';
+type Logout = {};
 
-export type SuccessfullAuthorRequest = {
+interface SuccessfulResponseBase {
 	successful: boolean;
+	result?: any;
+}
+
+interface SuccessfulAuthorResponse extends SuccessfulResponseBase {
 	result: Author[];
-};
-export type SuccessfullCourseRequest = {
-	successful: boolean;
+}
+
+interface SuccessfulCourseResponse extends SuccessfulResponseBase {
 	result: Course[];
-};
-export type SuccessfullUserRequest = {
-	successful: boolean;
+}
+interface SuccessfulUserResponse extends SuccessfulResponseBase {
 	result: User;
-};
+}
+interface SuccessfulAddAuthorResponse extends SuccessfulResponseBase {
+	result: Author;
+}
+interface SuccessfulAddCourseResponse extends SuccessfulResponseBase {
+	result: Course;
+}
 
-//type guards
+// TODO: unformat and remove comment
+// 2 mentor: There is no error behind prettier/prettier
+// just prevent prettier from formatting this code
+type SuccessfulResponse<T> =
+	// prettier-ignore
+	T extends Course
+	? SuccessfulAddCourseResponse	: T extends Author
+	? SuccessfulAddAuthorResponse	:	T extends Course[]
+	? SuccessfulCourseResponse		: T extends Author[]
+	? SuccessfulAuthorResponse		: T extends User
+	? SuccessfulUserResponse			: never;
 
-const isExpectedCourseData = (data: any): data is Course => {
-	if (
-		typeof data.id !== 'string' ||
-		typeof data.title !== 'string' ||
-		typeof data.description !== 'string' ||
-		typeof data.creationDate !== 'string' ||
-		typeof data.duration !== 'number' ||
-		typeof data.authors !== `object`
-	)
-		return false;
-	if (
-		!Array.isArray(data.authors) ||
-		!data?.authors.every((author: any) => typeof author === 'string')
-	)
-		return false;
-	return true;
-};
-
-const isExpectedAuthorData = (data: any): data is Author => {
-	if (typeof data.id !== 'string' || typeof data.name !== 'string')
-		return false;
-	return true;
-};
-
-const isExpectedUserData = (data: any): data is User => {
-	if (typeof data.email !== 'string' || typeof data.role !== 'string')
-		return false;
-	if (typeof data.name !== 'string' && data.name !== null) return false;
-	return true;
-};
+export interface SuccessfulLogoutResponse extends SuccessfulResponseBase {
+	result: Logout;
+}
 //assertion functions
-function assertAuthorsResponce(
-	data: SuccessfulRequest | FailedRequest
-): asserts data is SuccessfullAuthorRequest {
+//
+function assertSuccessfulResponse<T>(
+	data: SuccessfulRequest | FailedRequest,
+	errorPrefix: string
+): asserts data is SuccessfulResponse<T> {
 	if (!isFetchSuccess(data)) {
 		// if there is error message in result
 		if (data.result) {
-			throw new Error(`🛑 Errors: ${data.result}`);
+			throw new Error(`🛑 ${errorPrefix} Error: ${data.result}`);
 		}
 		// if there is error message in errors array
 		if (data.errors) {
-			throw new Error(`🛑 Errors: ${data.errors.join(', ')}`);
+			throw new Error(`🛑 ${errorPrefix} Errors: ${data.errors.join(', ')}`);
 		}
 		// if there is no error message but success is false
-		throw new Error('🛑 Error during fetching authors');
-	}
-	if (isFetchSuccess(data)) {
-		if (!Array.isArray(data.result)) {
-			throw new Error('🛑 Error in returned object');
-		}
-		if (!data.result.every((data) => isExpectedAuthorData(data))) {
-			throw new Error('🛑 Error in returned object');
-		}
-	}
-}
-
-function assertCoursesResponce(
-	data: SuccessfulRequest | FailedRequest
-): asserts data is SuccessfullCourseRequest {
-	if (!isFetchSuccess(data)) {
-		// if there is error message in result
-		if (data.result) {
-			throw new Error(`🛑 Errors: ${data.result}`);
-		}
-		// if there is error message in errors array
-		if (data.errors) {
-			throw new Error(`🛑 Errors: ${data.errors.join(', ')}`);
-		}
-		// if there is no error message but success is false
-		throw new Error('🛑 Error during fetching courses');
-	}
-	if (isFetchSuccess(data)) {
-		// if there ia a success in fetch but result has wrong type
-		// it must be array of courses
-		if (!Array.isArray(data.result)) {
-			throw new Error('🛑 Error in returned object');
-		}
-		if (!data.result.every((data) => isExpectedCourseData(data))) {
-			throw new Error('🛑 Error in returned object');
-		}
-	}
-}
-
-function assertUserResponce(
-	data: SuccessfulRequest | FailedRequest
-): asserts data is SuccessfullUserRequest {
-	if (!isFetchSuccess(data)) {
-		// if there is error message in result
-		if (data.result) {
-			throw new Error(`🛑 Errors: ${data.result}`);
-		}
-		// if there is error message in errors array
-		if (data.errors) {
-			throw new Error(`🛑 Errors: ${data.errors.join(', ')}`);
-		}
-		// if there is no error message but success is false
-		throw new Error('🛑 Error during fetching user');
-	}
-	if (isFetchSuccess(data)) {
-		// if there ia a success in fetch but result has wrong type
-		// it must be array of courses
-		if (!isExpectedUserData(data.result)) {
-			throw new Error('🛑 Error in returned object');
-		}
-	}
-}
-function assertUserLogoutResponce(
-	data: SuccessfulRequest | FailedRequest
-): asserts data is SuccessfulRequest {
-	if (!isFetchSuccess(data)) {
-		// if there is error message in result
-		if (data.result) {
-			throw new Error(`🛑 Errors: ${data.result}`);
-		}
-		// if there is error message in errors array
-		if (data.errors) {
-			throw new Error(`🛑 Errors: ${data.errors.join(', ')}`);
-		}
-		// if there is no error message but success is false
-		throw new Error('🛑 Error during user logoff');
+		throw new Error(`🛑 Error during fetching ${errorPrefix.toLowerCase()}`);
 	}
 }
 
 // fetching functions
-export const getAllCoursesFromAPI = async (): Promise<
-	SuccessfullCourseRequest | FailedRequest
-> => {
-	try {
-		const data = await fetchRequest('http://localhost:4000/courses/all');
-		// errors
-		assertCoursesResponce(data);
-		// all Ok
-		return data;
-	} catch (error) {
-		console.error(error);
-		// rethrow error to be able to catch it in thunk
-		throw error;
-	}
-};
+export const getAllCoursesFromAPI =
+	async (): Promise<SuccessfulCourseResponse> => {
+		try {
+			const data = await fetchRequest('http://localhost:4000/courses/all');
+			// errors
+			assertSuccessfulResponse<Course[]>(data, 'Courses');
+			// all Ok
+			return data;
+		} catch (error) {
+			console.error(error);
+			// rethrow error to be able to catch it in thunk
+			throw error;
+		}
+	};
 
-export const getAllAuthorsFromAPI = async (): Promise<
-	SuccessfullAuthorRequest | FailedRequest
-> => {
-	try {
-		const data = await fetchRequest('http://localhost:4000/authors/all');
-		// errors
-		assertAuthorsResponce(data);
-		// all Ok
-		return data;
-	} catch (error) {
-		console.error(error);
-		// rethrow error to be able to catch it in thunk
-		throw error;
-	}
-};
+export const getAllAuthorsFromAPI =
+	async (): Promise<SuccessfulAuthorResponse> => {
+		try {
+			const data = await fetchRequest('http://localhost:4000/authors/all');
+			// errors
+			assertSuccessfulResponse<Author[]>(data, 'Authors');
+			// all Ok
+			return data;
+		} catch (error) {
+			console.error(error);
+			// rethrow error to be able to catch it in thunk
+			throw error;
+		}
+	};
 
 export const getUserFromAPI = async (
 	token: string
-): Promise<SuccessfullUserRequest | FailedRequest> => {
+): Promise<SuccessfulUserResponse> => {
 	try {
 		const fetchOptions: FetchRequestOptions = {
 			token,
@@ -196,7 +115,7 @@ export const getUserFromAPI = async (
 			fetchOptions
 		);
 		// errors
-		assertUserResponce(data);
+		assertSuccessfulResponse<User>(data, 'User');
 		// all Ok
 		return data;
 	} catch (error) {
@@ -208,7 +127,7 @@ export const getUserFromAPI = async (
 
 export const logoutUserFromAPI = async (
 	token: string
-): Promise<SuccessfullUserRequest | FailedRequest> => {
+): Promise<SuccessfulLogoutResponse> => {
 	try {
 		const fetchOptions: FetchRequestOptions = {
 			token,
@@ -218,7 +137,61 @@ export const logoutUserFromAPI = async (
 			FETCH_ACTION_TYPES.DELETE,
 			fetchOptions
 		);
-		assertUserLogoutResponce(data);
+		if (!isFetchSuccess(data)) {
+			throw new Error('🛑 Error during logout');
+		}
+		return data as SuccessfulLogoutResponse;
+	} catch (error) {
+		console.error(error);
+		throw error;
+	}
+};
+
+export const sendNewCourseToAPI = async (
+	token: string
+): Promise<SuccessfulAddCourseResponse> => {
+	// /courses/add
+	try {
+		const fetchOptions: FetchRequestOptions = {
+			token,
+			queryData: {
+				title: 'New course',
+				description: 'New course description',
+				duration: 100,
+				authors: ['27cc3006-e93a-4748-8ca8-73d06aa93b6d'],
+			},
+		};
+		const data = await fetchRequest(
+			'http://localhost:4000/courses/add',
+			FETCH_ACTION_TYPES.ADD_NEW_COURSE,
+			fetchOptions
+		);
+		assertSuccessfulResponse<Course>(data, 'Course');
+		return data;
+	} catch (error) {
+		console.error(error);
+		throw error;
+	}
+};
+
+export const sendNewAuthorToAPI = async (
+	token: string,
+	name: string
+): Promise<SuccessfulAddAuthorResponse> => {
+	// /authors/add
+	try {
+		const fetchOptions: FetchRequestOptions = {
+			token,
+			queryData: {
+				name,
+			},
+		};
+		const data = await fetchRequest(
+			'http://localhost:4000/authors/add',
+			FETCH_ACTION_TYPES.ADD_NEW_AUTHOR,
+			fetchOptions
+		);
+		assertSuccessfulResponse<Author>(data, 'Author');
 		return data;
 	} catch (error) {
 		console.error(error);

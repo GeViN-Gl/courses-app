@@ -13,6 +13,7 @@ import { Course } from '../../store/courses/reducer';
 import { CoursesContainer } from './Courses.styles';
 import { useThunkDispatch } from '../../helpers/hooks/useThunkDispath';
 import { fetchUserAsync } from '../../store/user/thunk';
+import { sendNewAuthorToAPI, sendNewCourseToAPI } from '../../servises';
 
 const Courses: FC = () => {
 	const filterField: string = useSelector(selectFilterField);
@@ -44,7 +45,14 @@ const Courses: FC = () => {
 	const token = useSelector(selectCurrentUserToken);
 	//TODO: remove this test function
 	const handleTest = (event: MouseEvent<HTMLButtonElement>) => {
-		thunkDispatch(fetchUserAsync(token));
+		// thunkDispatch(fetchUserAsync(token));
+		async function test() {
+			// const responceC = await sendNewCourseToAPI(token);
+			const responceA = await sendNewAuthorToAPI(token, 'test author name');
+			// console.log('responceC:', responceC);
+			console.log('responceA:', responceA);
+		}
+		test();
 	};
 
 	return (

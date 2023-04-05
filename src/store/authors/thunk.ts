@@ -1,20 +1,11 @@
 import { ThunkDispatch } from 'redux-thunk';
-import { FailedRequest } from '../../helpers/dataFetchers';
-import { SuccessfullAuthorRequest, getAllAuthorsFromAPI } from '../../servises';
+import { getAllAuthorsFromAPI } from '../../servises';
 import {
 	fetchAuthorsFailure,
 	fetchAuthorsStart,
 	fetchAuthorsSuccess,
 } from './actionCreators';
 import { AnyAction } from 'redux';
-
-function assertAuthorsResponce(
-	data: SuccessfullAuthorRequest | FailedRequest
-): asserts data is SuccessfullAuthorRequest {
-	if (!data.successful) {
-		throw new Error(`${data.result}`);
-	}
-}
 
 // TODO: mayby add stronger types
 // {} specifies the type of the Redux state object
@@ -28,7 +19,7 @@ export const fetchAuthorsAsync = () => {
 		dispatch(fetchAuthorsStart());
 		try {
 			const data = await getAllAuthorsFromAPI();
-			assertAuthorsResponce(data);
+
 			dispatch(fetchAuthorsSuccess(data.result));
 		} catch (error) {
 			dispatch(fetchAuthorsFailure(error as Error));

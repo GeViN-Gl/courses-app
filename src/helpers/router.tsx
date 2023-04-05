@@ -1,7 +1,6 @@
 import {
 	createBrowserRouter,
 	createRoutesFromElements,
-	Navigate,
 	Route,
 } from 'react-router-dom';
 
@@ -12,12 +11,29 @@ import CourseInfo from '../components/CourseInfo/CourseInfo';
 import Courses from '../components/Courses/Courses';
 import Login from '../components/Courses/component/Login/Login';
 import Registration from '../components/Courses/component/Registration/Registration';
+import PrivateRoute from '../components/PrivateRouter/PrivateRouter';
 
 const router = createBrowserRouter(
 	createRoutesFromElements(
 		<>
 			<Route path='/' element={<Header />}>
-				<Route path='courses/add' element={<CourseForm />} />
+				<Route
+					path='courses/add'
+					element={
+						<PrivateRoute>
+							<CourseForm />
+						</PrivateRoute>
+					}
+				/>
+				<Route
+					path='/courses/update/:courseId'
+					element={
+						<PrivateRoute>
+							<CourseForm />
+						</PrivateRoute>
+					}
+					// loader={loader}
+				/>
 				<Route path='courses/*'>
 					<Route index element={<Courses />} />
 					<Route path=':courseId' element={<CourseInfo />} />

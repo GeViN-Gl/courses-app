@@ -1,20 +1,11 @@
 import { ThunkDispatch } from 'redux-thunk';
-import { FailedRequest } from '../../helpers/dataFetchers';
-import { SuccessfullUserRequest, getUserFromAPI } from '../../servises';
+import { getUserFromAPI } from '../../servises';
 import {
 	fetchUserStart,
 	fetchUserSuccess,
 	fetchUserFailure,
 } from './actionCreators';
 import { AnyAction } from 'redux';
-
-function assertUserResponce(
-	data: SuccessfullUserRequest | FailedRequest
-): asserts data is SuccessfullUserRequest {
-	if (!data.successful) {
-		throw new Error(`${data.result}`);
-	}
-}
 
 // TODO: mayby add stronger types
 // {} specifies the type of the Redux state object
@@ -28,7 +19,7 @@ export const fetchUserAsync = (token: string) => {
 		dispatch(fetchUserStart());
 		try {
 			const data = await getUserFromAPI(token);
-			assertUserResponce(data);
+
 			dispatch(fetchUserSuccess(data.result));
 		} catch (error) {
 			dispatch(fetchUserFailure(error as Error));

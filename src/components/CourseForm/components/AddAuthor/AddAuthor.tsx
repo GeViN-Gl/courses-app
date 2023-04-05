@@ -7,20 +7,30 @@ import { CustomTitle as Title } from '../../../../common/CustomTitle/CustomTitle
 
 import { useState, ChangeEvent, MouseEvent, FC } from 'react';
 
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { addAuthorToList } from '../../../../store/authors/actionCreators';
 
 import { Author } from '../../../../store/authors/reducer';
 import { AnyAction, Dispatch } from 'redux';
+import { sendNewAuthorToAPI } from '../../../../servises';
+import { selectCurrentUserToken } from '../../../../store/user/selectors';
 
 const AddAuthor: FC = () => {
 	const [inputValue, setInputValue] = useState('');
 
 	const dispatch: Dispatch<AnyAction> = useDispatch();
+	const token = useSelector(selectCurrentUserToken);
 
 	const inputHandler = (event: ChangeEvent<HTMLInputElement>) => {
 		event.preventDefault();
 		setInputValue(event.target.value);
+	};
+
+	const addAuthorAsyncHandler = async (name: string) => {
+		if (!name) return;
+		const newAuthorResponce = await sendNewAuthorToAPI(token, name);
+		console.log('newAuthorResponce:', newAuthorResponce);
+		if (newAuthorResponce.successful) return newAuthorResponce.result;
 	};
 
 	const newAuthorButtonHandler = (event: MouseEvent<HTMLButtonElement>) => {
@@ -29,14 +39,22 @@ const AddAuthor: FC = () => {
 			return;
 		}
 
-		const newAuthor: Author = {
-			id: crypto.randomUUID(),
-			name: inputValue,
-		};
-
-		dispatch(addAuthorToList(newAuthor));
-
-		setInputValue('');
+		// change
+		// first i just send author name to backend
+		// then backend returns both id and name
+		// if there are no error i dispatch action to add new author to store
+		// in this way state and back will be in sync
+		// as this will be async i will need to move this to separate function
+		addAuthorAsyncHandler(inputValue)
+			.then((newAuthor) => {
+				if (newAuthor) {
+					dispatch(addAuthorToList(newAuthor));
+					setInputValue('');
+				}
+			})
+			.catch((error) => {
+				console.log('Error while adding new author:', error);
+			});
 	};
 
 	return (

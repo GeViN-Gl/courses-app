@@ -36,9 +36,18 @@ import {
 // type imports
 import { Course } from '../../store/courses/reducer';
 
-import { useNavigate, Link, NavigateFunction } from 'react-router-dom';
+import {
+	useNavigate,
+	Link,
+	NavigateFunction,
+	useParams,
+	useLocation,
+} from 'react-router-dom';
 import { toastNotify } from '../../helpers/toastNotify';
 import { AnyAction, Dispatch } from 'redux';
+import { selectCoursesList } from '../../store/courses/selectors';
+import { toHoursAndMinutes } from '../../helpers/timeConvert';
+import { getArrayWithAuthors } from '../../helpers/customArrayFuncs';
 
 const getCurrentDate = () => {
 	const today = new Date();
@@ -51,22 +60,19 @@ const getCurrentDate = () => {
 const CourseForm: FC = () => {
 	const dispatch: Dispatch<AnyAction> = useDispatch();
 	const navigate: NavigateFunction = useNavigate();
+	// react-router-dom vars
+	const { courseId } = useParams();
+	const currentLocation = useLocation();
+
 	// redux vars
 	const courseTitle = useSelector(selectCourseTitle);
 	const courseDescription = useSelector(selectCourseDescription);
 	const addedAuthorsList = useSelector(selectAddedAuthorsList);
 	const timeMinutes = useSelector(selectTimeMinutes);
+	const coursesList = useSelector(selectCoursesList);
 
-	const clearFormFields = () => {
-		dispatch(setCourseTitle(''));
-		dispatch(setCourseDescription(''));
-		dispatch(setAddedAuthorsList([])); // no need to set NotAdded, i have useEffect that care about it
-		dispatch(setTimeMinutes(0));
-		dispatch(setTimeHours('00:00'));
-	};
-
+	// local state
 	const [isReadyToAddNewCourse, setIsReadyToAddNewCourse] = useState(false);
-
 	//
 	const defaultCourseObj: Course = {
 		id: '',
@@ -76,8 +82,27 @@ const CourseForm: FC = () => {
 		duration: 0,
 		authors: [],
 	};
-
 	const [courseObj, setCourseObj] = useState<Course>(defaultCourseObj);
+
+	// mode detection
+	type Mode = 'ADD' | 'UPDATE';
+	let mode: Mode = 'ADD';
+	if (currentLocation.pathname.includes('add')) {
+		mode = 'ADD';
+	}
+	if (currentLocation.pathname.includes('update')) {
+		mode = 'UPDATE';
+	}
+	console.log(mode);
+
+	// helpers
+	const clearFormFields = () => {
+		dispatch(setCourseTitle(''));
+		dispatch(setCourseDescription(''));
+		dispatch(setAddedAuthorsList([])); // no need to set NotAdded, i have useEffect that care about it
+		dispatch(setTimeMinutes(0));
+		dispatch(setTimeHours('00:00'));
+	};
 
 	// useEffect to balance added / NOTadded authorLists
 	const authorsList = useSelector(selectAuthorsList);
@@ -110,6 +135,48 @@ const CourseForm: FC = () => {
 		};
 		setCourseObj(newCourseObj);
 	}, [courseTitle, courseDescription, addedAuthorsList, timeMinutes]);
+
+	// on mount if mode is UPDATE regenerate courseObj
+	useEffect(() => {
+		// rehydrating courseObj
+		if (mode === 'UPDATE') {
+			if (!courseId) {
+				throw new Error('Error: courseId is undefined');
+			}
+
+			const courseToUpdate = coursesList.find(
+				(course) => course.id === courseId
+			);
+
+			if (courseToUpdate) {
+				console.log(`Start rehydrating courseObj`);
+				const addedAuthorsIdToUpdate = getArrayWithAuthors(
+					authorsList,
+					courseToUpdate.authors
+				);
+
+				dispatch(setCourseTitle(courseToUpdate.title));
+				dispatch(setCourseDescription(courseToUpdate.description));
+				if (addedAuthorsIdToUpdate)
+					// if there are authors
+					dispatch(setAddedAuthorsList(addedAuthorsIdToUpdate)); // no need to set NotAdded, i have useEffect that care about it
+
+				dispatch(setTimeMinutes(courseToUpdate.duration));
+				dispatch(setTimeHours(toHoursAndMinutes(courseToUpdate.duration)));
+
+				const newCourseObj: Course = {
+					id: courseToUpdate.id,
+					title: courseToUpdate.title,
+					description: courseToUpdate.description,
+					creationDate: courseToUpdate.creationDate,
+					duration: courseToUpdate.duration,
+					authors: courseToUpdate.authors,
+				};
+				console.log('newCourseObj:', newCourseObj);
+				setCourseObj(newCourseObj);
+			}
+		}
+	}, []);
 
 	// useEffect to check if current course object is ready to be added
 	useEffect(() => {
@@ -163,7 +230,11 @@ const CourseForm: FC = () => {
 					value={courseTitle}
 				/>
 			</TitleInput>
-			<Button onClick={createCourseButtonHandler}>Create course</Button>
+			{mode === 'UPDATE' ? (
+				<Button>Update course</Button>
+			) : (
+				<Button onClick={createCourseButtonHandler}>Create course</Button>
+			)}
 			<DescriptionInput>
 				<Input
 					isTextArea={true}

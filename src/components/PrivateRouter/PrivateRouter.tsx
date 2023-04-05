@@ -1,23 +1,20 @@
-import React, { ComponentType } from 'react';
-import { Navigate, Route } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { Navigate } from 'react-router-dom';
+import { selectCurrentUserRole } from '../../store/user/selectors';
 
-interface PrivateRouteProps {
-	path: string;
-	isAuthenticated: boolean;
-	component: ComponentType<any>;
+interface PrivateRouterProps {
+	children?: React.ReactNode;
 }
 
-const PrivateRouter: React.FC<PrivateRouteProps> = ({
-	component: Component,
-	isAuthenticated,
-	...rest
-}) => (
-	<Route
-		{...rest}
-		element={
-			isAuthenticated ? <Component /> : <Navigate to='/courses' replace />
-		}
-	/>
-);
-// When the replace prop is set to true, it replaces the current entry in the history stack
-export default PrivateRouter;
+// It`s not routeR, like in task description, but just route, so i call it PrivateRoute
+const PrivateRoute: React.FC<PrivateRouterProps> = ({ children }) => {
+	const userRole = useSelector(selectCurrentUserRole);
+
+	if (userRole === 'admin') {
+		return <>{children}</>;
+	} else {
+		return <Navigate to={'/courses'} />;
+	}
+};
+
+export default PrivateRoute;

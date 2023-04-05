@@ -18,6 +18,7 @@ import Button, { BUTTON_TYPES_CLASSES } from '../../common/Button/Button';
 
 import { useSelector, useDispatch } from 'react-redux';
 import {
+	selectCurrentUserRole,
 	selectCurrentUserIsAuth,
 	selectCurrentUserName,
 	selectCurrentUserToken,
@@ -29,6 +30,8 @@ import {
 import { AnyAction, Dispatch } from 'redux';
 import { logoutUserFromAPI } from '../../servises';
 import { toastNotify } from '../../helpers/toastNotify';
+import { useThunkDispatch } from '../../helpers/hooks/useThunkDispath';
+import { fetchUserAsync } from '../../store/user/thunk';
 
 const Header: FC = () => {
 	const navigate: NavigateFunction = useNavigate();
@@ -37,54 +40,18 @@ const Header: FC = () => {
 
 	const isUserAuth = useSelector(selectCurrentUserIsAuth);
 	const userName = useSelector(selectCurrentUserName);
+	const userRole = useSelector(selectCurrentUserRole);
 	const userToken = useSelector(selectCurrentUserToken);
 	const dispatch: Dispatch<AnyAction> = useDispatch();
+	const thunkDispatch = useThunkDispatch();
 
-	const currentLocation = useLocation(); //Where am i?
-	useEffect(() => {
-		if (
-			currentLocation.pathname.includes('login') ||
-			currentLocation.pathname.includes('registration')
-		) {
-			setOnAuthPages(true);
-		} else {
-			setOnAuthPages(false);
-		}
-	}, [currentLocation]);
-
-	// On first render, App should check if token exists in localStorage.
-	// If token exists, App should set it to the store.
-	type LocalToken = string | null;
-	useEffect(() => {
-		const localToken: LocalToken = localStorage.getItem('userToken');
-		const isLocalTokenExist = (localToken: LocalToken): localToken is string =>
-			localToken !== null;
-		if (isLocalTokenExist(localToken)) {
-			dispatch(setCurrentUserToken(localToken));
-		}
-	}, [dispatch]);
-
-	// If token exists, App should navigate to /courses.
-	// If token doesn't exist, App should navigate to /login.
-	// TODO: there is must be some logic to pull user credentials from server
-	// TODO: userToken from selector may cause unexpected rerendering, need to check
-	useEffect(() => {
-		if (localStorage.getItem('userToken')) {
-			navigate('/courses');
-		} else {
-			navigate('/login');
-		}
-		// i dont need navigate in dependency
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [userToken]);
-
+	// HANDLERS
 	const logoutHandler = async (): Promise<void> => {
 		// first check is user logged in
 		if (!isUserAuth) {
 			return;
 		}
 		// if user logged in, then logout
-		console.log('userToken: HEADER', userToken);
 		const { successful } = await logoutUserFromAPI(userToken);
 		if (successful) {
 			localStorage.removeItem('userToken');
@@ -107,6 +74,68 @@ const Header: FC = () => {
 			navigate('/login');
 		}
 	};
+
+	// EFFECTS
+
+	// On first render, App should check if token exists in localStorage.
+	// If token exists, App should set it to the store.
+	type LocalToken = string | null;
+	useEffect(() => {
+		let localToken: LocalToken = localStorage.getItem('userToken');
+		if (localToken) {
+			localToken = JSON.parse(localToken);
+		}
+		const isLocalTokenExist = (localToken: LocalToken): localToken is string =>
+			localToken !== null;
+		if (isLocalTokenExist(localToken)) {
+			dispatch(setCurrentUserToken(localToken));
+		}
+	}, [dispatch]);
+
+	// If token exists, App should navigate to /courses.
+	// If token doesn't exist, App should navigate to /login.
+	// TODO: there is must be some logic to pull user credentials from server
+	// TODO: userToken from selector may cause unexpected rerendering, need to check
+	// REDO
+	// if there is a token try to get user data from server,
+	// in case of success navigate to /courses and set user data to store
+	// also this useEffec will be called on every userToken change
+	// this will handle login behavior
+	useEffect(() => {
+		if (userToken && userToken.includes('Bearer')) {
+			console.log('userToken is valid');
+			thunkDispatch(fetchUserAsync(userToken));
+		} else {
+			navigate('/login');
+		}
+		// i dont need navigate in dependency
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [userToken]);
+
+	// When i successfully login, store user isAuth changes to true
+	// then i need to navigate to /courses
+	useEffect(() => {
+		if (isUserAuth) {
+			console.log('isUserAuth: ', isUserAuth);
+			console.log('user role: ', userRole);
+			navigate('/courses');
+		}
+	}, [isUserAuth]);
+
+	// show/hide logIN(OUT) button
+	const currentLocation = useLocation(); //Where am i?
+	useEffect(() => {
+		if (
+			currentLocation.pathname.includes('login') ||
+			currentLocation.pathname.includes('registration')
+		) {
+			setOnAuthPages(true);
+		} else {
+			setOnAuthPages(false);
+		}
+	}, [currentLocation]);
+
+	// RENDER
 
 	return (
 		<>

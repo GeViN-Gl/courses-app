@@ -3,10 +3,12 @@ export enum FETCH_ACTION_TYPES {
 	POST = 'POST',
 	GET_WITH_AUTH = 'GET_WITH_AUTH',
 	DELETE = 'DELETE',
+	ADD_NEW_COURSE = 'ADD_NEW_COURSE',
+	ADD_NEW_AUTHOR = 'ADD_NEW_AUTHOR',
 }
 
 export type QueryParams = {
-	[key: string]: string;
+	[key: string]: string | string[] | number;
 };
 
 export type SuccessfulRequest = {
@@ -80,6 +82,20 @@ export const fetchRequest = async (
 					},
 				});
 				break;
+			case FETCH_ACTION_TYPES.ADD_NEW_AUTHOR:
+			case FETCH_ACTION_TYPES.ADD_NEW_COURSE:
+				if (!options.queryData || !options.token) {
+					throw new Error('No query data or token provided');
+				}
+				request = new Request(url, {
+					method: 'POST',
+					headers: {
+						Authorization: options.token,
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify(options.queryData),
+				});
+				break;
 
 			default: //GET
 				request = new Request(url);
@@ -87,11 +103,10 @@ export const fetchRequest = async (
 		}
 
 		const response = await fetch(request);
-		console.log('response:', response);
+		// console.log('response:', response);
 		// Logout bechaivour is strange, it returns 200 and successful: false
 		// so i handle it here separately
 		if (response.ok && action === FETCH_ACTION_TYPES.DELETE) {
-			console.log('case: DELETE');
 			return {
 				successful: true,
 				result: 'Logout successful',
@@ -100,7 +115,7 @@ export const fetchRequest = async (
 		// -------
 		const responcedData: SuccessfulRequest | FailedRequest =
 			await response.json();
-		console.log('responcedData:', responcedData);
+		// console.log('responcedData:', responcedData);
 
 		// errors handling
 		if (!isFetchSuccess(responcedData)) {

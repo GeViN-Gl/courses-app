@@ -30,6 +30,7 @@ export type UpdateCourseInList = ActionWithPayload<
 	Course
 >;
 // Action types using Thunk
+// Fetch all courses
 export type FetchCoursesStart =
 	Action<COURSES_ACTION_TYPES.FETCH_COURSES_START>;
 export type FetchCoursesSuccess = ActionWithPayload<
@@ -64,6 +65,7 @@ export const updateCourseInList = withMatcher(
 );
 
 // Action Thunks
+// Fetch all courses
 export const fetchCoursesStart = withMatcher(
 	(): FetchCoursesStart =>
 		createAction(COURSES_ACTION_TYPES.FETCH_COURSES_START)

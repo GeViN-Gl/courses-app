@@ -5,12 +5,7 @@ import Button from '../../../../common/Button/Button';
 
 import { Link, NavigateFunction, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import {
-	setCurrentUserName,
-	setCurrentUserEmail,
-	setCurrentUserIsAuth,
-	setCurrentUserToken,
-} from '../../../../store/user/actionCreators';
+import { setCurrentUserToken } from '../../../../store/user/actionCreators';
 
 import { ChangeEvent, FC, FormEvent, useState, MouseEvent } from 'react';
 
@@ -68,7 +63,6 @@ const Login: FC = () => {
 			// Success
 			if (isFetchSuccess(data)) {
 				toastNotify('🟢 Login successful');
-				console.log(data);
 				return data;
 			}
 			// Errors
@@ -107,9 +101,6 @@ const Login: FC = () => {
 			.then((data) => {
 				if (data !== null && isUserExist(data)) {
 					localStorage.setItem('userToken', JSON.stringify(data.result));
-					dispatch(setCurrentUserIsAuth(true));
-					dispatch(setCurrentUserName(data.user.name));
-					dispatch(setCurrentUserEmail(data.user.email));
 					dispatch(setCurrentUserToken(data.result));
 					navigate('/courses');
 					resetFormFields();

@@ -17,18 +17,19 @@ const AuthorCarts: FC = () => {
 		<AllAuthorCards>
 			<Title>Authors</Title>
 			<AuthorCardsContainer>
+				{!notAddedAuthorsList.length && <span>Author list is empty</span>}
 				{notAddedAuthorsList.map((author) => (
 					<AuthorCard isAdd={true} key={author.id} author={author} />
 				))}
 			</AuthorCardsContainer>
-			{!notAddedAuthorsList.length && <span>Author list is empty</span>}
+
 			<Title>Course authors</Title>
 			<AuthorCardsContainer>
+				{!addedAuthorsList.length && <span>Author list is empty</span>}
 				{addedAuthorsList.map((author) => (
 					<AuthorCard isAdd={false} key={author.id} author={author} />
 				))}
 			</AuthorCardsContainer>
-			{!addedAuthorsList.length && <span>Author list is empty</span>}
 		</AllAuthorCards>
 	);
 };

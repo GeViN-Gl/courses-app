@@ -8,7 +8,7 @@ import {
 import Button from '../../../../common/Button/Button';
 import { toHoursAndMinutes } from '../../../../helpers/timeConvert';
 
-import { NavigateFunction, useNavigate } from 'react-router-dom';
+import { Navigate, NavigateFunction, useNavigate } from 'react-router-dom';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { Course } from '../../../../store/courses/reducer';
@@ -35,22 +35,12 @@ const CourseCard: FC<CourseCardProps> = ({ course }) => {
 	const navigate: NavigateFunction = useNavigate();
 
 	const showCourseNavigateHandler = () => navigate(id);
+
 	const deleteCourseButtonHandler = (event: MouseEvent<HTMLButtonElement>) => {
 		dispatch(deleteCourseFromList(id));
 	};
 	const updateCourseButtonHandler = (event: MouseEvent<HTMLButtonElement>) => {
-		// fake data to test reducer action
-		// will NOT cause rerender
-		dispatch(
-			updateCourseInList({
-				title: ' JS fake update title',
-				description: 'fake update description',
-				creationDate: '30/02/2021',
-				duration: 42,
-				authors: ['9b87e8b8-6ba5-40fc-a439-c4e30a373d36'],
-				id: 'de5aaa59-90f5-4dbc-b8a9-aaf205c551ba',
-			})
-		);
+		navigate(`update/${id}`);
 	};
 
 	return (
