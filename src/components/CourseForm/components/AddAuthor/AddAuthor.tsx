@@ -17,7 +17,6 @@ const AddAuthor: FC = () => {
 	const [inputValue, setInputValue] = useState('');
 
 	const dispatch: Dispatch<AnyAction> = useDispatch();
-	// const authorsList = useSelector(selectAuthorsList);
 
 	const inputHandler = (event: ChangeEvent<HTMLInputElement>) => {
 		event.preventDefault();

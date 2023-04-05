@@ -1,6 +1,7 @@
 export enum FETCH_ACTION_TYPES {
-	GET = 'get',
-	POST = 'post',
+	GET = 'GET',
+	POST = 'POST',
+	GET_WITH_AUTH = 'GET_WITH_AUTH',
 }
 
 export type QueryParams = {
@@ -26,29 +27,57 @@ export type FailedRequest = {
 export const isFetchSuccess = (data: any): data is SuccessfulRequest =>
 	data.successful === true;
 
+export type FetchRequestOptions = {
+	queryData?: QueryParams;
+	token?: string;
+};
+
 export const fetchRequest = async (
 	url: string,
 	action: FETCH_ACTION_TYPES = FETCH_ACTION_TYPES.GET,
-	postData?: QueryParams
+	options: FetchRequestOptions = {}
 ): Promise<SuccessfulRequest | FailedRequest> => {
 	try {
 		let request: Request;
-		if (action === FETCH_ACTION_TYPES.POST) {
-			request = new Request(url, {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify(postData),
-			});
-		} else {
-			//action === FETCH_ACTION_TYPES.GET
-			request = new Request(url);
+
+		switch (action) {
+			case FETCH_ACTION_TYPES.GET:
+				request = new Request(url);
+				break;
+
+			case FETCH_ACTION_TYPES.POST:
+				if (!options.queryData) {
+					throw new Error('No query data provided');
+				}
+				request = new Request(url, {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify(options.queryData),
+				});
+				break;
+
+			case FETCH_ACTION_TYPES.GET_WITH_AUTH:
+				if (!options.token) {
+					throw new Error('No token provided');
+				}
+				request = new Request(url, {
+					headers: {
+						Authorization: options.token,
+					},
+				});
+				break;
+
+			default: //GET
+				request = new Request(url);
+				break;
 		}
 
 		const response = await fetch(request);
 		const responcedData: SuccessfulRequest | FailedRequest =
 			await response.json();
+		console.log('responcedData:', responcedData);
 
 		// errors handling
 		if (!isFetchSuccess(responcedData)) {

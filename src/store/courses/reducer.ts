@@ -5,6 +5,9 @@ import {
 	addNewCourseToList,
 	deleteCourseFromList,
 	updateCourseInList,
+	fetchCoursesStart,
+	fetchCoursesSuccess,
+	fetchCoursesFailure,
 } from './actionCreators';
 
 export type Course = {
@@ -19,11 +22,15 @@ export type Course = {
 export type CourseState = {
 	readonly coursesList: Course[];
 	readonly filterField: string;
+	readonly isLoading: boolean;
+	readonly error: Error | null;
 };
 
 const INITIAL_STATE: CourseState = {
 	coursesList: [],
 	filterField: '',
+	isLoading: false,
+	error: null,
 };
 
 export const coursesReducer = (state = INITIAL_STATE, action: AnyAction) => {
@@ -59,16 +66,15 @@ export const coursesReducer = (state = INITIAL_STATE, action: AnyAction) => {
 			coursesList: newCoursesList,
 		};
 	}
+	// thunk actions
+	if (fetchCoursesStart.match(action)) {
+		return { ...state, isLoading: true };
+	}
+	if (fetchCoursesSuccess.match(action)) {
+		return { ...state, isLoading: false, coursesList: action.payload };
+	}
+	if (fetchCoursesFailure.match(action)) {
+		return { ...state, isLoading: false, error: action.payload };
+	}
 	return state;
 };
-
-/*
-
-courses: [], // list of courses. Default value - empty array. After
-success getting courses - value from API /courses/all response. See Swagger.
-
-Save new course.
-Delete course.
-Update course.
-Get courses. Save courses to store after getting them from API. See Swagger /courses/all.
-*/

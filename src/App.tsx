@@ -2,7 +2,7 @@ import './App.scss';
 
 import Header from './components/Header/Header';
 import Courses from './components/Courses/Courses';
-import CreateCourse from './components/CreateCourse/CreateCourse';
+import CourseForm from './components/CourseForm/CourseForm';
 import Registration from './components/Courses/component/Registration/Registration';
 import Login from './components/Courses/component/Login/Login';
 import CourseInfo from './components/CourseInfo/CourseInfo';
@@ -12,16 +12,12 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import { Routes, Route } from 'react-router-dom';
 import React, { FC, useEffect } from 'react';
-import {
-	SuccessfullCourseRequest,
-	SuccessfullAuthorRequest,
-	getAllAuthorsFromAPI,
-	getAllCoursesFromAPI,
-} from './servises';
-import { useDispatch } from 'react-redux';
-import { setAuthorsList } from './store/authors/actionCreators';
-import { setCoursesList } from './store/courses/actionCreators';
-import { FailedRequest } from './helpers/dataFetchers';
+
+import { fetchAuthorsAsync } from './store/authors/thunk';
+import { useThunkDispatch } from './helpers/hooks/useThunkDispath';
+import { fetchCoursesAsync } from './store/courses/thunk';
+
+//TODO migrate to 6.4 createBrowserRouter
 
 // fix for crypto
 // github.com/denoland/deno/issues/12754
@@ -35,49 +31,21 @@ export {};
 // this useEffect triggers fetching of authors list
 
 const App: FC = () => {
-	const dispatch = useDispatch();
-	useEffect(() => {
-		// typeguard for authors list
-		const isAuthorsFetchSuccess = (
-			data: SuccessfullAuthorRequest | FailedRequest
-		): data is SuccessfullAuthorRequest => data.successful;
+	const thuckDispatch = useThunkDispatch();
 
-		async function getAuthorFromBack(): Promise<void> {
-			try {
-				const data = await getAllAuthorsFromAPI();
-				if (isAuthorsFetchSuccess(data)) {
-					dispatch(setAuthorsList(data.result));
-				}
-			} catch (error) {
-				console.error(error);
-			}
-		}
-		getAuthorFromBack();
-	}, [dispatch]);
-	// this useEffect triggers rerendering of courses list
+	// this two useEffects triggers fetching of authors list and courses list
 	useEffect(() => {
-		// typeguard for courses list
-		const isCoursesFetchSuccess = (
-			data: SuccessfullCourseRequest | FailedRequest
-		): data is SuccessfullCourseRequest => data.successful;
+		thuckDispatch(fetchAuthorsAsync());
+	}, [thuckDispatch]);
+	useEffect(() => {
+		thuckDispatch(fetchCoursesAsync());
+	}, [thuckDispatch]);
 
-		async function getCoursesFromBack(): Promise<void> {
-			try {
-				const data = await getAllCoursesFromAPI();
-				if (isCoursesFetchSuccess(data)) {
-					dispatch(setCoursesList(data.result));
-				}
-			} catch (error) {
-				console.error(error);
-			}
-		}
-		getCoursesFromBack();
-	}, [dispatch]);
 	return (
 		<>
 			<Routes>
 				<Route path='/' element={<Header />}>
-					<Route path='courses/add' element={<CreateCourse />} />
+					<Route path='courses/add' element={<CourseForm />} />
 					<Route path='courses/*'>
 						<Route index element={<Courses />} />
 						<Route path=':courseId' element={<CourseInfo />} />

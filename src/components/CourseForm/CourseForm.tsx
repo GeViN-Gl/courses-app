@@ -6,7 +6,7 @@ import {
 	AddAuthorBox,
 	DurationBox,
 	CourseAuthorsBox,
-} from './CreateCourse.styles';
+} from './CourseForm.styles';
 import Input from '../../common/Input/Input';
 import Button from '../../common/Button/Button';
 import AuthorCarts from './components/AuthorCarts/AuthorCarts';
@@ -48,7 +48,7 @@ const getCurrentDate = () => {
 	return `${day}/${month}/${year}`;
 };
 
-const CreateCourse: FC = () => {
+const CourseForm: FC = () => {
 	const dispatch: Dispatch<AnyAction> = useDispatch();
 	const navigate: NavigateFunction = useNavigate();
 	// redux vars
@@ -188,4 +188,4 @@ const CreateCourse: FC = () => {
 	);
 };
 
-export default CreateCourse;
+export default CourseForm;

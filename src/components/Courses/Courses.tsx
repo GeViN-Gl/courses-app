@@ -1,15 +1,18 @@
 import CourseCard from './component/CourseCard/CourseCard';
 import SearchBar from './component/SearchBar/SearchBar';
 
-import { FC, useEffect, useState } from 'react';
+import { FC, useEffect, useState, MouseEvent } from 'react';
 import { useSelector } from 'react-redux';
 import {
 	selectFilterField,
 	selectCoursesList,
 } from '../../store/courses/selectors';
+import { selectCurrentUserToken } from '../../store/user/selectors';
 import { Course } from '../../store/courses/reducer';
 
 import { CoursesContainer } from './Courses.styles';
+import { useThunkDispatch } from '../../helpers/hooks/useThunkDispath';
+import { fetchUserAsync } from '../../store/user/thunk';
 
 const Courses: FC = () => {
 	const filterField: string = useSelector(selectFilterField);
@@ -37,8 +40,17 @@ const Courses: FC = () => {
 		setFilderedCoursesList(newFilderedCoursesList);
 	}, [filterField, coursesList]);
 
+	const thunkDispatch = useThunkDispatch();
+	const token = useSelector(selectCurrentUserToken);
+	//TODO: remove this test function
+	const handleTest = (event: MouseEvent<HTMLButtonElement>) => {
+		thunkDispatch(fetchUserAsync(token));
+		// console.log(data);
+	};
+
 	return (
 		<CoursesContainer>
+			<button onClick={handleTest}>Test</button>
 			<SearchBar />
 			{filderedCoursesList.map((course) => (
 				<CourseCard key={course.id} course={course} />

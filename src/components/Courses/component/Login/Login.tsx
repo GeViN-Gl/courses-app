@@ -12,13 +12,13 @@ import {
 	setCurrentUserToken,
 } from '../../../../store/user/actionCreators';
 
-import { ChangeEvent, FC, FormEvent, useState } from 'react';
+import { ChangeEvent, FC, FormEvent, useState, MouseEvent } from 'react';
 
 import {
 	FETCH_ACTION_TYPES,
 	fetchRequest,
+	FetchRequestOptions,
 	isFetchSuccess,
-	QueryParams,
 	SuccessfulRequest,
 } from '../../../../helpers/dataFetchers';
 import { toastNotify } from '../../../../helpers/toastNotify';
@@ -26,10 +26,15 @@ import { AnyAction, Dispatch } from 'redux';
 
 type LoginFormField = { name: string; email: string; password: string };
 
+// const defaultFormFields: LoginFormField = {
+// 	name: '',
+// 	email: '',
+// 	password: '',
+// };
 const defaultFormFields: LoginFormField = {
-	name: 'Test',
-	email: 'test@example.com',
-	password: '123123',
+	name: '',
+	email: 'admin@email.com',
+	password: 'admin123',
 };
 
 const Login: FC = () => {
@@ -51,16 +56,19 @@ const Login: FC = () => {
 
 	const fetchHandler = async (): Promise<SuccessfulRequest | null> => {
 		try {
-			const queryData: QueryParams = formFields; //recheck type i send to body
+			const fetchOptions: FetchRequestOptions = {
+				queryData: formFields,
+			};
 			const data = await fetchRequest(
 				'http://127.0.0.1:4000/login',
 				FETCH_ACTION_TYPES.POST,
-				queryData
+				fetchOptions
 			);
 
 			// Success
 			if (isFetchSuccess(data)) {
 				toastNotify('🟢 Login successful');
+				console.log(data);
 				return data;
 			}
 			// Errors
@@ -93,8 +101,7 @@ const Login: FC = () => {
 		};
 		const isUserExist = (
 			data: SuccessfulRequest
-		): data is SuccessfulRequestWithUser =>
-			!!data.user?.email && !!data.user?.name;
+		): data is SuccessfulRequestWithUser => !!data.user?.email;
 
 		fetchHandler()
 			.then((data) => {
@@ -111,35 +118,56 @@ const Login: FC = () => {
 			.catch((error) => console.error(error));
 	};
 
+	const adminCredHandler = (e: MouseEvent<HTMLButtonElement>) => {
+		e.preventDefault();
+		setFormFields({
+			...formFields,
+			email: 'admin@email.com',
+			password: 'admin123',
+		});
+	};
+	const userCredHandler = (e: MouseEvent<HTMLButtonElement>) => {
+		e.preventDefault();
+		setFormFields({
+			...formFields,
+			email: 'user@email.com',
+			password: 'user123',
+		});
+	};
+
 	return (
-		<LoginContainer>
-			<LoginForm onSubmit={submitFormHandler}>
-				<CustomTitle>Login</CustomTitle>
-				<Input
-					labelText='Email'
-					placeholderText='Enter email'
-					required
-					type='email'
-					onChange={inputChangeHandler}
-					name='email'
-					value={email}
-				/>
-				<Input
-					labelText='Password'
-					placeholderText='Enter password'
-					required
-					type='password'
-					onChange={inputChangeHandler}
-					name='password'
-					value={password}
-				/>
-				<Button>Login</Button>
-				<LoginFormText>
-					If you not have an account you can{' '}
-					<Link to='/registration'>Registration</Link>
-				</LoginFormText>
-			</LoginForm>
-		</LoginContainer>
+		<>
+			<button onClick={adminCredHandler}>admin cred</button>
+			<button onClick={userCredHandler}>user cred</button>
+			<LoginContainer>
+				<LoginForm onSubmit={submitFormHandler}>
+					<CustomTitle>Login</CustomTitle>
+					<Input
+						labelText='Email'
+						placeholderText='Enter email'
+						required
+						type='email'
+						onChange={inputChangeHandler}
+						name='email'
+						value={email}
+					/>
+					<Input
+						labelText='Password'
+						placeholderText='Enter password'
+						required
+						type='password'
+						onChange={inputChangeHandler}
+						name='password'
+						value={password}
+					/>
+					<Button>Login</Button>
+					<LoginFormText>
+						If you not have an account you can{' '}
+						<Link to='/registration'>Registration</Link>
+					</LoginFormText>
+				</LoginForm>
+			</LoginContainer>
+		</>
 	);
 };
 export default Login;

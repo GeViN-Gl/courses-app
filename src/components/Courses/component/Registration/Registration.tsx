@@ -14,8 +14,8 @@ import { Link, NavigateFunction, useNavigate } from 'react-router-dom';
 import {
 	FETCH_ACTION_TYPES,
 	fetchRequest,
+	FetchRequestOptions,
 	isFetchSuccess,
-	QueryParams,
 } from '../../../../helpers/dataFetchers';
 import { toastNotify } from '../../../../helpers/toastNotify';
 
@@ -44,11 +44,13 @@ const Registration: FC = () => {
 
 	const fetchHandler = async (): Promise<boolean> => {
 		try {
-			const queryData: QueryParams = formFields; //recheck type i send to body
+			const fetchOptions: FetchRequestOptions = {
+				queryData: formFields,
+			};
 			const data = await fetchRequest(
 				'http://127.0.0.1:4000/register',
 				FETCH_ACTION_TYPES.POST,
-				queryData
+				fetchOptions
 			);
 
 			// Success

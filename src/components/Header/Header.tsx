@@ -99,7 +99,7 @@ const Header: FC = () => {
 							// ASK strange prettier bechavior, have an Insert `⏎↹↹↹↹↹↹` error :(
 							// eslint-disable-next-line prettier/prettier
 							onClick={logInOutButtonHandler}>
-							{userName ? 'Logout' : 'Login'}
+							{isUserAuth ? 'Logout' : 'Login'}
 						</Button>
 					)}
 				</ElementContainer>
