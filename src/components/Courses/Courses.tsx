@@ -47,10 +47,15 @@ const Courses: FC = () => {
 	const handleTest = (event: MouseEvent<HTMLButtonElement>) => {
 		// thunkDispatch(fetchUserAsync(token));
 		async function test() {
-			// const responceC = await sendNewCourseToAPI(token);
-			const responceA = await sendNewAuthorToAPI(token, 'test author name');
-			// console.log('responceC:', responceC);
-			console.log('responceA:', responceA);
+			const responceC = await sendNewCourseToAPI(token, {
+				title: 'New course',
+				description: 'New course description',
+				duration: 100,
+				authors: ['27cc3006-e93a-4748-8ca8-73d06aa93b6d'],
+			});
+			// const responceA = await sendNewAuthorToAPI(token, 'test author name');
+			console.log('responceC:', responceC);
+			// console.log('responceA:', responceA);
 		}
 		test();
 	};

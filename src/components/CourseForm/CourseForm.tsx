@@ -4,7 +4,6 @@ import {
 	DescriptionInput,
 	AddAuthorContainer,
 	AddAuthorBox,
-	DurationBox,
 	CourseAuthorsBox,
 } from './CourseForm.styles';
 import Input from '../../common/Input/Input';
@@ -48,6 +47,8 @@ import { AnyAction, Dispatch } from 'redux';
 import { selectCoursesList } from '../../store/courses/selectors';
 import { toHoursAndMinutes } from '../../helpers/timeConvert';
 import { getArrayWithAuthors } from '../../helpers/customArrayFuncs';
+import { sendNewCourseToAPI } from '../../servises';
+import { selectCurrentUserToken } from '../../store/user/selectors';
 
 const getCurrentDate = () => {
 	const today = new Date();
@@ -70,6 +71,7 @@ const CourseForm: FC = () => {
 	const addedAuthorsList = useSelector(selectAddedAuthorsList);
 	const timeMinutes = useSelector(selectTimeMinutes);
 	const coursesList = useSelector(selectCoursesList);
+	const token = useSelector(selectCurrentUserToken);
 
 	// local state
 	const [isReadyToAddNewCourse, setIsReadyToAddNewCourse] = useState(false);
@@ -126,10 +128,10 @@ const CourseForm: FC = () => {
 		const authorsIdsList = addedAuthorsList.map((author) => author.id);
 
 		const newCourseObj: Course = {
-			id: crypto.randomUUID(),
+			id: '', // will be generated on server
 			title: courseTitle,
 			description: courseDescription,
-			creationDate: getCurrentDate(),
+			creationDate: '', // will be generated on server
 			duration: timeMinutes,
 			authors: authorsIdsList,
 		};
@@ -192,14 +194,45 @@ const CourseForm: FC = () => {
 		}
 	}, [courseObj]);
 
+	// async function to add new course via API
+	const addNewCourseAsyncHandler = async (
+		token: string,
+		courseToApi: {
+			title: string;
+			description: string;
+			duration: number;
+			authors: string[];
+		}
+	): Promise<Course | undefined> => {
+		if (!token || !courseToApi) return;
+		const newCourseResponse = await sendNewCourseToAPI(token, courseToApi);
+		console.log('newCourseResponse:', newCourseResponse);
+		if (newCourseResponse.successful) {
+			toastNotify('New course added successfully');
+			return newCourseResponse.result;
+		}
+	};
+
 	const createCourseButtonHandler = (event: MouseEvent<HTMLButtonElement>) => {
 		event.preventDefault();
 		if (!isReadyToAddNewCourse) {
 			toastNotify('Please fill all fields before creating new course');
 			return;
 		}
-
-		dispatch(addNewCourseToList(courseObj));
+		addNewCourseAsyncHandler(token, {
+			title: courseObj.title,
+			description: courseObj.description,
+			duration: courseObj.duration,
+			authors: courseObj.authors,
+		})
+			.then((newCourse) => {
+				if (newCourse) {
+					dispatch(addNewCourseToList(newCourse));
+				}
+			})
+			.catch((err) => {
+				console.error(err);
+			});
 
 		// clear fields
 		clearFormFields();
@@ -247,10 +280,8 @@ const CourseForm: FC = () => {
 			<AddAuthorContainer>
 				<AddAuthorBox>
 					<AddAuthor />
-				</AddAuthorBox>
-				<DurationBox>
 					<Duration />
-				</DurationBox>
+				</AddAuthorBox>
 				<CourseAuthorsBox>
 					<AuthorCarts />
 				</CourseAuthorsBox>

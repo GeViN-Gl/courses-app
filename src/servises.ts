@@ -12,28 +12,30 @@ import {
 import { Course } from './store/courses/reducer';
 import { Author } from './store/authors/reducer';
 import { User } from './store/user/reducer';
-type Logout = {};
 
 interface SuccessfulResponseBase {
 	successful: boolean;
 	result?: any;
 }
 
-interface SuccessfulAuthorResponse extends SuccessfulResponseBase {
-	result: Author[];
-}
-
-interface SuccessfulCourseResponse extends SuccessfulResponseBase {
-	result: Course[];
-}
-interface SuccessfulUserResponse extends SuccessfulResponseBase {
-	result: User;
+interface SuccessfulAddOrPutCourseResponse extends SuccessfulResponseBase {
+	result: Course;
 }
 interface SuccessfulAddAuthorResponse extends SuccessfulResponseBase {
 	result: Author;
 }
-interface SuccessfulAddCourseResponse extends SuccessfulResponseBase {
-	result: Course;
+interface SuccessfulCourseResponse extends SuccessfulResponseBase {
+	result: Course[];
+}
+interface SuccessfulAuthorResponse extends SuccessfulResponseBase {
+	result: Author[];
+}
+interface SuccessfulUserResponse extends SuccessfulResponseBase {
+	result: User;
+}
+//
+export interface SuccessfulLogoutResponse extends SuccessfulResponseBase {
+	result: string;
 }
 
 // TODO: unformat and remove comment
@@ -42,15 +44,12 @@ interface SuccessfulAddCourseResponse extends SuccessfulResponseBase {
 type SuccessfulResponse<T> =
 	// prettier-ignore
 	T extends Course
-	? SuccessfulAddCourseResponse	: T extends Author
-	? SuccessfulAddAuthorResponse	:	T extends Course[]
-	? SuccessfulCourseResponse		: T extends Author[]
-	? SuccessfulAuthorResponse		: T extends User
-	? SuccessfulUserResponse			: never;
+	? SuccessfulAddOrPutCourseResponse	: T extends Author
+	? SuccessfulAddAuthorResponse				:	T extends Course[]
+	? SuccessfulCourseResponse					: T extends Author[]
+	? SuccessfulAuthorResponse					: T extends User
+	? SuccessfulUserResponse						: never;
 
-export interface SuccessfulLogoutResponse extends SuccessfulResponseBase {
-	result: Logout;
-}
 //assertion functions
 //
 function assertSuccessfulResponse<T>(
@@ -148,18 +147,25 @@ export const logoutUserFromAPI = async (
 };
 
 export const sendNewCourseToAPI = async (
-	token: string
-): Promise<SuccessfulAddCourseResponse> => {
+	token: string,
+	courseToApi: {
+		title: string;
+		description: string;
+		duration: number;
+		authors: string[];
+	}
+): Promise<SuccessfulAddOrPutCourseResponse> => {
 	// /courses/add
 	try {
 		const fetchOptions: FetchRequestOptions = {
 			token,
-			queryData: {
-				title: 'New course',
-				description: 'New course description',
-				duration: 100,
-				authors: ['27cc3006-e93a-4748-8ca8-73d06aa93b6d'],
-			},
+			queryData: courseToApi,
+			// queryData: {
+			// 	title: 'New course',
+			// 	description: 'New course description',
+			// 	duration: 100,
+			// 	authors: ['27cc3006-e93a-4748-8ca8-73d06aa93b6d'],
+			// },
 		};
 		const data = await fetchRequest(
 			'http://localhost:4000/courses/add',
