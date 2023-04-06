@@ -103,7 +103,6 @@ const Header: FC = () => {
 	// this will handle login behavior
 	useEffect(() => {
 		if (userToken && userToken.includes('Bearer')) {
-			console.log('userToken is valid');
 			thunkDispatch(fetchUserAsync(userToken));
 		} else {
 			navigate('/login');
@@ -116,8 +115,6 @@ const Header: FC = () => {
 	// then i need to navigate to /courses
 	useEffect(() => {
 		if (isUserAuth) {
-			console.log('isUserAuth: ', isUserAuth);
-			console.log('user role: ', userRole);
 			navigate('/courses');
 		}
 	}, [isUserAuth]);

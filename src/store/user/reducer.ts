@@ -69,7 +69,14 @@ export const userReducer = (state = INITIAL_STATE, action: AnyAction) => {
 		return { ...state, isLoading: false, error: action.payload };
 	}
 	if (clearCurrentUser.match(action)) {
-		return { ...state, isAuth: false, name: '', email: '', token: '' };
+		return {
+			...state,
+			isAuth: false,
+			name: '',
+			email: '',
+			token: '',
+			role: '',
+		};
 	}
 	return state;
 };

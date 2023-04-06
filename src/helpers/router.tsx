@@ -32,7 +32,6 @@ const router = createBrowserRouter(
 							<CourseForm />
 						</PrivateRoute>
 					}
-					// loader={loader}
 				/>
 				<Route path='courses/*'>
 					<Route index element={<Courses />} />

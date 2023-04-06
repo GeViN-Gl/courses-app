@@ -34,7 +34,10 @@ interface SuccessfulUserResponse extends SuccessfulResponseBase {
 	result: User;
 }
 //
-export interface SuccessfulLogoutResponse extends SuccessfulResponseBase {
+interface SuccessfulLogoutResponse extends SuccessfulResponseBase {
+	result: string;
+}
+interface SuccessfulDeleteCourseResponse extends SuccessfulResponseBase {
 	result: string;
 }
 
@@ -133,7 +136,7 @@ export const logoutUserFromAPI = async (
 		};
 		const data = await fetchRequest(
 			'http://localhost:4000/logout',
-			FETCH_ACTION_TYPES.DELETE,
+			FETCH_ACTION_TYPES.LOGOUT,
 			fetchOptions
 		);
 		if (!isFetchSuccess(data)) {
@@ -222,6 +225,29 @@ export const sendNewAuthorToAPI = async (
 		);
 		assertSuccessfulResponse<Author>(data, 'Author');
 		return data;
+	} catch (error) {
+		console.error(error);
+		throw error;
+	}
+};
+
+export const deleteCourseFromAPI = async (
+	token: string,
+	courseId: string
+): Promise<SuccessfulDeleteCourseResponse> => {
+	try {
+		const fetchOptions: FetchRequestOptions = {
+			token,
+		};
+		const data = await fetchRequest(
+			`http://localhost:4000/courses/${courseId}`,
+			FETCH_ACTION_TYPES.DELETE_COURSE,
+			fetchOptions
+		);
+		if (!isFetchSuccess(data)) {
+			throw new Error('🛑 Error during course deletion');
+		}
+		return data as SuccessfulDeleteCourseResponse;
 	} catch (error) {
 		console.error(error);
 		throw error;

@@ -8,7 +8,7 @@ import {
 import Button from '../../../../common/Button/Button';
 import { toHoursAndMinutes } from '../../../../helpers/timeConvert';
 
-import { Navigate, NavigateFunction, useNavigate } from 'react-router-dom';
+import { NavigateFunction, useNavigate } from 'react-router-dom';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { Course } from '../../../../store/courses/reducer';
@@ -17,10 +17,8 @@ import { selectAuthorsList } from '../../../../store/authors/selectors';
 import { getStringWithAuthorsNames } from '../../../../helpers/customArrayFuncs';
 import { FC, MouseEvent } from 'react';
 import { AnyAction, Dispatch } from 'redux';
-import {
-	deleteCourseFromList,
-	updateCourseInList,
-} from '../../../../store/courses/actionCreators';
+import { deleteCourseFromList } from '../../../../store/courses/actionCreators';
+import { selectCurrentUserRole } from '../../../../store/user/selectors';
 
 type CourseCardProps = {
 	course: Course;
@@ -31,6 +29,7 @@ const CourseCard: FC<CourseCardProps> = ({ course }) => {
 	const { id, title, description, creationDate, duration, authors } = course;
 
 	const authorsList = useSelector(selectAuthorsList);
+	const userRole = useSelector(selectCurrentUserRole);
 
 	const navigate: NavigateFunction = useNavigate();
 
@@ -64,12 +63,16 @@ const CourseCard: FC<CourseCardProps> = ({ course }) => {
 				</InfoText>
 				<ButtonsContainer>
 					<Button onClick={showCourseNavigateHandler}>Show&nbsp;course</Button>
-					<Button narrow={true} onClick={updateCourseButtonHandler}>
-						📝
-					</Button>
-					<Button narrow={true} onClick={deleteCourseButtonHandler}>
-						❌
-					</Button>
+					{userRole === 'admin' && (
+						<Button narrow={true} onClick={updateCourseButtonHandler}>
+							📝
+						</Button>
+					)}
+					{userRole === 'admin' && (
+						<Button narrow={true} onClick={deleteCourseButtonHandler}>
+							❌
+						</Button>
+					)}
 				</ButtonsContainer>
 			</InfoContainer>
 		</CardContainer>
@@ -77,5 +80,3 @@ const CourseCard: FC<CourseCardProps> = ({ course }) => {
 };
 
 export default CourseCard;
-
-<></>;

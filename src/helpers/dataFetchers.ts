@@ -2,10 +2,11 @@ export enum FETCH_ACTION_TYPES {
 	GET = 'GET',
 	POST = 'POST',
 	GET_WITH_AUTH = 'GET_WITH_AUTH',
-	DELETE = 'DELETE',
+	LOGOUT = 'LOGOUT',
 	ADD_NEW_COURSE = 'ADD_NEW_COURSE',
 	ADD_NEW_AUTHOR = 'ADD_NEW_AUTHOR',
 	UPDATE_COURSE = 'UPDATE_COURSE',
+	DELETE_COURSE = 'DELETE_COURSE',
 }
 
 export type QueryParams = {
@@ -72,7 +73,8 @@ export const fetchRequest = async (
 					},
 				});
 				break;
-			case FETCH_ACTION_TYPES.DELETE:
+			case FETCH_ACTION_TYPES.DELETE_COURSE:
+			case FETCH_ACTION_TYPES.LOGOUT:
 				if (!options.token) {
 					throw new Error('No token provided');
 				}
@@ -120,7 +122,8 @@ export const fetchRequest = async (
 		// console.log('response:', response);
 		// Logout bechaivour is strange, it returns 200 and successful: false
 		// so i handle it here separately
-		if (response.ok && action === FETCH_ACTION_TYPES.DELETE) {
+		if (response.ok && action === FETCH_ACTION_TYPES.LOGOUT) {
+			console.log('response:', response);
 			return {
 				successful: true,
 				result: 'Logout successful',
