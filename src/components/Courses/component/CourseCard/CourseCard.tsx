@@ -18,7 +18,12 @@ import { getStringWithAuthorsNames } from '../../../../helpers/customArrayFuncs'
 import { FC, MouseEvent } from 'react';
 import { AnyAction, Dispatch } from 'redux';
 import { deleteCourseFromList } from '../../../../store/courses/actionCreators';
-import { selectCurrentUserRole } from '../../../../store/user/selectors';
+import {
+	selectCurrentUserRole,
+	selectCurrentUserToken,
+} from '../../../../store/user/selectors';
+import { deleteCourseFromAPI } from '../../../../servises';
+import { toastNotify } from '../../../../helpers/toastNotify';
 
 type CourseCardProps = {
 	course: Course;
@@ -30,13 +35,34 @@ const CourseCard: FC<CourseCardProps> = ({ course }) => {
 
 	const authorsList = useSelector(selectAuthorsList);
 	const userRole = useSelector(selectCurrentUserRole);
+	const userToken = useSelector(selectCurrentUserToken);
 
 	const navigate: NavigateFunction = useNavigate();
 
 	const showCourseNavigateHandler = () => navigate(id);
 
+	// delete bechavior will use API now
+	// delete async helper
+	const deleteCourseAsyncHandler = async () => {
+		const deleteResponce = await deleteCourseFromAPI(userToken, id);
+		if (deleteResponce.successful) {
+			return deleteResponce;
+		}
+	};
+
+	// delete button handler
 	const deleteCourseButtonHandler = (event: MouseEvent<HTMLButtonElement>) => {
-		dispatch(deleteCourseFromList(id));
+		deleteCourseAsyncHandler()
+			.then((responce) => {
+				if (responce?.successful) {
+					toastNotify('Course was deleted');
+					dispatch(deleteCourseFromList(id));
+				}
+			})
+			.catch((error) => {
+				toastNotify('Something went wrong');
+				console.error(error);
+			});
 	};
 	const updateCourseButtonHandler = (event: MouseEvent<HTMLButtonElement>) => {
 		navigate(`update/${id}`);
