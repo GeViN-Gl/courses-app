@@ -1,14 +1,17 @@
 import styled from 'styled-components';
 import { BaseButton } from '../../../../common/Button/Button.styles';
 export const TitleContainer = styled.div`
-	& h2 {
+	& > h2 {
 		font-size: 36px;
 		/* line-height: 1em; */
 		padding-bottom: 20px;
 	}
 
-	& p {
+	& > p {
 		text-align: justify;
+		hyphens: auto;
+		width: 100%;
+		word-break: break-all;
 	}
 `;
 type InfoTextProps = {

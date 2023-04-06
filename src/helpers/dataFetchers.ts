@@ -5,6 +5,7 @@ export enum FETCH_ACTION_TYPES {
 	DELETE = 'DELETE',
 	ADD_NEW_COURSE = 'ADD_NEW_COURSE',
 	ADD_NEW_AUTHOR = 'ADD_NEW_AUTHOR',
+	UPDATE_COURSE = 'UPDATE_COURSE',
 }
 
 export type QueryParams = {
@@ -89,6 +90,19 @@ export const fetchRequest = async (
 				}
 				request = new Request(url, {
 					method: 'POST',
+					headers: {
+						Authorization: options.token,
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify(options.queryData),
+				});
+				break;
+			case FETCH_ACTION_TYPES.UPDATE_COURSE:
+				if (!options.queryData || !options.token) {
+					throw new Error('No query data or token provided');
+				}
+				request = new Request(url, {
+					method: 'PUT',
 					headers: {
 						Authorization: options.token,
 						'Content-Type': 'application/json',

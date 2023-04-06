@@ -160,16 +160,39 @@ export const sendNewCourseToAPI = async (
 		const fetchOptions: FetchRequestOptions = {
 			token,
 			queryData: courseToApi,
-			// queryData: {
-			// 	title: 'New course',
-			// 	description: 'New course description',
-			// 	duration: 100,
-			// 	authors: ['27cc3006-e93a-4748-8ca8-73d06aa93b6d'],
-			// },
 		};
 		const data = await fetchRequest(
 			'http://localhost:4000/courses/add',
 			FETCH_ACTION_TYPES.ADD_NEW_COURSE,
+			fetchOptions
+		);
+		assertSuccessfulResponse<Course>(data, 'Course');
+		return data;
+	} catch (error) {
+		console.error(error);
+		throw error;
+	}
+};
+
+export const sendUpdatedCourseToAPI = async (
+	token: string,
+	courseToApi: {
+		title: string;
+		description: string;
+		duration: number;
+		authors: string[];
+	},
+	courseId: string
+): Promise<SuccessfulAddOrPutCourseResponse> => {
+	// /courses/update
+	try {
+		const fetchOptions: FetchRequestOptions = {
+			token,
+			queryData: courseToApi,
+		};
+		const data = await fetchRequest(
+			`http://localhost:4000/courses/${courseId}`,
+			FETCH_ACTION_TYPES.UPDATE_COURSE,
 			fetchOptions
 		);
 		assertSuccessfulResponse<Course>(data, 'Course');

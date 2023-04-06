@@ -77,3 +77,5 @@ const CourseCard: FC<CourseCardProps> = ({ course }) => {
 };
 
 export default CourseCard;
+
+<></>;

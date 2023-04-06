@@ -22,7 +22,10 @@ import {
 	selectTimeMinutes,
 	selectCourseDescription,
 } from '../../store/create-course/selectors';
-import { addNewCourseToList } from '../../store/courses/actionCreators';
+import {
+	addNewCourseToList,
+	updateCourseInList,
+} from '../../store/courses/actionCreators';
 import {
 	setAddedAuthorsList,
 	setNotAddedAuthorsList,
@@ -47,7 +50,7 @@ import { AnyAction, Dispatch } from 'redux';
 import { selectCoursesList } from '../../store/courses/selectors';
 import { toHoursAndMinutes } from '../../helpers/timeConvert';
 import { getArrayWithAuthors } from '../../helpers/customArrayFuncs';
-import { sendNewCourseToAPI } from '../../servises';
+import { sendNewCourseToAPI, sendUpdatedCourseToAPI } from '../../servises';
 import { selectCurrentUserToken } from '../../store/user/selectors';
 
 const getCurrentDate = () => {
@@ -59,13 +62,13 @@ const getCurrentDate = () => {
 };
 
 const CourseForm: FC = () => {
-	const dispatch: Dispatch<AnyAction> = useDispatch();
+	// react-router-dom variables
 	const navigate: NavigateFunction = useNavigate();
-	// react-router-dom vars
 	const { courseId } = useParams();
 	const currentLocation = useLocation();
 
-	// redux vars
+	// redux variables
+	const dispatch: Dispatch<AnyAction> = useDispatch();
 	const courseTitle = useSelector(selectCourseTitle);
 	const courseDescription = useSelector(selectCourseDescription);
 	const addedAuthorsList = useSelector(selectAddedAuthorsList);
@@ -75,7 +78,7 @@ const CourseForm: FC = () => {
 
 	// local state
 	const [isReadyToAddNewCourse, setIsReadyToAddNewCourse] = useState(false);
-	//
+	// local state course object
 	const defaultCourseObj: Course = {
 		id: '',
 		title: '',
@@ -86,7 +89,9 @@ const CourseForm: FC = () => {
 	};
 	const [courseObj, setCourseObj] = useState<Course>(defaultCourseObj);
 
-	// mode detection
+	// Mode detection
+	// Now i have 2 modes: ADD for add new course behavior and UPDATE for update course
+	// They using different API methods, so i need to know which mode i am in
 	type Mode = 'ADD' | 'UPDATE';
 	let mode: Mode = 'ADD';
 	if (currentLocation.pathname.includes('add')) {
@@ -95,9 +100,8 @@ const CourseForm: FC = () => {
 	if (currentLocation.pathname.includes('update')) {
 		mode = 'UPDATE';
 	}
-	console.log(mode);
 
-	// helpers
+	// HELPERS
 	const clearFormFields = () => {
 		dispatch(setCourseTitle(''));
 		dispatch(setCourseDescription(''));
@@ -138,7 +142,7 @@ const CourseForm: FC = () => {
 		setCourseObj(newCourseObj);
 	}, [courseTitle, courseDescription, addedAuthorsList, timeMinutes]);
 
-	// on mount if mode is UPDATE regenerate courseObj
+	// on mount if mode is UPDATE  i need to rehydrate courseObj
 	useEffect(() => {
 		// rehydrating courseObj
 		if (mode === 'UPDATE') {
@@ -194,7 +198,67 @@ const CourseForm: FC = () => {
 		}
 	}, [courseObj]);
 
-	// async function to add new course via API
+	// --------------------------------------------
+	// MAIN HANDLERS
+
+	// UPDATE COURSE
+	// Logic very similar to add new course, but now API need to know course id
+	// async handler for updateCourseButtonHandler
+	const updateCourseAsyncHandler = async (
+		token: string,
+		courseToApi: {
+			title: string;
+			description: string;
+			duration: number;
+			authors: string[];
+		}
+	): Promise<Course | undefined> => {
+		if (!token || !courseToApi || !courseId) return;
+		const updatedCourseResponse = await sendUpdatedCourseToAPI(
+			token,
+			courseToApi,
+			courseId
+		);
+		console.log('updatedCourseResponse:', updatedCourseResponse);
+		if (updatedCourseResponse.successful) {
+			toastNotify('Course updated successfully');
+			return updatedCourseResponse.result;
+		}
+	};
+
+	// button handler for "Update course" button
+	const updateCourseButtonHandler = (event: MouseEvent<HTMLButtonElement>) => {
+		event.preventDefault();
+		if (!isReadyToAddNewCourse) {
+			toastNotify(
+				`Please fill all fields before ${
+					mode === 'ADD' ? 'creating new' : 'updating'
+				} course`
+			);
+			return;
+		}
+		updateCourseAsyncHandler(token, {
+			title: courseObj.title,
+			description: courseObj.description,
+			duration: courseObj.duration,
+			authors: courseObj.authors,
+		})
+			.then((newCourse) => {
+				if (newCourse) {
+					dispatch(updateCourseInList(newCourse));
+					clearFormFields();
+					// navigate back to courses
+					navigate('/courses');
+				}
+			})
+			.catch((err) => {
+				console.error(err);
+			});
+	};
+
+	// ADD NEW COURSE
+	// Add new course to API and to redux store
+	// async handler for createCourseButtonHandler
 	const addNewCourseAsyncHandler = async (
 		token: string,
 		courseToApi: {
@@ -212,11 +276,15 @@ const CourseForm: FC = () => {
 			return newCourseResponse.result;
 		}
 	};
-
+	// this handler is for "Add new course" button
 	const createCourseButtonHandler = (event: MouseEvent<HTMLButtonElement>) => {
 		event.preventDefault();
 		if (!isReadyToAddNewCourse) {
-			toastNotify('Please fill all fields before creating new course');
+			toastNotify(
+				`Please fill all fields before ${
+					mode === 'ADD' ? 'creating new' : 'updating'
+				} course`
+			);
 			return;
 		}
 		addNewCourseAsyncHandler(token, {
@@ -228,18 +296,17 @@ const CourseForm: FC = () => {
 			.then((newCourse) => {
 				if (newCourse) {
 					dispatch(addNewCourseToList(newCourse));
+					clearFormFields();
+					// navigate back to courses
+					navigate('/courses');
 				}
 			})
 			.catch((err) => {
 				console.error(err);
 			});
-
-		// clear fields
-		clearFormFields();
-		// navigate back to courses
-		navigate('/courses');
 	};
 
+	// Form handlers
 	const titleInputHandler = (event: ChangeEvent<HTMLInputElement>) => {
 		event.preventDefault();
 		dispatch(setCourseTitle(event.target.value));
@@ -249,6 +316,8 @@ const CourseForm: FC = () => {
 		event.preventDefault();
 		dispatch(setCourseDescription(event.target.value));
 	};
+
+	// TODO: move all useEffects here
 
 	return (
 		<CreateCourseContainer>
@@ -264,7 +333,7 @@ const CourseForm: FC = () => {
 				/>
 			</TitleInput>
 			{mode === 'UPDATE' ? (
-				<Button>Update course</Button>
+				<Button onClick={updateCourseButtonHandler}>Update course</Button>
 			) : (
 				<Button onClick={createCourseButtonHandler}>Create course</Button>
 			)}
