@@ -18,7 +18,6 @@ import Button, { BUTTON_TYPES_CLASSES } from '../../common/Button/Button';
 
 import { useSelector, useDispatch } from 'react-redux';
 import {
-	selectCurrentUserRole,
 	selectCurrentUserIsAuth,
 	selectCurrentUserName,
 	selectCurrentUserToken,
@@ -40,7 +39,6 @@ const Header: FC = () => {
 
 	const isUserAuth = useSelector(selectCurrentUserIsAuth);
 	const userName = useSelector(selectCurrentUserName);
-	const userRole = useSelector(selectCurrentUserRole);
 	const userToken = useSelector(selectCurrentUserToken);
 	const dispatch: Dispatch<AnyAction> = useDispatch();
 	const thunkDispatch = useThunkDispatch();
@@ -65,7 +63,6 @@ const Header: FC = () => {
 	const logInOutButtonHandler = (event: MouseEvent<HTMLButtonElement>) => {
 		// When user clicks on Logout button, App should navigate to /login
 		// and you should remove token from localStorage.
-		// TODO: i need to migrate this behavior to redux-thunk
 		if (isUserAuth) {
 			// LogOUT displays only if user obj exists
 			logoutHandler();
@@ -94,12 +91,10 @@ const Header: FC = () => {
 
 	// If token exists, App should navigate to /courses.
 	// If token doesn't exist, App should navigate to /login.
-	// TODO: there is must be some logic to pull user credentials from server
-	// TODO: userToken from selector may cause unexpected rerendering, need to check
-	// REDO
+
 	// if there is a token try to get user data from server,
 	// in case of success navigate to /courses and set user data to store
-	// also this useEffec will be called on every userToken change
+	// also this useEffect will be called on every userToken change
 	// this will handle login behavior
 	useEffect(() => {
 		if (userToken && userToken.includes('Bearer')) {
@@ -118,6 +113,7 @@ const Header: FC = () => {
 			navigate('/courses');
 		}
 	}, [isUserAuth]);
+	// i dont need navigate in dependency, react-router-dom creates new function on every render
 
 	// show/hide logIN(OUT) button
 	const currentLocation = useLocation(); //Where am i?

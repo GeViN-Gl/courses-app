@@ -19,17 +19,6 @@ import { useThunkDispatch } from './helpers/hooks/useThunkDispath';
 import { fetchCoursesAsync } from './store/courses/thunk';
 import router from './helpers/router';
 
-//TODO migrate to 6.4 createBrowserRouter
-
-// fix for crypto
-// github.com/denoland/deno/issues/12754
-declare global {
-	interface Crypto {
-		randomUUID: () => `${string}-${string}-${string}-${string}-${string}`;
-	}
-}
-export {};
-
 // this useEffect triggers fetching of authors list
 
 const App: FC = () => {

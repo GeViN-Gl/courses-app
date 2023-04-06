@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import {
 	FETCH_ACTION_TYPES,
 	FailedRequest,
@@ -41,17 +40,18 @@ interface SuccessfulDeleteCourseResponse extends SuccessfulResponseBase {
 	result: string;
 }
 
-// TODO: unformat and remove comment
-// 2 mentor: There is no error behind prettier/prettier
-// just prevent prettier from formatting this code
-type SuccessfulResponse<T> =
-	// prettier-ignore
-	T extends Course
-	? SuccessfulAddOrPutCourseResponse	: T extends Author
-	? SuccessfulAddAuthorResponse				:	T extends Course[]
-	? SuccessfulCourseResponse					: T extends Author[]
-	? SuccessfulAuthorResponse					: T extends User
-	? SuccessfulUserResponse						: never;
+// First Author and Course, because they are more specific than arrays
+type SuccessfulResponse<T> = T extends Course
+	? SuccessfulAddOrPutCourseResponse
+	: T extends Author
+	? SuccessfulAddAuthorResponse
+	: T extends Course[]
+	? SuccessfulCourseResponse
+	: T extends Author[]
+	? SuccessfulAuthorResponse
+	: T extends User
+	? SuccessfulUserResponse
+	: never;
 
 //assertion functions
 //

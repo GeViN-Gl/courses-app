@@ -53,14 +53,6 @@ import { getArrayWithAuthors } from '../../helpers/customArrayFuncs';
 import { sendNewCourseToAPI, sendUpdatedCourseToAPI } from '../../servises';
 import { selectCurrentUserToken } from '../../store/user/selectors';
 
-const getCurrentDate = () => {
-	const today = new Date();
-	const day = today.getDate().toString();
-	const month = (today.getMonth() + 1).toString(); // JavaScript months are zero-based, so we need to add 1
-	const year = today.getFullYear().toString();
-	return `${day}/${month}/${year}`;
-};
-
 const CourseForm: FC = () => {
 	// react-router-dom variables
 	const navigate: NavigateFunction = useNavigate();
@@ -75,6 +67,7 @@ const CourseForm: FC = () => {
 	const timeMinutes = useSelector(selectTimeMinutes);
 	const coursesList = useSelector(selectCoursesList);
 	const token = useSelector(selectCurrentUserToken);
+	const authorsList = useSelector(selectAuthorsList);
 
 	// local state
 	const [isReadyToAddNewCourse, setIsReadyToAddNewCourse] = useState(false);
@@ -110,94 +103,6 @@ const CourseForm: FC = () => {
 		dispatch(setTimeHours('00:00'));
 	};
 
-	// useEffect to balance added / NOTadded authorLists
-	const authorsList = useSelector(selectAuthorsList);
-	useEffect(() => {
-		// if authorsList changed
-		// replace notAddedAuthorList with new authorsList - addedAuthorList
-		let newNotAddedAuthorList = [...authorsList];
-
-		// forEach author in already added list i need to remove it from notAdded
-		addedAuthorsList.forEach((addedAuthor) => {
-			const authorsWithoutAlreadyAdded = newNotAddedAuthorList.filter(
-				(notAdded) => notAdded.id !== addedAuthor.id
-			);
-			newNotAddedAuthorList = [...authorsWithoutAlreadyAdded];
-		});
-		dispatch(setNotAddedAuthorsList(newNotAddedAuthorList));
-	}, [authorsList, addedAuthorsList, dispatch]);
-
-	// useEffect to regenerate new course object
-	useEffect(() => {
-		const authorsIdsList = addedAuthorsList.map((author) => author.id);
-
-		const newCourseObj: Course = {
-			id: '', // will be generated on server
-			title: courseTitle,
-			description: courseDescription,
-			creationDate: '', // will be generated on server
-			duration: timeMinutes,
-			authors: authorsIdsList,
-		};
-		setCourseObj(newCourseObj);
-	}, [courseTitle, courseDescription, addedAuthorsList, timeMinutes]);
-
-	// on mount if mode is UPDATE  i need to rehydrate courseObj
-	useEffect(() => {
-		// rehydrating courseObj
-		if (mode === 'UPDATE') {
-			if (!courseId) {
-				throw new Error('Error: courseId is undefined');
-			}
-
-			const courseToUpdate = coursesList.find(
-				(course) => course.id === courseId
-			);
-
-			if (courseToUpdate) {
-				console.log(`Start rehydrating courseObj`);
-				const addedAuthorsIdToUpdate = getArrayWithAuthors(
-					authorsList,
-					courseToUpdate.authors
-				);
-
-				dispatch(setCourseTitle(courseToUpdate.title));
-				dispatch(setCourseDescription(courseToUpdate.description));
-				if (addedAuthorsIdToUpdate)
-					// if there are authors
-					dispatch(setAddedAuthorsList(addedAuthorsIdToUpdate)); // no need to set NotAdded, i have useEffect that care about it
-
-				dispatch(setTimeMinutes(courseToUpdate.duration));
-				dispatch(setTimeHours(toHoursAndMinutes(courseToUpdate.duration)));
-
-				const newCourseObj: Course = {
-					id: courseToUpdate.id,
-					title: courseToUpdate.title,
-					description: courseToUpdate.description,
-					creationDate: courseToUpdate.creationDate,
-					duration: courseToUpdate.duration,
-					authors: courseToUpdate.authors,
-				};
-				console.log('newCourseObj:', newCourseObj);
-				setCourseObj(newCourseObj);
-			}
-		}
-	}, []);
-
-	// useEffect to check if current course object is ready to be added
-	useEffect(() => {
-		if (
-			!!courseObj.title &&
-			!!courseObj.description &&
-			courseObj.authors.length > 0 &&
-			courseObj.duration !== 0
-		) {
-			setIsReadyToAddNewCourse(true);
-		} else {
-			setIsReadyToAddNewCourse(false);
-		}
-	}, [courseObj]);
-
 	// --------------------------------------------
 	// MAIN HANDLERS
 
@@ -219,7 +124,6 @@ const CourseForm: FC = () => {
 			courseToApi,
 			courseId
 		);
-		console.log('updatedCourseResponse:', updatedCourseResponse);
 		if (updatedCourseResponse.successful) {
 			toastNotify('Course updated successfully');
 			return updatedCourseResponse.result;
@@ -270,7 +174,6 @@ const CourseForm: FC = () => {
 	): Promise<Course | undefined> => {
 		if (!token || !courseToApi) return;
 		const newCourseResponse = await sendNewCourseToAPI(token, courseToApi);
-		console.log('newCourseResponse:', newCourseResponse);
 		if (newCourseResponse.successful) {
 			toastNotify('New course added successfully');
 			return newCourseResponse.result;
@@ -317,7 +220,94 @@ const CourseForm: FC = () => {
 		dispatch(setCourseDescription(event.target.value));
 	};
 
-	// TODO: move all useEffects here
+	// useEffect to balance added / NOTadded authorLists
+
+	useEffect(() => {
+		// if authorsList changed
+		// replace notAddedAuthorList with new authorsList - addedAuthorList
+		let newNotAddedAuthorList = [...authorsList];
+
+		// forEach author in already added list i need to remove it from notAdded
+		addedAuthorsList.forEach((addedAuthor) => {
+			const authorsWithoutAlreadyAdded = newNotAddedAuthorList.filter(
+				(notAdded) => notAdded.id !== addedAuthor.id
+			);
+			newNotAddedAuthorList = [...authorsWithoutAlreadyAdded];
+		});
+		dispatch(setNotAddedAuthorsList(newNotAddedAuthorList));
+	}, [authorsList, addedAuthorsList, dispatch]);
+
+	// useEffect to regenerate new course object
+	useEffect(() => {
+		const authorsIdsList = addedAuthorsList.map((author) => author.id);
+
+		const newCourseObj: Course = {
+			id: '', // will be generated on server
+			title: courseTitle,
+			description: courseDescription,
+			creationDate: '', // will be generated on server
+			duration: timeMinutes,
+			authors: authorsIdsList,
+		};
+		setCourseObj(newCourseObj);
+	}, [courseTitle, courseDescription, addedAuthorsList, timeMinutes]);
+
+	// on mount if mode is UPDATE  i need to rehydrate courseObj
+	useEffect(() => {
+		// rehydrating courseObj
+		if (mode === 'UPDATE') {
+			if (!courseId) {
+				throw new Error('Error: courseId is undefined');
+			}
+
+			const courseToUpdate = coursesList.find(
+				(course) => course.id === courseId
+			);
+
+			if (courseToUpdate) {
+				const addedAuthorsIdToUpdate = getArrayWithAuthors(
+					authorsList,
+					courseToUpdate.authors
+				);
+
+				dispatch(setCourseTitle(courseToUpdate.title));
+				dispatch(setCourseDescription(courseToUpdate.description));
+				if (addedAuthorsIdToUpdate)
+					// if there are authors
+					dispatch(setAddedAuthorsList(addedAuthorsIdToUpdate)); // no need to set NotAdded, i have useEffect that care about it
+
+				dispatch(setTimeMinutes(courseToUpdate.duration));
+				dispatch(setTimeHours(toHoursAndMinutes(courseToUpdate.duration)));
+
+				const newCourseObj: Course = {
+					id: courseToUpdate.id,
+					title: courseToUpdate.title,
+					description: courseToUpdate.description,
+					creationDate: courseToUpdate.creationDate,
+					duration: courseToUpdate.duration,
+					authors: courseToUpdate.authors,
+				};
+				setCourseObj(newCourseObj);
+			}
+		}
+	}, []);
+	// Dependencies are empty because i need to run this effect only once
+	// all other changes will be handled by other useEffects
+	// it`s because this component is reused for both ADD and UPDATE
+
+	// useEffect to check if current course object is ready to be added
+	useEffect(() => {
+		if (
+			!!courseObj.title &&
+			!!courseObj.description &&
+			courseObj.authors.length > 0 &&
+			courseObj.duration !== 0
+		) {
+			setIsReadyToAddNewCourse(true);
+		} else {
+			setIsReadyToAddNewCourse(false);
+		}
+	}, [courseObj]);
 
 	return (
 		<CreateCourseContainer>

@@ -21,15 +21,10 @@ import { AnyAction, Dispatch } from 'redux';
 
 type LoginFormField = { name: string; email: string; password: string };
 
-// const defaultFormFields: LoginFormField = {
-// 	name: '',
-// 	email: '',
-// 	password: '',
-// };
 const defaultFormFields: LoginFormField = {
 	name: '',
-	email: 'admin@email.com',
-	password: 'admin123',
+	email: '',
+	password: '',
 };
 
 const Login: FC = () => {
@@ -108,6 +103,8 @@ const Login: FC = () => {
 			})
 			.catch((error) => console.error(error));
 	};
+
+	// Both button handlers are for easy testing, they should`nt be here
 
 	const adminCredHandler = (e: MouseEvent<HTMLButtonElement>) => {
 		e.preventDefault();

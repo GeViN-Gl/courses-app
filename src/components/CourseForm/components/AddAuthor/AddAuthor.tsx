@@ -10,7 +10,6 @@ import { useState, ChangeEvent, MouseEvent, FC } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { addAuthorToList } from '../../../../store/authors/actionCreators';
 
-import { Author } from '../../../../store/authors/reducer';
 import { AnyAction, Dispatch } from 'redux';
 import { sendNewAuthorToAPI } from '../../../../servises';
 import { selectCurrentUserToken } from '../../../../store/user/selectors';
@@ -29,7 +28,6 @@ const AddAuthor: FC = () => {
 	const addAuthorAsyncHandler = async (name: string) => {
 		if (!name) return;
 		const newAuthorResponce = await sendNewAuthorToAPI(token, name);
-		console.log('newAuthorResponce:', newAuthorResponce);
 		if (newAuthorResponce.successful) return newAuthorResponce.result;
 	};
 
@@ -53,7 +51,7 @@ const AddAuthor: FC = () => {
 				}
 			})
 			.catch((error) => {
-				console.log('Error while adding new author:', error);
+				console.error('Error while adding new author:', error);
 			});
 	};
 

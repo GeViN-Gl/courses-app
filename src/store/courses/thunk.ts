@@ -7,7 +7,6 @@ import {
 } from './actionCreators';
 import { AnyAction } from 'redux';
 
-// TODO: mayby add stronger types
 // {} specifies the type of the Redux state object
 // {} specifies any extra arguments that can be passed to the thunk function
 // which we don't use

@@ -119,11 +119,9 @@ export const fetchRequest = async (
 		}
 
 		const response = await fetch(request);
-		// console.log('response:', response);
 		// Logout bechaivour is strange, it returns 200 and successful: false
 		// so i handle it here separately
 		if (response.ok && action === FETCH_ACTION_TYPES.LOGOUT) {
-			console.log('response:', response);
 			return {
 				successful: true,
 				result: 'Logout successful',
@@ -132,7 +130,6 @@ export const fetchRequest = async (
 		// -------
 		const responcedData: SuccessfulRequest | FailedRequest =
 			await response.json();
-		// console.log('responcedData:', responcedData);
 
 		// errors handling
 		if (!isFetchSuccess(responcedData)) {

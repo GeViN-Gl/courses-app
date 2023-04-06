@@ -22,9 +22,9 @@ import { toastNotify } from '../../../../helpers/toastNotify';
 type RegistrationFormField = { name: string; email: string; password: string };
 
 const defaultFormFields: RegistrationFormField = {
-	name: 'Test',
-	email: 'test@example.com',
-	password: '123123',
+	name: '',
+	email: '',
+	password: '',
 };
 
 const Registration: FC = () => {
