@@ -29,7 +29,7 @@ const router = createBrowserRouter(
 					path='/courses/update/:courseId'
 					element={
 						<PrivateRoute>
-							<CourseForm />
+							<CourseForm isUpdate />
 						</PrivateRoute>
 					}
 				/>

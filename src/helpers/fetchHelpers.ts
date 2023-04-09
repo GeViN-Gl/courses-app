@@ -133,7 +133,7 @@ export const addNewCourseHelper = async (
 	try {
 		if (!token) throw new Error('No token provided');
 		if (!courseToApi) throw new Error('No course provided');
-		const response = await fetch('http://localhost:4000/courses', {
+		const response = await fetch('http://localhost:4000/courses/add', {
 			method: 'POST',
 			headers: {
 				Authorization: token,
