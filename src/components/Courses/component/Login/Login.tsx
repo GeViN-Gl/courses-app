@@ -9,15 +9,9 @@ import { setCurrentUserToken } from '../../../../store/user/actionCreators';
 
 import { ChangeEvent, FC, FormEvent, useState, MouseEvent } from 'react';
 
-import {
-	FETCH_ACTION_TYPES,
-	fetchRequest,
-	FetchRequestOptions,
-	isFetchSuccess,
-	SuccessfulRequest,
-} from '../../../../helpers/dataFetchers';
 import { toastNotify } from '../../../../helpers/toastNotify';
 import { AnyAction, Dispatch } from 'redux';
+import { loginFetchHelper } from '../../../../helpers/fetchHelpers';
 
 type LoginFormField = { name: string; email: string; password: string };
 
@@ -44,64 +38,38 @@ const Login: FC = () => {
 		setFormFields({ ...formFields, [name]: value });
 	};
 
-	const fetchHandler = async (): Promise<SuccessfulRequest | null> => {
-		try {
-			const fetchOptions: FetchRequestOptions = {
-				queryData: formFields,
-			};
-			const data = await fetchRequest(
-				'http://127.0.0.1:4000/login',
-				FETCH_ACTION_TYPES.POST,
-				fetchOptions
-			);
-
-			// Success
-			if (isFetchSuccess(data)) {
-				toastNotify('🟢 Login successful');
-				return data;
-			}
-			// Errors
-			if (!isFetchSuccess(data)) {
-				if (data.result && data.result.includes('nvalid data')) {
-					toastNotify('🛑 Invalid email or password');
-					return null; // its form fill errors, report and do nothing
-				}
-				if (data.result) {
-					toastNotify(`🛑 Eroor: ${data.result}`);
-					return null; // its form fill errors, report and do nothing
-				}
-				if (data.errors) {
-					toastNotify(`🛑 Errors: ${data.errors.join(', ')}`);
-					return null; // its form fill errors, report and do nothing
-				}
-			}
-		} catch (error) {
-			toastNotify('🔴 Error');
-			console.error(`Fetch error during login: ${error}`);
-			throw new Error(`Fetch error during login: ${error}`);
+	type SucessfullLoginRequest = {
+		successful: true;
+		result: string;
+	};
+	function assertSuccessfulLoginRequest(
+		responcedData: any
+	): asserts responcedData is SucessfullLoginRequest {
+		if (!responcedData.successful) {
+			throw new Error('Login unsuccessful');
 		}
-		return null;
+	}
+
+	const loginFethcHandler = async () => {
+		try {
+			const responcedData = await loginFetchHelper(email, password);
+			assertSuccessfulLoginRequest(responcedData);
+			return responcedData.result;
+		} catch (error) {
+			console.error(error);
+		}
 	};
 
 	const submitFormHandler = (event: FormEvent<HTMLFormElement>): void => {
 		event.preventDefault();
-		type SuccessfulRequestWithUser = SuccessfulRequest & {
-			user: { name: string; email: string };
-		};
-		const isUserExist = (
-			data: SuccessfulRequest
-		): data is SuccessfulRequestWithUser => !!data.user?.email;
-
-		fetchHandler()
-			.then((data) => {
-				if (data !== null && isUserExist(data)) {
-					localStorage.setItem('userToken', JSON.stringify(data.result));
-					dispatch(setCurrentUserToken(data.result));
-					navigate('/courses');
-					resetFormFields();
-				} // else user stays on login form
-			})
-			.catch((error) => console.error(error));
+		loginFethcHandler().then((result) => {
+			if (result === undefined) return;
+			toastNotify('🤝 Login Successful');
+			localStorage.setItem('userToken', JSON.stringify(result));
+			dispatch(setCurrentUserToken(result));
+			navigate('/courses');
+			resetFormFields();
+		});
 	};
 
 	// Both button handlers are for easy testing, they should`nt be here

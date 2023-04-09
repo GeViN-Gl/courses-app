@@ -1,23 +1,25 @@
-import {
-	FETCH_ACTION_TYPES,
-	FailedRequest,
-	SuccessfulRequest,
-	fetchRequest,
-	isFetchSuccess,
-	FetchRequestOptions,
-} from './helpers/dataFetchers';
-
 //expected types
 import { Course } from './store/courses/reducer';
 import { Author } from './store/authors/reducer';
 import { User } from './store/user/reducer';
+import {
+	RequestResult,
+	addNewAuthorHelper,
+	addNewCourseHelper,
+	deleteCourseHelper,
+	getAllAuthorsHelper,
+	getAllCoursesHelper,
+	getUserFetchHelper,
+	logoutHelper,
+	updateCourseHelper,
+} from './helpers/fetchHelpers';
 
 interface SuccessfulResponseBase {
 	successful: boolean;
 	result?: any;
 }
 
-interface SuccessfulAddOrPutCourseResponse extends SuccessfulResponseBase {
+interface SuccessfulAddOrUpdateCourseResponse extends SuccessfulResponseBase {
 	result: Course;
 }
 interface SuccessfulAddAuthorResponse extends SuccessfulResponseBase {
@@ -42,7 +44,7 @@ interface SuccessfulDeleteCourseResponse extends SuccessfulResponseBase {
 
 // First Author and Course, because they are more specific than arrays
 type SuccessfulResponse<T> = T extends Course
-	? SuccessfulAddOrPutCourseResponse
+	? SuccessfulAddOrUpdateCourseResponse
 	: T extends Author
 	? SuccessfulAddAuthorResponse
 	: T extends Course[]
@@ -56,10 +58,10 @@ type SuccessfulResponse<T> = T extends Course
 //assertion functions
 //
 function assertSuccessfulResponse<T>(
-	data: SuccessfulRequest | FailedRequest,
+	data: RequestResult,
 	errorPrefix: string
 ): asserts data is SuccessfulResponse<T> {
-	if (!isFetchSuccess(data)) {
+	if (!data.successful) {
 		// if there is error message in result
 		if (data.result) {
 			throw new Error(`🛑 ${errorPrefix} Error: ${data.result}`);
@@ -77,30 +79,24 @@ function assertSuccessfulResponse<T>(
 export const getAllCoursesFromAPI =
 	async (): Promise<SuccessfulCourseResponse> => {
 		try {
-			const data = await fetchRequest('http://localhost:4000/courses/all');
-			// errors
-			assertSuccessfulResponse<Course[]>(data, 'Courses');
-			// all Ok
-			return data;
+			const responcedData = await getAllCoursesHelper();
+			assertSuccessfulResponse<Course[]>(responcedData, 'Courses'); // errors
+			return responcedData; // all Ok
 		} catch (error) {
 			console.error(error);
-			// rethrow error to be able to catch it in thunk
-			throw error;
+			throw error; // rethrow error to be able to catch it in thunk
 		}
 	};
 
 export const getAllAuthorsFromAPI =
 	async (): Promise<SuccessfulAuthorResponse> => {
 		try {
-			const data = await fetchRequest('http://localhost:4000/authors/all');
-			// errors
-			assertSuccessfulResponse<Author[]>(data, 'Authors');
-			// all Ok
-			return data;
+			const responcedData = await getAllAuthorsHelper();
+			assertSuccessfulResponse<Author[]>(responcedData, 'Authors'); // errors
+			return responcedData; // all Ok
 		} catch (error) {
 			console.error(error);
-			// rethrow error to be able to catch it in thunk
-			throw error;
+			throw error; // rethrow error to be able to catch it in thunk
 		}
 	};
 
@@ -108,22 +104,12 @@ export const getUserFromAPI = async (
 	token: string
 ): Promise<SuccessfulUserResponse> => {
 	try {
-		const fetchOptions: FetchRequestOptions = {
-			token,
-		};
-		const data = await fetchRequest(
-			'http://localhost:4000/users/me',
-			FETCH_ACTION_TYPES.GET_WITH_AUTH,
-			fetchOptions
-		);
-		// errors
-		assertSuccessfulResponse<User>(data, 'User');
-		// all Ok
-		return data;
+		const responcedData = await getUserFetchHelper(token);
+		assertSuccessfulResponse<User>(responcedData, 'User'); // errors
+		return responcedData; // all Ok
 	} catch (error) {
 		console.error(error);
-		// rethrow error to be able to catch it in thunk
-		throw error;
+		throw error; // rethrow error to be able to catch it in thunk
 	}
 };
 
@@ -131,18 +117,11 @@ export const logoutUserFromAPI = async (
 	token: string
 ): Promise<SuccessfulLogoutResponse> => {
 	try {
-		const fetchOptions: FetchRequestOptions = {
-			token,
-		};
-		const data = await fetchRequest(
-			'http://localhost:4000/logout',
-			FETCH_ACTION_TYPES.LOGOUT,
-			fetchOptions
-		);
-		if (!isFetchSuccess(data)) {
+		const responcedData = await logoutHelper(token);
+		if (!responcedData.successful) {
 			throw new Error('🛑 Error during logout');
 		}
-		return data as SuccessfulLogoutResponse;
+		return responcedData as SuccessfulLogoutResponse;
 	} catch (error) {
 		console.error(error);
 		throw error;
@@ -157,20 +136,11 @@ export const sendNewCourseToAPI = async (
 		duration: number;
 		authors: string[];
 	}
-): Promise<SuccessfulAddOrPutCourseResponse> => {
-	// /courses/add
+): Promise<SuccessfulAddOrUpdateCourseResponse> => {
 	try {
-		const fetchOptions: FetchRequestOptions = {
-			token,
-			queryData: courseToApi,
-		};
-		const data = await fetchRequest(
-			'http://localhost:4000/courses/add',
-			FETCH_ACTION_TYPES.ADD_NEW_COURSE,
-			fetchOptions
-		);
-		assertSuccessfulResponse<Course>(data, 'Course');
-		return data;
+		const responcedData = await addNewCourseHelper(token, courseToApi);
+		assertSuccessfulResponse<Course>(responcedData, 'Course');
+		return responcedData;
 	} catch (error) {
 		console.error(error);
 		throw error;
@@ -186,45 +156,15 @@ export const sendUpdatedCourseToAPI = async (
 		authors: string[];
 	},
 	courseId: string
-): Promise<SuccessfulAddOrPutCourseResponse> => {
-	// /courses/update
+): Promise<SuccessfulAddOrUpdateCourseResponse> => {
 	try {
-		const fetchOptions: FetchRequestOptions = {
+		const responcedData = await updateCourseHelper(
 			token,
-			queryData: courseToApi,
-		};
-		const data = await fetchRequest(
-			`http://localhost:4000/courses/${courseId}`,
-			FETCH_ACTION_TYPES.UPDATE_COURSE,
-			fetchOptions
+			courseToApi,
+			courseId
 		);
-		assertSuccessfulResponse<Course>(data, 'Course');
-		return data;
-	} catch (error) {
-		console.error(error);
-		throw error;
-	}
-};
-
-export const sendNewAuthorToAPI = async (
-	token: string,
-	name: string
-): Promise<SuccessfulAddAuthorResponse> => {
-	// /authors/add
-	try {
-		const fetchOptions: FetchRequestOptions = {
-			token,
-			queryData: {
-				name,
-			},
-		};
-		const data = await fetchRequest(
-			'http://localhost:4000/authors/add',
-			FETCH_ACTION_TYPES.ADD_NEW_AUTHOR,
-			fetchOptions
-		);
-		assertSuccessfulResponse<Author>(data, 'Author');
-		return data;
+		assertSuccessfulResponse<Course>(responcedData, 'Course');
+		return responcedData;
 	} catch (error) {
 		console.error(error);
 		throw error;
@@ -236,18 +176,25 @@ export const deleteCourseFromAPI = async (
 	courseId: string
 ): Promise<SuccessfulDeleteCourseResponse> => {
 	try {
-		const fetchOptions: FetchRequestOptions = {
-			token,
-		};
-		const data = await fetchRequest(
-			`http://localhost:4000/courses/${courseId}`,
-			FETCH_ACTION_TYPES.DELETE_COURSE,
-			fetchOptions
-		);
-		if (!isFetchSuccess(data)) {
+		const data = await deleteCourseHelper(token, courseId);
+		if (!data.successful) {
 			throw new Error('🛑 Error during course deletion');
 		}
 		return data as SuccessfulDeleteCourseResponse;
+	} catch (error) {
+		console.error(error);
+		throw error;
+	}
+};
+
+export const sendNewAuthorToAPI = async (
+	token: string,
+	name: string
+): Promise<SuccessfulAddAuthorResponse> => {
+	try {
+		const responcedData = await addNewAuthorHelper(token, name);
+		assertSuccessfulResponse<Author>(responcedData, 'Author');
+		return responcedData;
 	} catch (error) {
 		console.error(error);
 		throw error;
