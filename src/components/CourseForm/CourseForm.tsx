@@ -57,7 +57,6 @@ type CourseFormProps = {
 };
 
 const CourseForm: FC<CourseFormProps> = ({ isUpdate }) => {
-	console.log('isUpdate:', isUpdate);
 	// react-router-dom variables
 	const navigate: NavigateFunction = useNavigate();
 	const { courseId } = useParams();
@@ -75,7 +74,6 @@ const CourseForm: FC<CourseFormProps> = ({ isUpdate }) => {
 	// local state
 	const [isReadyToAddNewCourse, setIsReadyToAddNewCourse] = useState(false);
 	const [isRehydrated, setIsRehydrated] = useState(false);
-	console.log('isRehydrated:', isRehydrated);
 
 	//--------------------------------------------
 
@@ -90,8 +88,10 @@ const CourseForm: FC<CourseFormProps> = ({ isUpdate }) => {
 
 	// --------------------------------------------
 	// MAIN HANDLERS
+	// This useEffect is for rehydrate form fields if we are in update mode
 	useEffect(() => {
 		if (isUpdate && !courseId) throw new Error('Error: courseId is undefined');
+
 		if (isUpdate && !isRehydrated) {
 			const courseToUpdate = coursesList.find(
 				(course) => course.id === courseId
@@ -109,7 +109,7 @@ const CourseForm: FC<CourseFormProps> = ({ isUpdate }) => {
 			dispatch(setAddedAuthorsList(addedAuthorsIdsToRehydrate));
 			dispatch(setTimeMinutes(courseToUpdate.duration));
 			dispatch(setTimeHours(toHoursAndMinutes(courseToUpdate.duration)));
-			setIsRehydrated(true);
+			setIsRehydrated(true); // to prevent rehydrate again
 		}
 		//
 	}, [authorsList, courseId, coursesList, dispatch, isRehydrated, isUpdate]);
@@ -118,7 +118,6 @@ const CourseForm: FC<CourseFormProps> = ({ isUpdate }) => {
 	const commonButtonHandler = async (event: MouseEvent<HTMLButtonElement>) => {
 		event.preventDefault();
 		if (!isReadyToAddNewCourse) {
-			//TODO: add toast
 			toastNotify(
 				`Please fill all fields before ${isUpdate ? 'update' : 'create'} course`
 			);
