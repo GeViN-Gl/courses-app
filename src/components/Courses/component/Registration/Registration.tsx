@@ -11,20 +11,15 @@ import Button from '../../../../common/Button/Button';
 import { ChangeEvent, FC, FormEvent, useState } from 'react';
 import { Link, NavigateFunction, useNavigate } from 'react-router-dom';
 
-import {
-	FETCH_ACTION_TYPES,
-	fetchRequest,
-	isFetchSuccess,
-	QueryParams,
-} from '../../../../helpers/dataFetchers';
 import { toastNotify } from '../../../../helpers/toastNotify';
+import { registerFetchHelper } from '../../../../helpers/fetchHelpers';
 
 type RegistrationFormField = { name: string; email: string; password: string };
 
 const defaultFormFields: RegistrationFormField = {
-	name: 'Test',
-	email: 'test@example.com',
-	password: '123123',
+	name: '',
+	email: '',
+	password: '',
 };
 
 const Registration: FC = () => {
@@ -42,43 +37,36 @@ const Registration: FC = () => {
 		setFormFields({ ...formFields, [name]: value });
 	};
 
-	const fetchHandler = async (): Promise<boolean> => {
-		try {
-			const queryData: QueryParams = formFields; //recheck type i send to body
-			const data = await fetchRequest(
-				'http://127.0.0.1:4000/register',
-				FETCH_ACTION_TYPES.POST,
-				queryData
-			);
-
-			// Success
-			if (isFetchSuccess(data)) {
-				toastNotify('🟢 ' + data.result);
-				return true;
-			}
-			// Errors
-			if (!isFetchSuccess(data)) {
-				if (data.errors) {
-					toastNotify(`🛑 Errors: ${data.errors.join(', ')}`);
-					return false; // Give user a second chance to reenter the form fields
-				}
-			}
-		} catch (error) {
-			toastNotify('🔴 Error');
-			console.error(`Fetch error during registration: ${error}`);
-			throw new Error(`Fetch error during registration: ${error}`);
+	type SucessfullRegistrationRequest = {
+		successful: true;
+		result: string;
+	};
+	function assertSuccessfulRegistrationRequest(
+		responcedData: any
+	): asserts responcedData is SucessfullRegistrationRequest {
+		if (!responcedData.successful) {
+			throw new Error('Registration unsuccessful');
 		}
-		return false;
+	}
+
+	const registrationFethchHandler = async () => {
+		try {
+			const responsedData = await registerFetchHelper(name, email, password);
+			assertSuccessfulRegistrationRequest(responsedData);
+			return responsedData.successful;
+		} catch (error) {
+			console.error(error);
+		}
 	};
 
 	const submitFormHandler = (event: FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
-		fetchHandler().then((result) => {
-			if (result) {
+		registrationFethchHandler().then((successfull) => {
+			if (successfull) {
+				toastNotify('🤝 Registration Successful');
 				resetFormFields();
 				navigate('/login');
 			}
-			// else nothig, user stay on this page until registration compl
 		});
 	};
 

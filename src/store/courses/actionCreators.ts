@@ -3,6 +3,7 @@ import {
 	createAction,
 	ActionWithPayload,
 	withMatcher,
+	Action,
 } from '../../helpers/reducer/reducer.utils';
 
 import { Course } from './reducer';
@@ -28,6 +29,18 @@ export type UpdateCourseInList = ActionWithPayload<
 	COURSES_ACTION_TYPES.UPDATE_COURSE_IN_LIST,
 	Course
 >;
+// Action types using Thunk
+// Fetch all courses
+export type FetchCoursesStart =
+	Action<COURSES_ACTION_TYPES.FETCH_COURSES_START>;
+export type FetchCoursesSuccess = ActionWithPayload<
+	COURSES_ACTION_TYPES.FETCH_COURSES_SUCCESS,
+	Course[]
+>;
+export type FetchCoursesFailure = ActionWithPayload<
+	COURSES_ACTION_TYPES.FETCH_COURSES_FAILURE,
+	Error
+>;
 
 // Action Creators with withMacther
 export const setCoursesList = withMatcher(
@@ -49,4 +62,19 @@ export const deleteCourseFromList = withMatcher(
 export const updateCourseInList = withMatcher(
 	(updatedCourse: Course): UpdateCourseInList =>
 		createAction(COURSES_ACTION_TYPES.UPDATE_COURSE_IN_LIST, updatedCourse)
+);
+
+// Action Thunks
+// Fetch all courses
+export const fetchCoursesStart = withMatcher(
+	(): FetchCoursesStart =>
+		createAction(COURSES_ACTION_TYPES.FETCH_COURSES_START)
+);
+export const fetchCoursesSuccess = withMatcher(
+	(coursesList: Course[]): FetchCoursesSuccess =>
+		createAction(COURSES_ACTION_TYPES.FETCH_COURSES_SUCCESS, coursesList)
+);
+export const fetchCoursesFailure = withMatcher(
+	(error: Error): FetchCoursesFailure =>
+		createAction(COURSES_ACTION_TYPES.FETCH_COURSES_FAILURE, error)
 );

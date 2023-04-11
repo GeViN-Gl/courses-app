@@ -17,10 +17,13 @@ import { selectAuthorsList } from '../../../../store/authors/selectors';
 import { getStringWithAuthorsNames } from '../../../../helpers/customArrayFuncs';
 import { FC, MouseEvent } from 'react';
 import { AnyAction, Dispatch } from 'redux';
+import { deleteCourseFromList } from '../../../../store/courses/actionCreators';
 import {
-	deleteCourseFromList,
-	updateCourseInList,
-} from '../../../../store/courses/actionCreators';
+	selectCurrentUserRole,
+	selectCurrentUserToken,
+} from '../../../../store/user/selectors';
+import { deleteCourseFromAPI } from '../../../../servises';
+import { toastNotify } from '../../../../helpers/toastNotify';
 
 type CourseCardProps = {
 	course: Course;
@@ -31,26 +34,38 @@ const CourseCard: FC<CourseCardProps> = ({ course }) => {
 	const { id, title, description, creationDate, duration, authors } = course;
 
 	const authorsList = useSelector(selectAuthorsList);
+	const userRole = useSelector(selectCurrentUserRole);
+	const userToken = useSelector(selectCurrentUserToken);
 
 	const navigate: NavigateFunction = useNavigate();
 
 	const showCourseNavigateHandler = () => navigate(id);
+
+	// delete bechavior will use API now
+	// delete async helper
+	const deleteCourseAsyncHandler = async () => {
+		const deleteResponce = await deleteCourseFromAPI(userToken, id);
+		if (deleteResponce.successful) {
+			return deleteResponce;
+		}
+	};
+
+	// delete button handler
 	const deleteCourseButtonHandler = (event: MouseEvent<HTMLButtonElement>) => {
-		dispatch(deleteCourseFromList(id));
+		deleteCourseAsyncHandler()
+			.then((responce) => {
+				if (responce?.successful) {
+					toastNotify('Course was deleted');
+					dispatch(deleteCourseFromList(id));
+				}
+			})
+			.catch((error) => {
+				toastNotify('Something went wrong');
+				console.error(error);
+			});
 	};
 	const updateCourseButtonHandler = (event: MouseEvent<HTMLButtonElement>) => {
-		// fake data to test reducer action
-		// will NOT cause rerender
-		dispatch(
-			updateCourseInList({
-				title: ' JS fake update title',
-				description: 'fake update description',
-				creationDate: '30/02/2021',
-				duration: 42,
-				authors: ['9b87e8b8-6ba5-40fc-a439-c4e30a373d36'],
-				id: 'de5aaa59-90f5-4dbc-b8a9-aaf205c551ba',
-			})
-		);
+		navigate(`update/${id}`);
 	};
 
 	return (
@@ -74,12 +89,16 @@ const CourseCard: FC<CourseCardProps> = ({ course }) => {
 				</InfoText>
 				<ButtonsContainer>
 					<Button onClick={showCourseNavigateHandler}>Show&nbsp;course</Button>
-					<Button narrow={true} onClick={updateCourseButtonHandler}>
-						📝
-					</Button>
-					<Button narrow={true} onClick={deleteCourseButtonHandler}>
-						❌
-					</Button>
+					{userRole === 'admin' && (
+						<Button narrow={true} onClick={updateCourseButtonHandler}>
+							📝
+						</Button>
+					)}
+					{userRole === 'admin' && (
+						<Button narrow={true} onClick={deleteCourseButtonHandler}>
+							❌
+						</Button>
+					)}
 				</ButtonsContainer>
 			</InfoContainer>
 		</CardContainer>

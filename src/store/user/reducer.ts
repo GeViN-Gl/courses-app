@@ -5,13 +5,26 @@ import {
 	setCurrentUserIsAuth,
 	setCurrentUserName,
 	setCurrentUserToken,
+	setCurrentUserRole,
+	fetchUserStart,
+	fetchUserSuccess,
+	fetchUserFailure,
 } from './actionCreators';
+
+export type User = {
+	isAuth: boolean;
+	name: string;
+	email: string;
+	token: string;
+	role: string;
+};
 
 export type UserState = {
 	readonly isAuth: boolean;
 	readonly name: string;
 	readonly email: string;
 	readonly token: string;
+	readonly role: string;
 };
 
 const INITIAL_STATE: UserState = {
@@ -19,6 +32,7 @@ const INITIAL_STATE: UserState = {
 	name: '',
 	email: '',
 	token: '',
+	role: '',
 };
 
 export const userReducer = (state = INITIAL_STATE, action: AnyAction) => {
@@ -34,19 +48,35 @@ export const userReducer = (state = INITIAL_STATE, action: AnyAction) => {
 	if (setCurrentUserToken.match(action)) {
 		return { ...state, token: action.payload };
 	}
+	if (setCurrentUserRole.match(action)) {
+		return { ...state, role: action.payload };
+	}
+	if (fetchUserStart.match(action)) {
+		return { ...state, isLoading: true };
+	}
+	if (fetchUserSuccess.match(action)) {
+		const { name, email, role } = action.payload;
+		return {
+			...state,
+			isLoading: false,
+			isAuth: true,
+			name,
+			email,
+			role,
+		};
+	}
+	if (fetchUserFailure.match(action)) {
+		return { ...state, isLoading: false, error: action.payload };
+	}
 	if (clearCurrentUser.match(action)) {
-		return { ...state, isAuth: false, name: '', email: '', token: '' };
+		return {
+			...state,
+			isAuth: false,
+			name: '',
+			email: '',
+			token: '',
+			role: '',
+		};
 	}
 	return state;
 };
-
-/*
-user: {
-isAuth: boolean, // default value - false. After success login -true
-name: string, // default value - empty string. After success login - name of user
-email: string, // default value - empty string. After success login - email of user
-token: string, // default value - empty string or token value from localStorage. After success login - value from API /login response. See Swagger.
-},
-
-
-*/

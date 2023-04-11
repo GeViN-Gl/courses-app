@@ -5,6 +5,7 @@ import {
 	ActionWithPayload,
 	Action,
 } from '../../helpers/reducer/reducer.utils';
+import { User } from './reducer';
 
 // Action types
 export type SetCurrentUserIsAuth = ActionWithPayload<
@@ -22,6 +23,19 @@ export type SetCurrentUserEmail = ActionWithPayload<
 export type SetCurrentUserToken = ActionWithPayload<
 	USER_ACTION_TYPES.SET_CURRENT_USER_TOKEN,
 	string
+>;
+export type SetCurrentUserRole = ActionWithPayload<
+	USER_ACTION_TYPES.SET_CURRENT_USER_ROLE,
+	string
+>;
+export type FetchUserStart = Action<USER_ACTION_TYPES.FETCH_USER_START>;
+export type FetchUserSuccess = ActionWithPayload<
+	USER_ACTION_TYPES.FETCH_USER_SUCCESS,
+	User
+>;
+export type FetchUserFailure = ActionWithPayload<
+	USER_ACTION_TYPES.FETCH_USER_FAILURE,
+	Error
 >;
 export type ClearCurrentUser = Action<USER_ACTION_TYPES.CLEAR_CURRENT_USER>;
 
@@ -41,6 +55,21 @@ export const setCurrentUserEmail = withMatcher(
 export const setCurrentUserToken = withMatcher(
 	(userToken: string): SetCurrentUserToken =>
 		createAction(USER_ACTION_TYPES.SET_CURRENT_USER_TOKEN, userToken)
+);
+export const setCurrentUserRole = withMatcher(
+	(userRole: string): SetCurrentUserRole =>
+		createAction(USER_ACTION_TYPES.SET_CURRENT_USER_ROLE, userRole)
+);
+export const fetchUserStart = withMatcher(
+	(): FetchUserStart => createAction(USER_ACTION_TYPES.FETCH_USER_START)
+);
+export const fetchUserSuccess = withMatcher(
+	(user: User): FetchUserSuccess =>
+		createAction(USER_ACTION_TYPES.FETCH_USER_SUCCESS, user)
+);
+export const fetchUserFailure = withMatcher(
+	(error: Error): FetchUserFailure =>
+		createAction(USER_ACTION_TYPES.FETCH_USER_FAILURE, error)
 );
 export const clearCurrentUser = withMatcher(
 	(): ClearCurrentUser => createAction(USER_ACTION_TYPES.CLEAR_CURRENT_USER)

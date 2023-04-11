@@ -38,7 +38,7 @@ export const CreateCourseContainer = styled.form`
 	min-height: 80vh;
 	display: grid;
 	grid-template-columns: 1fr 1fr;
-	grid-template-rows: auto 80px 250px auto;
+	grid-template-rows: 25px 80px 240px auto;
 	align-items: start;
 
 	& > button {
@@ -61,10 +61,11 @@ export const AddAuthorContainer = styled.div`
 	gap: 25px;
 `;
 
-export const AddAuthorBox = styled.div``;
-
-export const DurationBox = styled.div`
-	grid-row: 2/3;
+export const AddAuthorBox = styled.div`
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	padding: 0 15px;
 `;
 
 export const CourseAuthorsBox = styled.div``;

@@ -1,92 +1,40 @@
 import './App.scss';
 
-import Header from './components/Header/Header';
-import Courses from './components/Courses/Courses';
-import CreateCourse from './components/CreateCourse/CreateCourse';
-import Registration from './components/Courses/component/Registration/Registration';
-import Login from './components/Courses/component/Login/Login';
-import CourseInfo from './components/CourseInfo/CourseInfo';
+// import Header from './components/Header/Header';
+// import Courses from './components/Courses/Courses';
+// import CourseForm from './components/CourseForm/CourseForm';
+// import Registration from './components/Courses/component/Registration/Registration';
+// import Login from './components/Courses/component/Login/Login';
+// import CourseInfo from './components/CourseInfo/CourseInfo';
 
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-import { Routes, Route } from 'react-router-dom';
+// import { Routes, Route } from 'react-router-dom';
+import { RouterProvider } from 'react-router-dom';
 import React, { FC, useEffect } from 'react';
-import {
-	SuccessfullCourseRequest,
-	SuccessfullAuthorRequest,
-	getAllAuthorsFromAPI,
-	getAllCoursesFromAPI,
-} from './servises';
-import { useDispatch } from 'react-redux';
-import { setAuthorsList } from './store/authors/actionCreators';
-import { setCoursesList } from './store/courses/actionCreators';
-import { FailedRequest } from './helpers/dataFetchers';
 
-// fix for crypto
-// github.com/denoland/deno/issues/12754
-declare global {
-	interface Crypto {
-		randomUUID: () => `${string}-${string}-${string}-${string}-${string}`;
-	}
-}
-export {};
+import { fetchAuthorsAsync } from './store/authors/thunk';
+import { useThunkDispatch } from './helpers/hooks/useThunkDispath';
+import { fetchCoursesAsync } from './store/courses/thunk';
+import router from './helpers/router';
 
 // this useEffect triggers fetching of authors list
 
 const App: FC = () => {
-	const dispatch = useDispatch();
-	useEffect(() => {
-		// typeguard for authors list
-		const isAuthorsFetchSuccess = (
-			data: SuccessfullAuthorRequest | FailedRequest
-		): data is SuccessfullAuthorRequest => data.successful;
+	const thuckDispatch = useThunkDispatch();
 
-		async function getAuthorFromBack(): Promise<void> {
-			try {
-				const data = await getAllAuthorsFromAPI();
-				if (isAuthorsFetchSuccess(data)) {
-					dispatch(setAuthorsList(data.result));
-				}
-			} catch (error) {
-				console.error(error);
-			}
-		}
-		getAuthorFromBack();
-	}, [dispatch]);
-	// this useEffect triggers rerendering of courses list
+	// this two useEffects triggers fetching of authors list and courses list
 	useEffect(() => {
-		// typeguard for courses list
-		const isCoursesFetchSuccess = (
-			data: SuccessfullCourseRequest | FailedRequest
-		): data is SuccessfullCourseRequest => data.successful;
+		thuckDispatch(fetchAuthorsAsync());
+	}, [thuckDispatch]);
+	useEffect(() => {
+		thuckDispatch(fetchCoursesAsync());
+	}, [thuckDispatch]);
 
-		async function getCoursesFromBack(): Promise<void> {
-			try {
-				const data = await getAllCoursesFromAPI();
-				if (isCoursesFetchSuccess(data)) {
-					dispatch(setCoursesList(data.result));
-				}
-			} catch (error) {
-				console.error(error);
-			}
-		}
-		getCoursesFromBack();
-	}, [dispatch]);
 	return (
 		<>
-			<Routes>
-				<Route path='/' element={<Header />}>
-					<Route path='courses/add' element={<CreateCourse />} />
-					<Route path='courses/*'>
-						<Route index element={<Courses />} />
-						<Route path=':courseId' element={<CourseInfo />} />
-					</Route>
-					<Route path='registration' element={<Registration />} />
-					<Route path='login' element={<Login />} />
-					<Route path='*' element={<Courses />} />
-				</Route>
-			</Routes>
+			<RouterProvider router={router} />
 			<ToastContainer
 				position='top-left'
 				autoClose={3000}

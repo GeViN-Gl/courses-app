@@ -1,5 +1,5 @@
 import React, { useState, useEffect, MouseEvent, ChangeEvent, FC } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setFilterField } from '../../../../store/courses/actionCreators';
 
 import Input from '../../../../common/Input/Input';
@@ -9,9 +9,11 @@ import { SearchBarContainer } from './SearchBar.styles';
 
 import { NavigateFunction, useNavigate } from 'react-router-dom';
 import { AnyAction, Dispatch } from 'redux';
+import { selectCurrentUserRole } from '../../../../store/user/selectors';
 
 const SearchBar: FC = () => {
 	const dispatch: Dispatch<AnyAction> = useDispatch();
+	const userRole = useSelector(selectCurrentUserRole);
 
 	const [inputFieldValue, setInputFieldValue] = useState('');
 
@@ -52,7 +54,9 @@ const SearchBar: FC = () => {
 				onChange={inputChangeHandler}
 			/>
 			<Button onClick={seacrhClickHandler}>Search</Button>
-			<Button onClick={addNewCourseNavigateHandler}>Add new course</Button>
+			{userRole === 'admin' && (
+				<Button onClick={addNewCourseNavigateHandler}>Add new course</Button>
+			)}
 		</SearchBarContainer>
 	);
 };

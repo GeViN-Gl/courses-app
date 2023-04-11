@@ -7,6 +7,7 @@ import {
 	selectFilterField,
 	selectCoursesList,
 } from '../../store/courses/selectors';
+
 import { Course } from '../../store/courses/reducer';
 
 import { CoursesContainer } from './Courses.styles';
