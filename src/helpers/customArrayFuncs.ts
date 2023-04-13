@@ -24,5 +24,5 @@ export const getStringWithAuthorsNames = (
 		.filter((res) => res !== undefined)
 		.map((auth) => auth?.name)
 		.join(', ');
-	return names;
+	return names === '' ? null : names;
 };

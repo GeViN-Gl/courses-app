@@ -8,7 +8,7 @@ import { mockedState } from '../../../constants';
 import Header from '../Header';
 
 describe('Header', () => {
-	it('renders correctly', async () => {
+	beforeEach(() => {
 		const store = mockStore(mockedState);
 		render(
 			<Provider store={store}>
@@ -17,9 +17,11 @@ describe('Header', () => {
 				</BrowserRouter>
 			</Provider>
 		);
-
+	});
+	it('should have logo', async () => {
 		expect(screen.getByTestId('logo-element')).toBeInTheDocument();
+	});
+	it('should have user`s name', async () => {
 		expect(screen.getByText('Test Name')).toBeInTheDocument();
-		expect(false).toBeTruthy();
 	});
 });

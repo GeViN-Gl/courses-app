@@ -6,7 +6,6 @@ import { mockStore } from '../../../store/tests/mockStore';
 import { mockedState } from '../../../constants';
 
 import Courses from '../Courses';
-// import { getStringWithAuthorsNames } from '../../../helpers/customArrayFuncs';
 
 jest.mock('../../../helpers/customArrayFuncs', () => ({
 	getStringWithAuthorsNames: jest.fn(() => 'mocked author names'),
@@ -38,7 +37,6 @@ describe('Courses', () => {
 			mockedState.courses.coursesList.length
 		);
 	});
-	//should display amount of CourseCard equal length of courses array
 
 	it('should display Empty container if courses array length is 0', () => {
 		const noCoursesState = { ...mockedState, courses: { coursesList: [] } };
