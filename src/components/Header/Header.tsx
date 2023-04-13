@@ -112,6 +112,7 @@ const Header: FC = () => {
 		if (isUserAuth) {
 			navigate('/courses');
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [isUserAuth]);
 	// i dont need navigate in dependency, react-router-dom creates new function on every render
 
@@ -133,7 +134,7 @@ const Header: FC = () => {
 	return (
 		<>
 			<HeaderContainer>
-				<LogoLinkContainer to='/courses'>
+				<LogoLinkContainer to='/courses' data-testid='logo-element'>
 					<Logo />
 				</LogoLinkContainer>
 				<ElementContainer>

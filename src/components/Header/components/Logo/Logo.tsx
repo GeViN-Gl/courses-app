@@ -1,12 +1,12 @@
 import { FC } from 'react';
 import { LogoSvg } from './Logo.styles';
 
-const Logo: FC = () => {
-	return (
-		<>
-			<LogoSvg />
-		</>
-	);
+type LogoProps = {
+	alt?: string;
+};
+
+const Logo: FC<LogoProps> = () => {
+	return <LogoSvg />;
 };
 
 export default Logo;

@@ -69,7 +69,7 @@ const CourseCard: FC<CourseCardProps> = ({ course }) => {
 	};
 
 	return (
-		<CardContainer>
+		<CardContainer data-testid={'course-card-element'}>
 			<TitleContainer>
 				<h2 className='title'>{title}</h2>
 				<p className='description'>{description}</p>

@@ -40,3 +40,44 @@ export const mockedAuthorsList = [
 		name: 'Valentina Larina',
 	},
 ];
+
+export const mockedState = {
+	user: {
+		isAuth: true,
+		name: 'Test Name',
+		email: 'email@example.com',
+		token: 'token',
+		role: 'admin',
+	},
+
+	authors: {
+		authorList: [
+			{ id: 'id1', name: 'author name 1' },
+			{ id: 'id2', name: 'author name 2' },
+		],
+	},
+
+	courses: {
+		coursesList: [
+			{
+				id: '1',
+				title: 'title 1',
+				description: 'description 1',
+				creationDate: '1/2/3456',
+				duration: 42,
+				authors: ['id1'],
+			},
+			{
+				id: '2',
+				title: 'title 2',
+				description: 'description 2',
+				creationDate: '3/4/5678',
+				duration: 24,
+				authors: ['id2'],
+			},
+		],
+		filterField: '',
+		isLoading: false,
+		error: null,
+	},
+};
