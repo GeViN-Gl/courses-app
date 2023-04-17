@@ -15,10 +15,14 @@ export const getArrayWithAuthors = (
 
 export const getStringWithAuthorsNames = (
 	allAuthors: Author[],
-	authorsIds: string[]
+	requestedAuthorsIds: string[]
 ): string | null => {
-	const mappedResult = getArrayWithAuthors(allAuthors, authorsIds);
-	if (mappedResult === null) return null;
-	const names = mappedResult.map(({ name }) => name).join(', ');
-	return names;
+	const names = requestedAuthorsIds
+		.map((requestedAuthorId) =>
+			allAuthors.find((author) => author.id === requestedAuthorId)
+		)
+		.filter((res) => res !== undefined)
+		.map((auth) => auth?.name)
+		.join(', ');
+	return names === '' ? null : names;
 };
